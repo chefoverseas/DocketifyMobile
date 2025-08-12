@@ -4,18 +4,32 @@ import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: json("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  }
+);
+
+// User storage table for Replit Auth
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  phone: text("phone"), // Optional field for profile
   uid: text("uid").unique(), // 8-digit unique identifier
-  phone: text("phone").notNull().unique(),
   givenName: text("given_name"),
   surname: text("surname"),
   displayName: text("display_name"),
-  email: text("email"),
-  profilePhotoUrl: text("profile_photo_url"),
   docketCompleted: boolean("docket_completed").default(false),
   isAdmin: boolean("is_admin").default(false),
-  createdAt: timestamp("created_at").default(sql`now()`),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const dockets = pgTable("dockets", {
@@ -38,7 +52,7 @@ export const dockets = pgTable("dockets", {
 
 export const otpSessions = pgTable("otp_sessions", {
   id: serial("id").primaryKey(),
-  phone: text("phone").notNull(),
+  email: text("email").notNull(),
   code: text("code").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   verified: boolean("verified").default(false),
@@ -152,6 +166,7 @@ export const insertWorkPermitSchema = createInsertSchema(workPermits).omit({
   createdAt: true,
 });
 
+export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Docket = typeof dockets.$inferSelect;

@@ -1,11 +1,32 @@
-import { users, dockets, otpSessions, contracts, adminSessions, workPermits, type User, type InsertUser, type Docket, type InsertDocket, type OtpSession, type InsertOtpSession, type Contract, type InsertContract, type AdminSession, type InsertAdminSession, type WorkPermit, type InsertWorkPermit } from "@shared/schema";
+import { 
+  users, 
+  dockets, 
+  otpSessions, 
+  contracts, 
+  adminSessions, 
+  workPermits, 
+  type User, 
+  type UpsertUser,
+  type InsertUser, 
+  type Docket, 
+  type InsertDocket, 
+  type OtpSession, 
+  type InsertOtpSession, 
+  type Contract, 
+  type InsertContract, 
+  type AdminSession, 
+  type InsertAdminSession, 
+  type WorkPermit, 
+  type InsertWorkPermit 
+} from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, lt } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations
+  // User operations (updated for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
-  getUserByPhone(phone: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUid(uid: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User>;
@@ -13,9 +34,9 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   generateUniqueUid(): Promise<string>;
 
-  // OTP operations
+  // Email OTP operations
   createOtpVerification(session: InsertOtpSession): Promise<OtpSession>;
-  getLatestOtpVerification(phone: string): Promise<OtpSession | undefined>;
+  getLatestOtpVerification(email: string): Promise<OtpSession | undefined>;
   markOtpAsVerified(id: number): Promise<void>;
   cleanupExpiredOtp(): Promise<void>;
 
@@ -60,8 +81,23 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
-  async getUserByPhone(phone: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.phone, phone));
+  async upsertUser(userData: UpsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
     return user || undefined;
   }
 
@@ -114,8 +150,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOtpVerification(session: InsertOtpSession): Promise<OtpSession> {
-    // First clean up any existing sessions for this phone
-    await db.delete(otpSessions).where(eq(otpSessions.phone, session.phone));
+    // First clean up any existing sessions for this email
+    await db.delete(otpSessions).where(eq(otpSessions.email, session.email));
     
     const [otpSession] = await db
       .insert(otpSessions)
@@ -124,11 +160,11 @@ export class DatabaseStorage implements IStorage {
     return otpSession;
   }
 
-  async getLatestOtpVerification(phone: string): Promise<OtpSession | undefined> {
+  async getLatestOtpVerification(email: string): Promise<OtpSession | undefined> {
     const [session] = await db
       .select()
       .from(otpSessions)
-      .where(eq(otpSessions.phone, phone))
+      .where(eq(otpSessions.email, email))
       .orderBy(desc(otpSessions.createdAt));
     return session || undefined;
   }

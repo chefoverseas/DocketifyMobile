@@ -3,11 +3,9 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { AuthProvider } from "@/hooks/use-auth";
-import Navigation from "@/components/navigation";
+import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
-import OtpVerification from "@/pages/otp-verification";
 import Profile from "@/pages/profile";
 import Docket from "@/pages/docket";
 import Contracts from "@/pages/contracts";
@@ -28,15 +26,23 @@ import AdminContractDetail from "@/pages/admin-contract-detail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <Switch>
-      <Route path="/" component={Landing} />
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/auth/otp" component={OtpVerification} />
-      <Route path="/profile" component={Profile} />
-      <Route path="/docket" component={Docket} />
-      <Route path="/contracts" component={Contracts} />
-      <Route path="/workpermit" component={WorkPermit} />
+      {isLoading || !isAuthenticated ? (
+        <Route path="/" component={Landing} />
+      ) : (
+        <>
+          <Route path="/" component={Dashboard} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/profile" component={Profile} />
+          <Route path="/docket" component={Docket} />
+          <Route path="/contracts" component={Contracts} />
+          <Route path="/workpermit" component={WorkPermit} />
+        </>
+      )}
+      {/* Admin routes - separate authentication */}
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/contracts" component={AdminContracts} />
@@ -44,12 +50,8 @@ function Router() {
       <Route path="/admin/workpermits" component={AdminWorkPermits} />
       <Route path="/admin/workpermit/:userId" component={AdminWorkPermit} />
       <Route path="/admin/user/new" component={AdminUserCreate} />
-      <Route path="/admin/user/:userId/edit">
-        {params => <AdminUserEdit userId={params.userId} />}
-      </Route>
-      <Route path="/admin/user/:userId">
-        {params => <AdminUserDetail userId={params.userId} />}
-      </Route>
+      <Route path="/admin/user/:userId/edit" component={AdminUserEdit} />
+      <Route path="/admin/user/:userId" component={AdminUserDetail} />
       <Route path="/admin/dockets" component={AdminDockets} />
       <Route path="/admin/docket/:userId">
         {params => <AdminDocketDetail userId={params.userId} />}
@@ -67,13 +69,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <AuthProvider>
-          <div className="min-h-screen bg-gray-50">
-            <Navigation />
-            <Toaster />
-            <Router />
-          </div>
-        </AuthProvider>
+        <div className="min-h-screen bg-gray-50">
+          <Toaster />
+          <Router />
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );
