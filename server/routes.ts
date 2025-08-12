@@ -138,6 +138,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Phone number is required" });
       }
 
+      // Check if user exists (was created by admin)
+      const existingUser = await storage.getUserByPhone(phone);
+      if (!existingUser) {
+        return res.status(403).json({ message: "You are not a candidate of Chef Overseas" });
+      }
+
       const code = generateOTP();
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -175,17 +181,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Mark OTP as verified
       await storage.markOtpAsVerified(verification.id);
 
-      // Get or create user
-      let user = await storage.getUserByPhone(phone);
+      // Get user (must exist now since we checked in send-otp)
+      const user = await storage.getUserByPhone(phone);
       if (!user) {
-        // Generate unique UID for new user
-        const uid = await storage.generateUniqueUid();
-        user = await storage.createUser({
-          phone,
-          uid,
-          displayName: "",
-          email: "",
-        });
+        return res.status(403).json({ message: "You are not a candidate of Chef Overseas" });
       }
 
       // Set user session
