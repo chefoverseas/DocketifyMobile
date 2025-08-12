@@ -63,7 +63,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
     retry: false,
   });
 
-  const user = userId ? (userData as any)?.user : (userData as any)?.user;
+  const user = userId ? (userData as any) : (userData as any)?.user;
   const docket = userId ? (docketData as any)?.docket : (docketData as any)?.docket;
   const contract = userId ? (contractData as any)?.contract : (contractData as any)?.contract;
   const workPermit = userId ? (workPermitData as any)?.workPermit : (workPermitData as any)?.workPermit;
@@ -127,6 +127,42 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
   const workPermitStatus = getWorkPermitStatus();
 
   const baseUrl = userId ? `/admin` : '';
+
+  // Debug logging to help identify the issue
+  console.log('UserNavigationHub Debug:', { userId, userData, user, showUserInfo });
+
+  // If we're in admin mode (userId provided) but don't have user data yet, show loading
+  if (userId && !userData) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading user information...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // If we're in admin mode and have no user data after loading, show error
+  if (userId && userData && !user) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">User Information Unavailable</h3>
+              <p className="text-gray-600">Unable to load user details at this time.</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
