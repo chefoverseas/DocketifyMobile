@@ -86,10 +86,10 @@ export function AdvancedSearch() {
   const clearFilters = () => {
     setFilters({
       query: "",
-      documentType: "",
-      status: "",
-      dateRange: "",
-      userRole: ""
+      documentType: "all-types",
+      status: "all-statuses",
+      dateRange: "any-time",
+      userRole: "all-roles"
     });
     setSearchResults([]);
   };
