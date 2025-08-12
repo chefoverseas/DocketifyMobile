@@ -10,7 +10,7 @@ export default function Landing() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      setLocation("/docket");
+      setLocation("/dashboard");
     }
   }, [isAuthenticated, setLocation]);
 

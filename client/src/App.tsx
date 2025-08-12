@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import Navigation from "@/components/navigation";
 import Landing from "@/pages/landing";
+import Dashboard from "@/pages/dashboard";
 import OtpVerification from "@/pages/otp-verification";
 import Profile from "@/pages/profile";
 import Docket from "@/pages/docket";
@@ -24,6 +25,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      <Route path="/dashboard" component={Dashboard} />
       <Route path="/auth/otp" component={OtpVerification} />
       <Route path="/profile" component={Profile} />
       <Route path="/docket" component={Docket} />

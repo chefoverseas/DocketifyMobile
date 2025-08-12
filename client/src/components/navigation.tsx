@@ -33,6 +33,16 @@ export default function Navigation() {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               <Link 
+                href="/dashboard"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive("/dashboard") 
+                    ? "text-primary-600 bg-primary-50" 
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Link 
                 href="/profile"
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                   isActive("/profile") 
