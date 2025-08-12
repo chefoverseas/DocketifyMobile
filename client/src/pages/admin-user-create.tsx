@@ -101,12 +101,13 @@ export default function AdminUserCreatePage() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="name">First Name (as per passport)</Label>
+                  <Label htmlFor="name">First Name (as per passport) <span className="text-red-500">*</span></Label>
                   <Input
                     id="name"
                     {...register("name")}
                     placeholder="Enter first name"
                     disabled={createUserMutation.isPending}
+                    required
                   />
                   {errors.name && (
                     <p className="text-sm text-red-600">{errors.name.message}</p>
@@ -114,12 +115,13 @@ export default function AdminUserCreatePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="surname">Surname (as per passport)</Label>
+                  <Label htmlFor="surname">Surname (as per passport) <span className="text-red-500">*</span></Label>
                   <Input
                     id="surname"
                     {...register("surname")}
                     placeholder="Enter surname"
                     disabled={createUserMutation.isPending}
+                    required
                   />
                   {errors.surname && (
                     <p className="text-sm text-red-600">{errors.surname.message}</p>
@@ -128,13 +130,14 @@ export default function AdminUserCreatePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
+                <Label htmlFor="email">Email Address <span className="text-red-500">*</span></Label>
                 <Input
                   id="email"
                   type="email"
                   {...register("email")}
                   placeholder="Enter email address"
                   disabled={createUserMutation.isPending}
+                  required
                 />
                 {errors.email && (
                   <p className="text-sm text-red-600">{errors.email.message}</p>
@@ -142,19 +145,29 @@ export default function AdminUserCreatePage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Mobile Number</Label>
+                <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
                 <Input
                   id="phone"
                   type="tel"
                   {...register("phone")}
                   placeholder="Enter mobile number (e.g., +1234567890)"
                   disabled={createUserMutation.isPending}
+                  required
                 />
                 {errors.phone && (
                   <p className="text-sm text-red-600">{errors.phone.message}</p>
                 )}
                 <p className="text-xs text-gray-500">
                   User will receive OTP verification codes on this number for login
+                </p>
+              </div>
+
+              <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg mb-4">
+                <h3 className="font-medium text-red-900 dark:text-red-100 mb-2">
+                  Required Fields
+                </h3>
+                <p className="text-sm text-red-700 dark:text-red-200">
+                  All fields marked with <span className="text-red-500">*</span> are mandatory and must be completed before creating the user.
                 </p>
               </div>
 

@@ -104,11 +104,18 @@ export default function AdminWorkPermitsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Work Permits Management</h1>
-        <p className="text-gray-600 mt-2">
-          Manage work permit applications and track their status
-        </p>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Work Permits Management</h1>
+          <p className="text-gray-600 mt-2">
+            Manage work permit applications and track their status
+          </p>
+        </div>
+        <div className="flex space-x-3">
+          <Button variant="outline" onClick={() => window.location.href = "/admin/dashboard"}>
+            Back to Dashboard
+          </Button>
+        </div>
       </div>
 
       {/* Statistics Cards */}
