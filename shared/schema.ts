@@ -48,12 +48,17 @@ export const otpSessions = pgTable("otp_sessions", {
 export const contracts = pgTable("contracts", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  companyContractUrl: text("company_contract_url"),
+  // Contract fields - original admin-uploaded documents
+  companyContractOriginalUrl: text("company_contract_original_url"),
+  companyContractSignedUrl: text("company_contract_signed_url"),
   companyContractStatus: text("company_contract_status").default("pending"), // pending, signed, rejected
   companyContractSignatureValid: boolean("company_contract_signature_valid").default(false),
-  jobOfferUrl: text("job_offer_url"),
-  jobOfferStatus: text("job_offer_status").default("pending"), // pending, accepted, rejected
+  
+  jobOfferOriginalUrl: text("job_offer_original_url"),
+  jobOfferSignedUrl: text("job_offer_signed_url"),
+  jobOfferStatus: text("job_offer_status").default("pending"), // pending, signed, rejected
   jobOfferSignatureValid: boolean("job_offer_signature_valid").default(false),
+  
   notes: text("notes"),
   lastUpdated: timestamp("last_updated").default(sql`now()`),
   createdAt: timestamp("created_at").default(sql`now()`),

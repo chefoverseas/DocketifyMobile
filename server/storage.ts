@@ -236,7 +236,8 @@ export class DatabaseStorage implements IStorage {
     const completedDockets = allUsers.filter(u => u.docketCompleted).length;
     const pendingDockets = totalUsers - completedDockets;
     const contractsPending = contractData.filter(c => 
-      c.companyContractStatus === 'pending' || c.jobOfferStatus === 'pending'
+      (c.companyContractStatus === 'pending' && c.companyContractOriginalUrl) || 
+      (c.jobOfferStatus === 'pending' && c.jobOfferOriginalUrl)
     ).length;
     
     return {

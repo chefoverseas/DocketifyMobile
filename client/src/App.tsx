@@ -13,6 +13,7 @@ import Contracts from "@/pages/contracts";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Admin from "@/pages/admin";
+import AdminContracts from "@/pages/admin-contracts";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/contracts" component={Contracts} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/contracts" component={AdminContracts} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>

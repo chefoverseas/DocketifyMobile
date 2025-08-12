@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import FileUploader from "@/components/file-uploader";
+import ContractUploader from "@/components/contract-uploader";
 import { 
   FileText, 
   Building2, 
@@ -53,14 +54,53 @@ export default function ContractsPage() {
     updateMutation.mutate({ [field]: fileData });
   };
 
+  const signedContractMutation = useMutation({
+    mutationFn: async ({ type, file }: { type: string; file: File }) => {
+      const formData = new FormData();
+      formData.append('pdf', file);
+      formData.append('type', type);
+      
+      const response = await fetch('/api/contracts/upload-signed', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to upload signed contract');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/contracts"] });
+      toast({
+        title: "Success",
+        description: "Signed contract uploaded successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload signed contract",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSignedContractUpload = (type: string, file: File) => {
+    signedContractMutation.mutate({ type, file });
+  };
+
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
   // Calculate progress
   const sections = [
-    { key: 'companyContract', completed: !!contract?.companyContractUrl },
-    { key: 'jobOffer', completed: !!contract?.jobOfferUrl },
+    { key: 'companyContract', completed: !!contract?.companyContractSignedUrl },
+    { key: 'jobOffer', completed: !!contract?.jobOfferSignedUrl },
   ];
   
   const completedSections = sections.filter(s => s.completed).length;
@@ -114,16 +154,16 @@ export default function ContractsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  contract?.companyContractUrl ? "bg-green-100" : "bg-gray-100"
+                  contract?.companyContractOriginalUrl ? "bg-green-100" : "bg-gray-100"
                 }`}>
                   <Building2 className={`h-4 w-4 ${
-                    contract?.companyContractUrl ? "text-green-600" : "text-gray-400"
+                    contract?.companyContractOriginalUrl ? "text-green-600" : "text-gray-400"
                   }`} />
                 </div>
                 <div>
                   <CardTitle className="flex items-center space-x-2">
                     <span>Company Contract</span>
-                    {contract?.companyContractUrl && (
+                    {contract?.companyContractOriginalUrl && (
                       <div className="flex items-center space-x-1">
                         {getStatusIcon(contract.companyContractStatus || 'pending', contract.companyContractSignatureValid)}
                         {contract.companyContractSignatureValid && (
@@ -137,36 +177,74 @@ export default function ContractsPage() {
                   </p>
                 </div>
               </div>
-              {contract?.companyContractUrl && getStatusBadge(contract.companyContractStatus || 'pending')}
+              {contract?.companyContractOriginalUrl && getStatusBadge(contract.companyContractStatus || 'pending')}
             </div>
           </CardHeader>
           <CardContent>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Company Contract Document
-              </label>
-              <FileUploader
-                currentFile={contract?.companyContractUrl}
-                onUpload={(fileData) => handleFileUpload('companyContractUrl', fileData.url)}
-                accept=".pdf"
-                description="Upload company contract in PDF format"
-              />
-              
-              {contract?.companyContractUrl && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between">
+              {!contract?.companyContractOriginalUrl ? (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Waiting for Admin</h3>
+                  <p className="text-gray-600">
+                    Your admin will upload the company contract for you to review and sign.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                     <div>
-                      <h4 className="font-medium text-gray-900">Document Status</h4>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Status: {contract.companyContractStatus || 'pending'}
-                      </p>
-                      {contract.companyContractSignatureValid !== undefined && (
-                        <p className="text-sm text-gray-600">
-                          Signature: {contract.companyContractSignatureValid ? 'Valid' : 'Invalid/Missing'}
-                        </p>
-                      )}
+                      <h4 className="font-medium text-gray-900">Original Contract</h4>
+                      <p className="text-sm text-gray-600">Review and download the contract from admin</p>
                     </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href={contract.companyContractOriginalUrl} target="_blank">
+                        <FileText className="h-4 w-4 mr-2" />
+                        View Contract
+                      </a>
+                    </Button>
                   </div>
+                  
+                  {!contract?.companyContractSignedUrl && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Signed Contract
+                      </label>
+                      <ContractUploader
+                        onUpload={(file) => handleSignedContractUpload('company', file)}
+                        accept=".pdf"
+                        description="Upload your signed company contract (PDF format)"
+                        disabled={signedContractMutation.isPending}
+                      />
+                    </div>
+                  )}
+                  
+                  {contract?.companyContractSignedUrl && (
+                    <div className="p-4 bg-green-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900 flex items-center">
+                            <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                            Signed Contract Submitted
+                          </h4>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Status: {contract.companyContractStatus || 'pending'}
+                          </p>
+                          {contract.companyContractSignatureValid !== undefined && (
+                            <p className="text-sm text-gray-600">
+                              Signature: {contract.companyContractSignatureValid ? 'Valid' : 'Invalid/Missing'}
+                            </p>
+                          )}
+                        </div>
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={contract.companyContractSignedUrl} target="_blank">
+                            <FileText className="h-4 w-4 mr-2" />
+                            View Signed
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -179,16 +257,16 @@ export default function ContractsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  contract?.jobOfferUrl ? "bg-green-100" : "bg-gray-100"
+                  contract?.jobOfferOriginalUrl ? "bg-green-100" : "bg-gray-100"
                 }`}>
                   <Briefcase className={`h-4 w-4 ${
-                    contract?.jobOfferUrl ? "text-green-600" : "text-gray-400"
+                    contract?.jobOfferOriginalUrl ? "text-green-600" : "text-gray-400"
                   }`} />
                 </div>
                 <div>
                   <CardTitle className="flex items-center space-x-2">
                     <span>Job Offer Letter</span>
-                    {contract?.jobOfferUrl && (
+                    {contract?.jobOfferOriginalUrl && (
                       <div className="flex items-center space-x-1">
                         {getStatusIcon(contract.jobOfferStatus || 'pending', contract.jobOfferSignatureValid)}
                         {contract.jobOfferSignatureValid && (
@@ -202,36 +280,74 @@ export default function ContractsPage() {
                   </p>
                 </div>
               </div>
-              {contract?.jobOfferUrl && getStatusBadge(contract.jobOfferStatus || 'pending')}
+              {contract?.jobOfferOriginalUrl && getStatusBadge(contract.jobOfferStatus || 'pending')}
             </div>
           </CardHeader>
           <CardContent>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Job Offer Document
-              </label>
-              <FileUploader
-                currentFile={contract?.jobOfferUrl}
-                onUpload={(fileData) => handleFileUpload('jobOfferUrl', fileData.url)}
-                accept=".pdf"
-                description="Upload job offer letter in PDF format"
-              />
-              
-              {contract?.jobOfferUrl && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center justify-between">
+              {!contract?.jobOfferOriginalUrl ? (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Waiting for Admin</h3>
+                  <p className="text-gray-600">
+                    Your admin will upload the job offer for you to review and sign.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                     <div>
-                      <h4 className="font-medium text-gray-900">Document Status</h4>
-                      <p className="text-sm text-gray-600 mt-1">
-                        Status: {contract.jobOfferStatus || 'pending'}
-                      </p>
-                      {contract.jobOfferSignatureValid !== undefined && (
-                        <p className="text-sm text-gray-600">
-                          Signature: {contract.jobOfferSignatureValid ? 'Valid' : 'Invalid/Missing'}
-                        </p>
-                      )}
+                      <h4 className="font-medium text-gray-900">Original Job Offer</h4>
+                      <p className="text-sm text-gray-600">Review and download the job offer from admin</p>
                     </div>
+                    <Button variant="outline" size="sm" asChild>
+                      <a href={contract.jobOfferOriginalUrl} target="_blank">
+                        <FileText className="h-4 w-4 mr-2" />
+                        View Offer
+                      </a>
+                    </Button>
                   </div>
+                  
+                  {!contract?.jobOfferSignedUrl && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Signed Job Offer
+                      </label>
+                      <ContractUploader
+                        onUpload={(file) => handleSignedContractUpload('joboffer', file)}
+                        accept=".pdf"
+                        description="Upload your signed job offer letter (PDF format)"
+                        disabled={signedContractMutation.isPending}
+                      />
+                    </div>
+                  )}
+                  
+                  {contract?.jobOfferSignedUrl && (
+                    <div className="p-4 bg-green-50 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-gray-900 flex items-center">
+                            <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                            Signed Job Offer Submitted
+                          </h4>
+                          <p className="text-sm text-gray-600 mt-1">
+                            Status: {contract.jobOfferStatus || 'pending'}
+                          </p>
+                          {contract.jobOfferSignatureValid !== undefined && (
+                            <p className="text-sm text-gray-600">
+                              Signature: {contract.jobOfferSignatureValid ? 'Valid' : 'Invalid/Missing'}
+                            </p>
+                          )}
+                        </div>
+                        <Button variant="outline" size="sm" asChild>
+                          <a href={contract.jobOfferSignedUrl} target="_blank">
+                            <FileText className="h-4 w-4 mr-2" />
+                            View Signed
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

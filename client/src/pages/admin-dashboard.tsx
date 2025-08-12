@@ -124,6 +124,10 @@ export default function AdminDashboardPage() {
               </p>
             </div>
             <div className="flex space-x-3">
+              <Button variant="outline" onClick={() => setLocation("/admin/contracts")}>
+                <FileText className="h-4 w-4 mr-2" />
+                Contract Management
+              </Button>
               <Button variant="outline" onClick={handleExportCSV}>
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV

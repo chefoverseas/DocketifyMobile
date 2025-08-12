@@ -10,6 +10,7 @@ import fs from "fs";
 import { randomUUID } from "crypto";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import { validatePDFSignature, isSignatureValid } from "./pdf-signature-validator";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -506,6 +507,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Update contract error:", error);
       res.status(500).json({ message: "Failed to update contract" });
+    }
+  });
+
+  // PDF signature validation API
+  app.post("/api/validate-signature", upload.single('pdf'), async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      const adminSession = await getAdminSession(req);
+      
+      if (!userId && !adminSession) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "PDF file is required" });
+      }
+
+      if (req.file.mimetype !== 'application/pdf') {
+        return res.status(400).json({ message: "Only PDF files are allowed" });
+      }
+
+      const pdfBuffer = fs.readFileSync(req.file.path);
+      const validationResult = await validatePDFSignature(pdfBuffer);
+      const isValid = isSignatureValid(validationResult);
+
+      // Clean up uploaded file
+      fs.unlinkSync(req.file.path);
+
+      res.json({ 
+        valid: isValid, 
+        result: validationResult 
+      });
+    } catch (error) {
+      console.error("PDF validation error:", error);
+      res.status(500).json({ message: "Failed to validate PDF signature" });
+    }
+  });
+
+  // Admin: Upload contract documents for users
+  app.post("/api/admin/contracts/:userId/company-contract", upload.single('pdf'), async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+      if (!req.file) {
+        return res.status(400).json({ message: "PDF file is required" });
+      }
+
+      const fileName = `contract-${userId}-company-${Date.now()}.pdf`;
+      const finalPath = path.join("uploads", fileName);
+      
+      fs.renameSync(req.file.path, finalPath);
+      const fileUrl = `/uploads/${fileName}`;
+
+      await storage.updateContract(userId, {
+        companyContractOriginalUrl: fileUrl,
+        companyContractStatus: "pending",
+      });
+
+      res.json({ message: "Company contract uploaded successfully", url: fileUrl });
+    } catch (error) {
+      console.error("Admin contract upload error:", error);
+      res.status(500).json({ message: "Failed to upload contract" });
+    }
+  });
+
+  app.post("/api/admin/contracts/:userId/job-offer", upload.single('pdf'), async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+      if (!req.file) {
+        return res.status(400).json({ message: "PDF file is required" });
+      }
+
+      const fileName = `contract-${userId}-joboffer-${Date.now()}.pdf`;
+      const finalPath = path.join("uploads", fileName);
+      
+      fs.renameSync(req.file.path, finalPath);
+      const fileUrl = `/uploads/${fileName}`;
+
+      await storage.updateContract(userId, {
+        jobOfferOriginalUrl: fileUrl,
+        jobOfferStatus: "pending",
+      });
+
+      res.json({ message: "Job offer uploaded successfully", url: fileUrl });
+    } catch (error) {
+      console.error("Admin job offer upload error:", error);
+      res.status(500).json({ message: "Failed to upload job offer" });
+    }
+  });
+
+  // User: Upload signed documents
+  app.post("/api/contracts/upload-signed", upload.single('pdf'), async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "PDF file is required" });
+      }
+
+      const { type } = req.body; // 'company' or 'joboffer'
+      if (!type || !['company', 'joboffer'].includes(type)) {
+        return res.status(400).json({ message: "Invalid document type" });
+      }
+
+      // Validate PDF signature
+      const pdfBuffer = fs.readFileSync(req.file.path);
+      const validationResult = await validatePDFSignature(pdfBuffer);
+      const isValid = isSignatureValid(validationResult);
+
+      if (!isValid) {
+        fs.unlinkSync(req.file.path); // Clean up
+        return res.status(400).json({ 
+          message: "PDF signature validation failed. Please ensure the document is properly signed.",
+          details: validationResult
+        });
+      }
+
+      const fileName = `contract-${userId}-${type}-signed-${Date.now()}.pdf`;
+      const finalPath = path.join("uploads", fileName);
+      
+      fs.renameSync(req.file.path, finalPath);
+      const fileUrl = `/uploads/${fileName}`;
+
+      const updateData = type === 'company' 
+        ? {
+            companyContractSignedUrl: fileUrl,
+            companyContractStatus: "signed" as const,
+            companyContractSignatureValid: true,
+          }
+        : {
+            jobOfferSignedUrl: fileUrl,
+            jobOfferStatus: "signed" as const,
+            jobOfferSignatureValid: true,
+          };
+
+      await storage.updateContract(userId, updateData);
+
+      res.json({ message: "Signed document uploaded successfully", url: fileUrl });
+    } catch (error) {
+      console.error("Signed document upload error:", error);
+      res.status(500).json({ message: "Failed to upload signed document" });
     }
   });
 
