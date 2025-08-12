@@ -250,15 +250,15 @@ export default function AdminDashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation("/admin/user/new")}>
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation("/admin/users")}>
             <CardContent className="p-6">
               <div className="flex items-center">
                 <div className="p-3 bg-accent/10 rounded-lg">
-                  <Plus className="h-8 w-8 text-accent-foreground" />
+                  <Users className="h-8 w-8 text-accent-foreground" />
                 </div>
                 <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Create New User</h3>
-                  <p className="text-sm text-gray-600">Add new candidates to the system</p>
+                  <h3 className="text-lg font-semibold text-gray-900">User Management</h3>
+                  <p className="text-sm text-gray-600">View, edit, and manage all user accounts</p>
                 </div>
               </div>
             </CardContent>
@@ -269,12 +269,12 @@ export default function AdminDashboardPage() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>User Management</CardTitle>
+              <CardTitle>Recent Users</CardTitle>
               <div className="flex space-x-2">
-                <Link href="/admin/workpermits">
+                <Link href="/admin/users">
                   <Button variant="outline">
-                    <Briefcase className="h-4 w-4 mr-2" />
-                    Work Permits
+                    <Users className="h-4 w-4 mr-2" />
+                    All Users
                   </Button>
                 </Link>
                 <Link href="/admin/user/new">

@@ -461,8 +461,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get all users
   app.get("/api/admin/users", async (req, res) => {
     try {
-      const adminSession = await getAdminSession(req);
-      if (!adminSession) {
+      const sessionToken = req.cookies.admin_session;
+      if (!sessionToken) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const adminSession = await storage.getAdminSession(sessionToken);
+      if (!adminSession || adminSession.expiresAt < new Date()) {
         return res.status(401).json({ message: "Admin authentication required" });
       }
 
@@ -477,8 +482,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Update user
   app.patch("/api/admin/users/:userId", async (req, res) => {
     try {
-      const adminSession = await getAdminSession(req);
-      if (!adminSession) {
+      const sessionToken = req.cookies.admin_session;
+      if (!sessionToken) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const adminSession = await storage.getAdminSession(sessionToken);
+      if (!adminSession || adminSession.expiresAt < new Date()) {
         return res.status(401).json({ message: "Admin authentication required" });
       }
 
@@ -514,8 +524,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Delete user
   app.delete("/api/admin/users/:userId", async (req, res) => {
     try {
-      const adminSession = await getAdminSession(req);
-      if (!adminSession) {
+      const sessionToken = req.cookies.admin_session;
+      if (!sessionToken) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const adminSession = await storage.getAdminSession(sessionToken);
+      if (!adminSession || adminSession.expiresAt < new Date()) {
         return res.status(401).json({ message: "Admin authentication required" });
       }
 
