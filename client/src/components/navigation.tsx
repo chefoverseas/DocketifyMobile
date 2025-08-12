@@ -2,7 +2,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, FolderOpen } from "lucide-react";
+import { Bell } from "lucide-react";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -20,8 +21,12 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <FolderOpen className="h-8 w-8 text-primary" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Docketify</span>
+              <img 
+                src={chefOverseasLogo} 
+                alt="Chef Overseas Logo" 
+                className="h-8 w-auto mr-2"
+              />
+              <span className="text-xl font-bold text-gray-900">Docketify</span>
             </div>
           </div>
           

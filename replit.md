@@ -30,9 +30,11 @@ Preferred communication style: Simple, everyday language.
 - **Relationships**: One-to-one relationship between users and their dockets
 
 ## Authentication System
-- **Phone-based OTP**: Users authenticate using their mobile phone number and SMS verification codes
+- **Phone-based OTP**: Users authenticate using their mobile phone number and SMS verification codes with country code selection
 - **Session-based Auth**: Server-side sessions for maintaining authentication state
 - **Role-based Access**: Admin users have additional permissions for user management
+- **Admin Pre-registration**: Only admin-created users can access the system with proper error messaging
+- **Country Code Support**: 13 country codes supported including US, UK, India, UAE, Singapore, etc.
 
 ## File Storage Strategy
 - **Local File System**: Files stored in uploads directory with UUID-based naming
@@ -52,8 +54,9 @@ Preferred communication style: Simple, everyday language.
 
 ## UI Components
 - **Radix UI**: Headless UI primitives for accessibility and behavior
-- **Tailwind CSS**: Utility-first CSS framework for styling
+- **Tailwind CSS**: Utility-first CSS framework with Chef Overseas brand colors (orange, red, green)
 - **Lucide React**: Icon library for consistent iconography
+- **Brand Integration**: Chef Overseas logo displayed across all pages with matching color scheme
 
 ## Security Dependencies
 - **Helmet.js**: Security middleware for Express.js with CSP, HSTS, and other security headers

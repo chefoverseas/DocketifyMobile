@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Shield, LogIn } from "lucide-react";
 import { useLocation } from "wouter";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 interface AdminLoginForm {
   email: string;
@@ -46,19 +47,21 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
-              <Shield className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-            </div>
+            <img 
+              src={chefOverseasLogo} 
+              alt="Chef Overseas Logo" 
+              className="h-16 w-auto"
+            />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900 dark:text-white">
+          <h2 className="mt-6 text-3xl font-bold text-gray-900">
             Admin Portal
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Access the Docketify Pro administration dashboard
+          <p className="mt-2 text-sm text-gray-600">
+            Chef Overseas - Administrative Access
           </p>
         </div>
 
