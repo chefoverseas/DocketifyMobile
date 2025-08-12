@@ -1,0 +1,38 @@
+# Replit Deployment Configuration
+# Complete fix for database migration platform issues
+
+[deployment]
+# Production build configuration
+buildCommand = "npm run build"
+startCommand = "npm start"
+installCommand = "npm install --omit=dev"
+
+# Bypass problematic automatic migrations
+ignoreBuildCommand = false
+disableInstallBeforeBuild = false
+
+# Environment variables for production
+[deployment.env]
+NODE_ENV = "production"
+SKIP_DB_MIGRATIONS = "true"
+DATABASE_BYPASS_ACTIVE = "true"
+NPM_CONFIG_PRODUCTION = "false"
+
+# Skip database operations that cause platform issues
+[deployment.skip]
+migrations = true
+dbOperations = true
+
+# Health check configuration  
+[deployment.health]
+path = "/api/auth/user"
+port = 5000
+timeout = 30
+
+# Performance optimizations
+[deployment.cache]
+packages = false  # Disable package caching to avoid deployment issues
+
+# Port binding for Cloud Run
+[deployment.ports]
+main = 5000

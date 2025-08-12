@@ -20,13 +20,18 @@ if (process.env.NODE_ENV === "production") {
   console.log("   - Drizzle migration system: DISABLED");
   console.log("   - Database schema: VERIFIED & READY");
   console.log("   - Deployment status: READY");
+  console.log("   - Host binding: 0.0.0.0 (Cloud Run compatible)");
   
   // Verify bypass environment
   process.env.SKIP_DB_MIGRATIONS = "true";
   process.env.DATABASE_BYPASS_ACTIVE = "true";
   
+  // Ensure proper host binding for Cloud Run deployment
+  process.env.HOST = "0.0.0.0";
+  
   // Log bypass confirmation
   console.log("✅ Migration bypass environment configured");
+  console.log("✅ Port configuration set for Cloud Run deployment");
   console.log("✅ Ready for deployment without platform migration dependencies");
 }
 
