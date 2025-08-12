@@ -119,13 +119,47 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteUser(id: string): Promise<void> {
-    // Delete related records first
-    await db.delete(dockets).where(eq(dockets.userId, id));
-    await db.delete(contracts).where(eq(contracts.userId, id));
-    await db.delete(workPermits).where(eq(workPermits.userId, id));
+    console.log(`🗑️  Starting cascading deletion for user: ${id}`);
     
-    // Delete the user
-    await db.delete(users).where(eq(users.id, id));
+    try {
+      // Get user details for logging
+      const user = await this.getUser(id);
+      if (!user) {
+        console.log(`❌ User ${id} not found for deletion`);
+        return;
+      }
+      
+      console.log(`Deleting user: ${user.email} (${user.displayName})`);
+      
+      // Delete all related records with cascade (order matters for foreign key constraints)
+      // 1. Delete OTP sessions for this user's email
+      if (user.email) {
+        const deletedOtpSessions = await db.delete(otpSessions).where(eq(otpSessions.email, user.email));
+        console.log(`🔐 Deleted OTP sessions for ${user.email}`);
+      }
+      
+      // 2. Delete work permits
+      const deletedWorkPermits = await db.delete(workPermits).where(eq(workPermits.userId, id));
+      console.log(`📋 Deleted work permits for user ${id}`);
+      
+      // 3. Delete contracts
+      const deletedContracts = await db.delete(contracts).where(eq(contracts.userId, id));
+      console.log(`📄 Deleted contracts for user ${id}`);
+      
+      // 4. Delete dockets
+      const deletedDockets = await db.delete(dockets).where(eq(dockets.userId, id));
+      console.log(`📁 Deleted dockets for user ${id}`);
+      
+      // 5. Finally delete the user
+      const deletedUser = await db.delete(users).where(eq(users.id, id));
+      console.log(`👤 Deleted user record ${id}`);
+      
+      console.log(`✅ Successfully completed cascading deletion for user: ${user.email}`);
+      
+    } catch (error) {
+      console.error(`❌ Error during cascading deletion for user ${id}:`, error);
+      throw error;
+    }
   }
 
   async getAllUsers(): Promise<User[]> {

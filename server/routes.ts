@@ -455,6 +455,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/admin/users/:userId", requireAdminAuth, async (req, res) => {
+    console.log(`🗑️ Admin delete user request for: ${req.params.userId}`);
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // Check if user exists before deletion
+      const user = await storage.getUser(userId);
+      if (!user) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Perform cascading deletion
+      await storage.deleteUser(userId);
+      
+      console.log(`✅ Successfully deleted user: ${userId} (${user.email})`);
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(200).json({ 
+        message: "User deleted successfully",
+        deletedUser: {
+          id: userId,
+          email: user.email,
+          displayName: user.displayName
+        }
+      });
+    } catch (error) {
+      console.error("Admin delete user error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
