@@ -8,7 +8,7 @@ import { FileText, Briefcase, Clock, CheckCircle, Activity, Settings, LogOut } f
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   if (!user) {
     return <div>Loading...</div>;
@@ -33,7 +33,7 @@ export default function Dashboard() {
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" onClick={() => logout()} title="Sign Out">
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>

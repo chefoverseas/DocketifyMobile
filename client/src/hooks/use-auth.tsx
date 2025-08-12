@@ -51,7 +51,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      queryClient.clear();
+      // Force redirect to home page after logout
+      window.location.href = "/";
     },
   });
 
