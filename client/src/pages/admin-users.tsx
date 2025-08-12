@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -54,7 +54,13 @@ export default function AdminUsersPage() {
     queryKey: ['/api/admin/users'],
   });
 
-  const users = ((data as { users?: User[] })?.users || []) as User[];
+  // Safe handling of the users data with proper type checking
+  const users = React.useMemo(() => {
+    if (!data) return [];
+    const usersData = (data as { users?: User[] })?.users;
+    if (!Array.isArray(usersData)) return [];
+    return usersData;
+  }, [data]);
 
   // Filter users based on search term
   const filteredUsers = users.filter((user) =>
