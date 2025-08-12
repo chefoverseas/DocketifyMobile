@@ -22,13 +22,20 @@ export default function EmailLogin() {
     setError("");
 
     try {
-      await apiRequest("POST", "/api/auth/send-otp", { email });
-      setStep("otp");
-      toast({
-        title: "OTP Sent",
-        description: "Please check your email for the verification code.",
-      });
+      const response = await apiRequest("POST", "/api/auth/send-otp", { email });
+      
+      if (response.ok) {
+        setStep("otp");
+        toast({
+          title: "OTP Sent",
+          description: "Please check your email for the verification code.",
+        });
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to send OTP");
+      }
     } catch (error: any) {
+      console.error("Send OTP error:", error);
       setError(error.message || "Failed to send OTP");
     } finally {
       setIsLoading(false);

@@ -71,10 +71,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send OTP email
       const emailSent = await sendOtpEmail(email, otp);
       if (!emailSent) {
-        return res.status(500).json({ message: "Failed to send OTP email" });
+        console.error(`Failed to send OTP to ${email}. Check SendGrid configuration.`);
+        return res.status(500).json({ 
+          message: "Failed to send OTP email. Please check your email configuration." 
+        });
       }
 
-      res.json({ message: "OTP sent to your email address" });
+      console.log(`OTP sent successfully to ${email}`);
+      res.json({ 
+        message: "OTP sent to your email address",
+        success: true 
+      });
     } catch (error) {
       console.error("Send OTP error:", error);
       res.status(500).json({ message: "Failed to send OTP" });
