@@ -165,7 +165,7 @@ export default function AdminWorkPermitsPage() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-600">Approved</p>
+                <p className="text-sm font-medium text-green-600">Embassy Approved</p>
                 <p className="text-2xl font-bold text-green-900">{stats.approved}</p>
               </div>
               <CheckCircle className="h-8 w-8 text-green-400" />

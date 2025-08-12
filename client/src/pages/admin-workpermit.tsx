@@ -349,22 +349,23 @@ export default function AdminWorkPermitPage() {
               Final Docket Upload
             </CardTitle>
             <CardDescription>
-              Upload the final approved work permit document (PDF only). This will automatically set the status to "Approved".
+              Upload the final work permit document (PDF only). Available for Applied status and above.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {status === "approved" || workPermit?.status === "approved" ? (
+              {(status === "applied" || status === "awaiting_decision" || status === "approved") || 
+               (workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") ? (
                 <Alert>
                   <FileText className="h-4 w-4" />
                   <AlertDescription>
-                    Status is set to "Approved". You can upload or replace the final docket document.
+                    Final docket upload is available. You can upload or replace the document.
                   </AlertDescription>
                 </Alert>
               ) : (
                 <Alert>
                   <AlertDescription>
-                    Upload will be enabled when status is set to "Approved" or when you upload a document.
+                    Upload will be enabled when status is set to "Applied" or higher.
                   </AlertDescription>
                 </Alert>
               )}
@@ -380,9 +381,9 @@ export default function AdminWorkPermitPage() {
                       handleFileUpload([e.target.files[0]]);
                     }
                   }}
-                  disabled={isUploading}
+                  disabled={isUploading || !(status === "applied" || status === "awaiting_decision" || status === "approved" || workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved")}
                 />
-                <label htmlFor="file-upload" className={`cursor-pointer ${isUploading ? 'opacity-50' : ''}`}>
+                <label htmlFor="file-upload" className={`cursor-pointer ${isUploading || !(status === "applied" || status === "awaiting_decision" || status === "approved" || workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") ? 'opacity-50' : ''}`}>
                   <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                   <p className="text-sm font-medium text-gray-700">
                     {isUploading ? "Uploading..." : "Click to upload PDF"}
