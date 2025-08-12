@@ -35,11 +35,15 @@ export default function AdminDashboardPage() {
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
     enabled: !!(adminData as any)?.admin,
+    refetchInterval: false, // Disable auto-refetch to prevent excessive polling
+    retry: false,
   });
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["/api/admin/users"],
     enabled: !!(adminData as any)?.admin,
+    refetchInterval: false, // Disable auto-refetch to prevent excessive polling
+    retry: false,
   });
 
   const logoutMutation = useMutation({

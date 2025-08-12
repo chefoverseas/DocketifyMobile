@@ -2,8 +2,19 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
+    try {
+      // Try to parse JSON error first
+      const clonedRes = res.clone();
+      const json = await clonedRes.json();
+      throw new Error(json.message || `HTTP ${res.status}`);
+    } catch (jsonError) {
+      // If JSON parsing fails, fall back to text
+      const text = await res.text();
+      if (text.includes('<!DOCTYPE')) {
+        throw new Error(`Authentication required - please log in again`);
+      }
+      throw new Error(`${res.status}: ${text || res.statusText}`);
+    }
   }
 }
 

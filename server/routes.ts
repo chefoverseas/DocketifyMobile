@@ -352,6 +352,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log("Admin auth middleware - adminId:", (req.session as any)?.adminId);
     
     if (!(req.session as any).adminId) {
+      res.setHeader('Content-Type', 'application/json');
       return res.status(401).json({ message: "Admin authentication required" });
     }
     next();
