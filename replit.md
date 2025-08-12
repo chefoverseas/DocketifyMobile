@@ -55,6 +55,11 @@ Preferred communication style: Simple, everyday language.
 - **Tailwind CSS**: Utility-first CSS framework for styling
 - **Lucide React**: Icon library for consistent iconography
 
+## Security Dependencies
+- **Helmet.js**: Security middleware for Express.js with CSP, HSTS, and other security headers
+- **HTTPS Module**: Native Node.js HTTPS server support for SSL/TLS encryption
+- **OpenSSL**: Certificate generation for development HTTPS
+
 ## Development Tools
 - **ESBuild**: Fast bundling for production builds
 - **PostCSS**: CSS processing with Tailwind and Autoprefixer
@@ -64,4 +69,19 @@ Preferred communication style: Simple, everyday language.
 - **Class Variance Authority**: Dynamic class name generation
 - **Nanoid**: Unique ID generation for files and sessions
 
-The application is designed as a production-ready starter with emphasis on type safety, user experience, and maintainable code structure. The architecture supports easy scaling and can be adapted to use external services like Firebase or AWS for file storage and authentication.
+# Security Features
+
+## SSL/TLS Implementation
+- **Development HTTPS**: Self-signed certificates for local development
+- **Production SSL**: Automatic SSL termination via Replit Deployments
+- **Security Headers**: Comprehensive security header implementation with Helmet.js
+- **HTTPS Redirect**: Automatic HTTP to HTTPS redirection in production
+- **Secure Sessions**: HTTPOnly and secure cookie configuration
+
+## Authentication Security
+- **OTP Verification**: Phone-based authentication with SMS verification
+- **Session Security**: Server-side session management with expiration
+- **Admin Protection**: Separate admin authentication system
+- **Input Validation**: Zod schema validation for all user inputs
+
+The application is designed as a production-ready starter with enterprise-grade security, type safety, user experience, and maintainable code structure. The architecture supports easy scaling and can be adapted to use external services while maintaining security best practices.

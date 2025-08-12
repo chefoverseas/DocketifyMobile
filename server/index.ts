@@ -1,8 +1,46 @@
 import express, { type Request, Response, NextFunction } from "express";
+import https from "https";
+import fs from "fs";
+import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { loadSSLConfig } from "./ssl-config";
 
 const app = express();
+
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
+}));
+
+// Force HTTPS in production
+if (process.env.NODE_ENV === "production") {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -61,11 +99,59 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  
+  // Check if we're in Replit environment
+  const isReplit = process.env.REPL_ID || process.env.REPLIT_DB_URL;
+  
+  if (isReplit || process.env.NODE_ENV === "production") {
+    // In Replit or production, use HTTP server (Replit handles SSL termination)
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      if (process.env.NODE_ENV === "production") {
+        log(`🚀 Production server running on port ${port}`);
+        log(`🔒 SSL/TLS handled by Replit Deployments`);
+      } else {
+        log(`🌐 Replit development server running on port ${port}`);
+        log(`🔒 SSL security headers enabled via Helmet.js`);
+      }
+    });
+  } else {
+    // Local development: Try to use HTTPS with SSL certificates
+    const sslConfig = loadSSLConfig();
+    
+    if (sslConfig) {
+      try {
+        // Create HTTPS server with SSL certificates
+        const httpsServer = https.createServer(sslConfig, app);
+        
+        httpsServer.listen(port, "0.0.0.0", () => {
+          log(`🔒 HTTPS server running securely on port ${port}`);
+          log(`📱 Access the app at: https://localhost:${port}`);
+          log(`🛡️  Full SSL/TLS encryption enabled`);
+        });
+      } catch (error) {
+        log(`⚠️  HTTPS setup failed, falling back to HTTP: ${error}`);
+        fallbackToHTTP();
+      }
+    } else {
+      log(`⚠️  SSL certificates not found`);
+      log(`💡 Run './generate-ssl.sh' to create certificates for HTTPS`);
+      fallbackToHTTP();
+    }
+  }
+  
+  function fallbackToHTTP() {
+    server.listen({
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    }, () => {
+      log(`🌐 HTTP server running on port ${port}`);
+      log(`🔒 Security headers enabled via Helmet.js`);
+      log(`📱 Access the app at: http://localhost:${port}`);
+    });
+  }
 })();
