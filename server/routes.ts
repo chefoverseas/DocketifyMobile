@@ -11,6 +11,7 @@ import { randomUUID } from "crypto";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { validatePDFSignature, isSignatureValid } from "./pdf-signature-validator";
+import twilio from 'twilio';
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -62,11 +63,14 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
 let twilioClient: any = null;
 if (accountSid && authToken) {
   try {
-    const twilio = require('twilio');
     twilioClient = twilio(accountSid, authToken);
+    console.log("✅ Twilio SMS service initialized successfully");
   } catch (error) {
+    console.error("❌ Twilio initialization failed:", error);
     console.warn("Twilio not available, OTP will be logged instead");
   }
+} else {
+  console.warn("Twilio credentials not found, OTP will be logged instead");
 }
 
 async function sendOTP(phone: string, otp: string) {
