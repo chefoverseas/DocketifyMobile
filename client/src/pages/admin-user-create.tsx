@@ -61,13 +61,12 @@ export default function AdminUserCreatePage() {
 
   const createUserMutation = useMutation({
     mutationFn: async (data: CreateUserData) => {
-      // Combine country code and phone number
-      const fullPhone = data.countryCode + data.phone;
       const userData = {
         name: data.name,
         surname: data.surname,
         email: data.email,
-        phone: fullPhone,
+        countryCode: data.countryCode,
+        phone: data.phone, // Send phone without country code, backend will combine
       };
       const response = await apiRequest("POST", "/api/admin/users", userData);
       return response.json();

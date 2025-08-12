@@ -455,6 +455,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/users", requireAdminAuth, async (req, res) => {
+    console.log(`👤 Admin create user request:`, req.body);
+    try {
+      const { email, name, surname, countryCode, phone } = req.body;
+
+      // Validate required fields
+      if (!email || !name || !surname || !phone) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ 
+          message: "Email, name, surname, and phone are required" 
+        });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(409).json({ 
+          message: "User with this email already exists" 
+        });
+      }
+
+      // Generate unique UID
+      const uid = await storage.generateUniqueUid();
+      
+      // Create user with proper field mapping
+      const fullPhone = countryCode ? `${countryCode}${phone}` : phone;
+      const displayName = `${name} ${surname}`.trim();
+      
+      const newUser = await storage.createUser({
+        email,
+        firstName: name,
+        lastName: surname,
+        givenName: name,
+        surname, 
+        displayName,
+        phone: fullPhone,
+        uid,
+        docketCompleted: false,
+        isAdmin: false
+      });
+
+      console.log(`✅ Successfully created user: ${newUser.id} (${newUser.email})`);
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(201).json({ 
+        message: "User created successfully",
+        user: newUser
+      });
+    } catch (error) {
+      console.error("Admin create user error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
   app.delete("/api/admin/users/:userId", requireAdminAuth, async (req, res) => {
     console.log(`🗑️ Admin delete user request for: ${req.params.userId}`);
     try {
