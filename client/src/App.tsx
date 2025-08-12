@@ -16,6 +16,7 @@ import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Admin from "@/pages/admin";
 import AdminContracts from "@/pages/admin-contracts";
+import AdminUsers from "@/pages/admin-users";
 import AdminWorkPermits from "@/pages/admin-workpermits";
 import AdminWorkPermit from "@/pages/admin-workpermit";
 import AdminUserCreate from "@/pages/admin-user-create";
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/contracts" component={AdminContracts} />
+      <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/workpermits" component={AdminWorkPermits} />
       <Route path="/admin/workpermit/:userId" component={AdminWorkPermit} />
       <Route path="/admin/user/new" component={AdminUserCreate} />

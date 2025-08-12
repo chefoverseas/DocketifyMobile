@@ -474,6 +474,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Update user
+  app.patch("/api/admin/users/:userId", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+      const { displayName, email, phone } = req.body;
+
+      // Validation
+      if (!displayName || displayName.trim().length < 2) {
+        return res.status(400).json({ message: "Display name must be at least 2 characters" });
+      }
+
+      if (email && !/\S+@\S+\.\S+/.test(email)) {
+        return res.status(400).json({ message: "Please enter a valid email address" });
+      }
+
+      if (!phone || phone.length < 10) {
+        return res.status(400).json({ message: "Phone number must be at least 10 digits" });
+      }
+
+      const user = await storage.updateUser(userId, {
+        displayName: displayName.trim(),
+        email: email?.trim() || null,
+        phone: phone.trim(),
+      });
+
+      res.json({ user, message: "User updated successfully" });
+    } catch (error) {
+      console.error("Update user error:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  // Admin: Delete user
+  app.delete("/api/admin/users/:userId", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+
+      // Check if user exists and is not admin
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (user.isAdmin) {
+        return res.status(400).json({ message: "Cannot delete admin users" });
+      }
+
+      await storage.deleteUser(userId);
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Delete user error:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   // Admin: Create user
   app.post("/api/admin/users", async (req, res) => {
     try {

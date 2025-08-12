@@ -9,6 +9,7 @@ export interface IStorage {
   getUserByUid(uid: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: string, updates: Partial<User>): Promise<User>;
+  deleteUser(id: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
   generateUniqueUid(): Promise<string>;
 
@@ -76,6 +77,16 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    // Delete related records first
+    await db.delete(dockets).where(eq(dockets.userId, id));
+    await db.delete(contracts).where(eq(contracts.userId, id));
+    await db.delete(workPermits).where(eq(workPermits.userId, id));
+    
+    // Delete the user
+    await db.delete(users).where(eq(users.id, id));
   }
 
   async getAllUsers(): Promise<User[]> {
