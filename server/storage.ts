@@ -163,7 +163,7 @@ export class DatabaseStorage implements IStorage {
 
     const [newDocket] = await db
       .insert(dockets)
-      .values([insertData])
+      .values(insertData)
       .returning();
     return newDocket;
   }

@@ -9,9 +9,13 @@ import { apiRequest } from "@/lib/queryClient";
 import FileUploader from "@/components/file-uploader";
 import ReferenceForm from "@/components/reference-form";
 import { WorkPermitStatusBadge } from "@/components/work-permit-status-badge";
+import { UserNavigationHub } from "@/components/user-navigation-hub";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 import { Check, Clock, Minus, Save, CheckCircle, Briefcase, Download, FileText, AlertCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import type { Docket } from "@shared/schema";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 type WorkPermit = {
   id: number;
@@ -136,20 +140,49 @@ export default function DocketPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      {/* Progress Header */}
-      <Card className="mb-8">
-        <CardContent className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">Document Docket</h1>
-            <div className="text-sm text-gray-500">
-              <span className="font-medium">{completedSections}</span> of{" "}
-              <span>{sections.length}</span> sections completed
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center">
+              <img src={chefOverseasLogo} alt="Chef Overseas" className="h-10 w-10 mr-3" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Document Docket</h1>
+                <p className="text-sm text-gray-600">Upload and manage your required documents</p>
+              </div>
             </div>
+            <Link href="/dashboard">
+              <Button variant="outline">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
           </div>
-          <Progress value={progressPercentage} className="w-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Navigation Hub */}
+        <div className="mb-8">
+          <UserNavigationHub />
+        </div>
+
+        <div className="max-w-6xl mx-auto">
+          {/* Progress Header */}
+          <Card className="mb-8">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">Document Upload Progress</h2>
+                <div className="text-sm text-gray-500">
+                  <span className="font-medium">{completedSections}</span> of{" "}
+                  <span>{sections.length}</span> sections completed
+                </div>
+              </div>
+              <Progress value={progressPercentage} className="w-full" />
+            </CardContent>
+          </Card>
 
       {/* Work Permit Status Card */}
       <Card className="mb-8 border-l-4 border-l-primary">
@@ -542,6 +575,8 @@ export default function DocketPage() {
           </div>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }

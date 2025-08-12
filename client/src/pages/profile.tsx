@@ -10,7 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { UserNavigationHub } from "@/components/user-navigation-hub";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 import { z } from "zod";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 const updateProfileSchema = insertUserSchema.pick({
   displayName: true,
@@ -65,16 +69,44 @@ export default function Profile() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Update your personal information and contact details.
-          </p>
-        </CardHeader>
-        
-        <CardContent>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center">
+              <img src={chefOverseasLogo} alt="Chef Overseas" className="h-10 w-10 mr-3" />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+                <p className="text-sm text-gray-600">Update your personal information</p>
+              </div>
+            </div>
+            <Link href="/dashboard">
+              <Button variant="outline">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Navigation Hub */}
+        <div className="mb-8">
+          <UserNavigationHub />
+        </div>
+
+        {/* Profile Form */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile Information</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Update your personal information and contact details.
+            </p>
+          </CardHeader>
+          <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="flex items-center space-x-6">
@@ -155,8 +187,9 @@ export default function Profile() {
               </div>
             </form>
           </Form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

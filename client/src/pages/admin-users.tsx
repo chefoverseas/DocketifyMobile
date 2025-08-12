@@ -302,6 +302,11 @@ export default function AdminUsersPage() {
                   </div>
 
                   <div className="flex space-x-2 ml-4">
+                    <Link href={`/admin/user/${user.id}`}>
+                      <Button size="sm" variant="secondary">
+                        View Details
+                      </Button>
+                    </Link>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
