@@ -343,7 +343,7 @@ export default function DocketPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Resume / CV Document</label>
               <FileUploader
                 currentFile={docket?.resumeUrl}
-                onUpload={(fileData) => handleFileUpload('resumeUrl', fileData.url)}
+                onUpload={(fileData) => handleFileUpload('resumeUrl', (fileData as any).url)}
                 accept=".pdf,.doc,.docx"
                 description="Upload your resume in PDF, DOC, or DOCX format"
               />

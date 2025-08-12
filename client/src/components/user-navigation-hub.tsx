@@ -47,10 +47,10 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
     enabled: !!userId || !userId,
   });
 
-  const user = userId ? userData?.user : userData?.user;
-  const docket = userId ? docketData?.docket : docketData?.docket;
-  const contract = userId ? contractData?.contract : contractData?.contract;
-  const workPermit = userId ? workPermitData?.workPermit : workPermitData?.workPermit;
+  const user = userId ? (userData as any)?.user : (userData as any)?.user;
+  const docket = userId ? (docketData as any)?.docket : (docketData as any)?.docket;
+  const contract = userId ? (contractData as any)?.contract : (contractData as any)?.contract;
+  const workPermit = userId ? (workPermitData as any)?.workPermit : (workPermitData as any)?.workPermit;
 
   const calculateDocketProgress = () => {
     if (!docket) return { completed: 0, total: 9, percentage: 0 };

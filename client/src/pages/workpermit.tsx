@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { WorkPermitStatusBadge } from "@/components/work-permit-status-badge";
+import { UserNavigationHub } from "@/components/user-navigation-hub";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 import { Download, FileText, Clock, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 type WorkPermit = {
   id: number;

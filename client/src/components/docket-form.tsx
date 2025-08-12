@@ -90,7 +90,7 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
                       <FormControl>
                         <FileUploader
                           currentFile={field.value}
-                          onUpload={(fileData) => field.onChange(fileData.url)}
+                          onUpload={(fileData) => field.onChange((fileData as any).url)}
                           accept="image/*,application/pdf"
                         />
                       </FormControl>
@@ -107,7 +107,7 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
                       <FormControl>
                         <FileUploader
                           currentFile={field.value}
-                          onUpload={(fileData) => field.onChange(fileData.url)}
+                          onUpload={(fileData) => field.onChange((fileData as any).url)}
                           accept="image/*,application/pdf"
                         />
                       </FormControl>
@@ -124,7 +124,7 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
                       <FormControl>
                         <FileUploader
                           currentFile={field.value}
-                          onUpload={(fileData) => field.onChange(fileData.url)}
+                          onUpload={(fileData) => field.onChange((fileData as any).url)}
                           accept="image/*"
                         />
                       </FormControl>
@@ -205,7 +205,7 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
                     <FormControl>
                       <FileUploader
                         currentFile={field.value}
-                        onUpload={(fileData) => field.onChange(fileData.url)}
+                        onUpload={(fileData) => field.onChange((fileData as any).url)}
                         accept="image/*,application/pdf"
                       />
                     </FormControl>
@@ -232,7 +232,7 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
                       <FormControl>
                         <FileUploader
                           currentFile={field.value}
-                          onUpload={(fileData) => field.onChange(fileData.url)}
+                          onUpload={(fileData) => field.onChange((fileData as any).url)}
                           accept="image/*,application/pdf"
                         />
                       </FormControl>
@@ -249,7 +249,7 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
                       <FormControl>
                         <FileUploader
                           currentFile={field.value}
-                          onUpload={(fileData) => field.onChange(fileData.url)}
+                          onUpload={(fileData) => field.onChange((fileData as any).url)}
                           accept="image/*,application/pdf"
                         />
                       </FormControl>

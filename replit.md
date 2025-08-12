@@ -9,19 +9,21 @@ Preferred communication style: Simple, everyday language.
 # System Architecture
 
 ## Frontend Architecture
-- **React with TypeScript**: Modern React application using functional components and hooks
-- **Routing**: Wouter for lightweight client-side routing
+- **React with TypeScript**: Modern React application using functional components and hooks with complete type safety
+- **Routing**: Wouter for lightweight client-side routing with protected admin routes
 - **UI Framework**: Shadcn/ui components built on top of Radix UI primitives with Tailwind CSS styling
 - **State Management**: React Query (@tanstack/react-query) for server state management and caching
 - **Form Handling**: React Hook Form with Zod validation for type-safe form validation
 - **File Uploads**: React Dropzone for drag-and-drop file upload interface
+- **Module Interlinking**: Comprehensive navigation between user modules (docket ↔ work permit ↔ contract ↔ profile)
 
 ## Backend Architecture
-- **Express.js Server**: Node.js/Express API server with TypeScript
-- **Session Management**: Express sessions for authentication state
-- **File Upload Handling**: Multer middleware for multipart form data processing
+- **Express.js Server**: Node.js/Express API server with TypeScript and comprehensive error handling
+- **Session Management**: Express sessions for authentication state with security headers
+- **File Upload Handling**: Multer middleware for multipart form data processing with validation
 - **Database Layer**: Drizzle ORM with PostgreSQL for type-safe database operations
-- **API Structure**: RESTful endpoints organized by feature (auth, users, docket, admin)
+- **API Structure**: RESTful endpoints organized by feature (auth, users, docket, admin, contracts, work permits)
+- **Admin Management**: Complete CRUD operations with user detail drill-down capabilities
 
 ## Database Design
 - **Users Table**: Stores user authentication and profile information (phone, name, email, admin status)
