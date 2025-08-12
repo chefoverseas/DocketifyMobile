@@ -7,9 +7,9 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (phone: string, otp: string) => Promise<void>;
+  login: (email: string, otp: string) => Promise<void>;
   logout: () => Promise<void>;
-  sendOtp: (phone: string) => Promise<void>;
+  sendOtp: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isInitialized, setIsInitialized] = useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery({
-    queryKey: ["/api/auth/me"],
+    queryKey: ["/api/auth/user"],
     enabled: isInitialized,
     retry: false,
   });
@@ -29,19 +29,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const sendOtpMutation = useMutation({
-    mutationFn: async (phone: string) => {
-      const res = await apiRequest("POST", "/api/auth/send-otp", { phone });
+    mutationFn: async (email: string) => {
+      const res = await apiRequest("POST", "/api/auth/send-otp", { email });
       return res.json();
     },
   });
 
   const loginMutation = useMutation({
-    mutationFn: async ({ phone, otp }: { phone: string; otp: string }) => {
-      const res = await apiRequest("POST", "/api/auth/verify-otp", { phone, otp });
+    mutationFn: async ({ email, otp }: { email: string; otp: string }) => {
+      const res = await apiRequest("POST", "/api/auth/verify-otp", { email, otp });
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
   });
 
@@ -51,16 +51,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.clear();
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
   });
 
-  const sendOtp = async (phone: string) => {
-    await sendOtpMutation.mutateAsync(phone);
+  const sendOtp = async (email: string) => {
+    await sendOtpMutation.mutateAsync(email);
   };
 
-  const login = async (phone: string, otp: string) => {
-    await loginMutation.mutateAsync({ phone, otp });
+  const login = async (email: string, otp: string) => {
+    await loginMutation.mutateAsync({ email, otp });
   };
 
   const logout = async () => {
@@ -70,9 +70,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user: user?.user || null,
+        user: user || null,
         isLoading: !isInitialized || userLoading,
-        isAuthenticated: !!user?.user,
+        isAuthenticated: !!user,
         login,
         logout,
         sendOtp,
