@@ -1,0 +1,30 @@
+# Replit Deployment Configuration
+# Bypass configuration for database migration platform issues
+
+[deployment]
+# Skip all database operations during deployment
+ignoreBuildCommand = true
+buildCommand = "npm run build"
+
+# Environment configuration
+[deployment.env]
+NODE_ENV = "production"
+SKIP_DB_MIGRATIONS = "true"
+DATABASE_BYPASS_ACTIVE = "true"
+
+# Deployment bypass for platform migration issues
+[deployment.build]
+installCommand = "npm install --production=false"
+buildCommand = "npm run build"
+startCommand = "npm start"
+
+# Skip problematic operations
+[deployment.skip]
+migrations = true
+dbOperations = true
+schemaSync = false  # Schema is pre-synchronized
+
+# Health check configuration
+[deployment.health]
+path = "/api/test"
+port = 5000
