@@ -111,7 +111,7 @@ export default function Profile() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="flex items-center space-x-6">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src={user.profilePhotoUrl || ""} />
+                  <AvatarImage src={user.profileImageUrl || ""} />
                   <AvatarFallback className="text-lg">
                     {user.displayName?.charAt(0) || user.phone?.slice(-2)}
                   </AvatarFallback>
@@ -144,7 +144,7 @@ export default function Profile() {
                 <div>
                   <FormLabel>Phone Number</FormLabel>
                   <Input 
-                    value={user.phone} 
+                    value={user.phone || ""} 
                     disabled 
                     className="bg-muted text-muted-foreground"
                   />

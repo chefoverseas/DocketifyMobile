@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText, Briefcase, Clock, CheckCircle, Activity, Settings, LogOut } from "lucide-react";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
+import { Link } from "wouter";
 
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -30,9 +31,11 @@ export default function Dashboard() {
             <div className="flex items-center space-x-4">
               <AdvancedSearch />
               <NotificationSystem />
-              <Button variant="ghost" size="sm">
-                <Settings className="h-4 w-4" />
-              </Button>
+              <Link href="/profile">
+                <Button variant="ghost" size="sm" title="User Settings">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </Link>
               <Button variant="ghost" size="sm" onClick={() => logout()} title="Sign Out">
                 <LogOut className="h-4 w-4" />
               </Button>
