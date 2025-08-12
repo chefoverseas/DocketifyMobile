@@ -26,12 +26,13 @@ export default function AdminLoginPage() {
       const res = await apiRequest("POST", "/api/admin/login", data);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
-        title: "Success",
+        title: "Success", 
         description: "Admin login successful",
       });
-      setLocation("/admin/dashboard");
+      // Force page reload to ensure session cookie is properly set
+      window.location.href = "/admin/dashboard";
     },
     onError: (error: any) => {
       toast({

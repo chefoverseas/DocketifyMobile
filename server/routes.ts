@@ -385,6 +385,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Admin logged out successfully" });
   });
 
+  // Admin authentication check endpoint
+  app.get("/api/admin/me", async (req, res) => {
+    try {
+      const adminId = (req.session as any)?.adminId;
+      console.log("Admin auth check - session adminId:", adminId);
+      
+      res.setHeader('Content-Type', 'application/json');
+      
+      if (adminId === "admin") {
+        return res.status(200).json({ 
+          admin: true, 
+          email: "info@chefoverseas.com",
+          id: "admin" 
+        });
+      } else {
+        return res.status(401).json({ message: "Not authenticated as admin" });
+      }
+    } catch (error) {
+      console.error("Admin auth check error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(500).json({ message: "Authentication check failed" });
+    }
+  });
+
   // Admin routes (protected with admin authentication)
   app.get("/api/admin/users", requireAdminAuth, async (req, res) => {
     try {
