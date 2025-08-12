@@ -41,6 +41,12 @@ const requireAuth = (req: any, res: any, next: any) => {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session middleware
   setupSession(app);
+  
+  // Test route to verify API is working
+  app.get("/api/test", (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.json({ message: "API is working", timestamp: new Date().toISOString() });
+  });
 
   // Email OTP Authentication routes
   app.post('/api/auth/send-otp', async (req, res) => {
@@ -342,18 +348,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin login route
   app.post("/api/admin/login", async (req, res) => {
     try {
+      console.log("Admin login attempt:", req.body);
       const { email, password } = req.body;
+      
+      // Set proper JSON content type
+      res.setHeader('Content-Type', 'application/json');
       
       // Hardcoded admin credentials
       if (email === "info@chefoverseas.com" && password === "Revaan56789!") {
         req.session.adminId = "admin";
-        res.json({ message: "Admin login successful" });
+        console.log("Admin login successful, session set");
+        return res.status(200).json({ message: "Admin login successful" });
       } else {
-        res.status(401).json({ message: "Invalid admin credentials" });
+        console.log("Invalid admin credentials provided");
+        return res.status(401).json({ message: "Invalid admin credentials" });
       }
     } catch (error) {
       console.error("Admin login error:", error);
-      res.status(500).json({ message: "Admin login failed" });
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(500).json({ message: "Admin login failed" });
     }
   });
 
