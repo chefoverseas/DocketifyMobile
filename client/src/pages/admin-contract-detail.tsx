@@ -7,8 +7,13 @@ import { ArrowLeft, FileText, Download, Upload, CheckCircle, Clock, AlertTriangl
 import { format } from "date-fns";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
-export default function AdminContractDetail() {
-  const { userId } = useParams<{ userId: string }>();
+interface AdminContractDetailProps {
+  userId?: string;
+}
+
+export default function AdminContractDetail({ userId: propUserId }: AdminContractDetailProps) {
+  const { userId: paramUserId } = useParams<{ userId: string }>();
+  const userId = propUserId || paramUserId;
 
   const { data, isLoading, error } = useQuery({
     queryKey: [`/api/admin/contract/${userId}`],

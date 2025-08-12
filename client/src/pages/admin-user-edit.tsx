@@ -46,7 +46,7 @@ export default function AdminUserEdit({ userId }: AdminUserEditProps) {
     queryKey: ['/api/admin/users'],
   });
 
-  const users = (usersData?.users || []) as User[];
+  const users = (usersData || []) as User[];
   
   // Find user by ID or UID
   const user = users.find(u => u.id === userId || u.uid === userId);

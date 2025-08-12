@@ -5,8 +5,13 @@ import { UserNavigationHub } from "@/components/user-navigation-hub";
 import { ArrowLeft, User } from "lucide-react";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
-export default function AdminUserDetail() {
-  const { userId } = useParams<{ userId: string }>();
+interface AdminUserDetailProps {
+  userId?: string;
+}
+
+export default function AdminUserDetail({ userId: propUserId }: AdminUserDetailProps) {
+  const { userId: paramUserId } = useParams<{ userId: string }>();
+  const userId = propUserId || paramUserId;
 
   return (
     <div className="min-h-screen bg-gray-50">
