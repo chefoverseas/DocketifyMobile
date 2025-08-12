@@ -29,6 +29,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
   // Otherwise, fetch current user's data (user view)
   const { data: userData } = useQuery({
     queryKey: userId ? [`/api/admin/user/${userId}`] : ['/api/auth/me'],
+    enabled: true, // Always enabled
     refetchInterval: false,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -37,25 +38,28 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
 
   const { data: docketData } = useQuery({
     queryKey: userId ? [`/api/admin/docket/${userId}`] : ['/api/docket'],
+    enabled: !!userData && userId !== undefined, // Only fetch when user data is available and for admin views
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
     retry: false,
   });
 
   const { data: contractData } = useQuery({
     queryKey: userId ? [`/api/admin/contract/${userId}`] : ['/api/contracts'],
+    enabled: !!userData && userId !== undefined, // Only fetch when user data is available and for specific use cases
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
     retry: false,
   });
 
   const { data: workPermitData } = useQuery({
     queryKey: userId ? [`/api/admin/workpermit/${userId}`] : ['/api/workpermit'],
+    enabled: !!userData && userId !== undefined, // Only fetch when user data is available and for specific use cases
     refetchInterval: false,
     refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 10 * 60 * 1000, // 10 minutes
     retry: false,
   });
 

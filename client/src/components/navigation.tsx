@@ -103,7 +103,7 @@ export default function Navigation() {
             </Button>
             <div className="flex items-center space-x-2">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.profilePhotoUrl || ""} />
+                <AvatarImage src={user?.profileImageUrl || ""} />
                 <AvatarFallback>
                   {user?.displayName?.charAt(0) || user?.phone?.slice(-2)}
                 </AvatarFallback>

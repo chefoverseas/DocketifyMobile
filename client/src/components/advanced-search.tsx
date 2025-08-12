@@ -30,10 +30,10 @@ export function AdvancedSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     query: "",
-    documentType: "",
-    status: "",
-    dateRange: "",
-    userRole: ""
+    documentType: "all-types",
+    status: "all-statuses",
+    dateRange: "any-time",
+    userRole: "all-roles"
   });
 
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -167,7 +167,7 @@ export function AdvancedSearch() {
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All types</SelectItem>
+                  <SelectItem value="all-types">All types</SelectItem>
                   <SelectItem value="passport">Passport</SelectItem>
                   <SelectItem value="resume">Resume</SelectItem>
                   <SelectItem value="contract">Contract</SelectItem>
@@ -188,7 +188,7 @@ export function AdvancedSearch() {
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All statuses</SelectItem>
+                  <SelectItem value="all-statuses">All statuses</SelectItem>
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="approved">Approved</SelectItem>
                   <SelectItem value="rejected">Rejected</SelectItem>
@@ -208,7 +208,7 @@ export function AdvancedSearch() {
                   <SelectValue placeholder="Any time" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Any time</SelectItem>
+                  <SelectItem value="any-time">Any time</SelectItem>
                   <SelectItem value="today">Today</SelectItem>
                   <SelectItem value="week">This week</SelectItem>
                   <SelectItem value="month">This month</SelectItem>
