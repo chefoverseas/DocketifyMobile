@@ -128,8 +128,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
 
   const baseUrl = userId ? `/admin` : '';
 
-  // Debug logging to help identify the issue
-  console.log('UserNavigationHub Debug:', { userId, userData, user, showUserInfo });
+
 
   // If we're in admin mode (userId provided) but don't have user data yet, show loading
   if (userId && !userData) {
