@@ -1,8 +1,23 @@
+import React, { createContext, useContext, ReactNode } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-export function useAuth() {
+interface AuthContextType {
+  user: any;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  logoutMutation: any;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function AuthProvider(props: { children: ReactNode }) {
+  const auth = useAuthValue();
+  return React.createElement(AuthContext.Provider, { value: auth }, props.children);
+}
+
+function useAuthValue() {
   const { toast } = useToast();
   
   const { data: user, isLoading, error } = useQuery({
@@ -34,4 +49,12 @@ export function useAuth() {
     isAuthenticated: !!user && !error,
     logoutMutation,
   };
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
 }

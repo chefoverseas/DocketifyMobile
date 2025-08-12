@@ -19,6 +19,7 @@ import {
   Settings
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useEffect } from "react";
 import type { User } from "@shared/schema";
 
 export default function AdminDashboardPage() {
@@ -63,8 +64,14 @@ export default function AdminDashboardPage() {
     );
   }
 
+  // Redirect effect to avoid state update during render
+  useEffect(() => {
+    if (!adminLoading && !(adminData as any)?.admin) {
+      setLocation("/admin/login");
+    }
+  }, [adminLoading, adminData, setLocation]);
+
   if (!(adminData as any)?.admin) {
-    setLocation("/admin/login");
     return null;
   }
 

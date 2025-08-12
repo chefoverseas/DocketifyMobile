@@ -190,7 +190,7 @@ export class DatabaseStorage implements IStorage {
   async createDocket(docket: InsertDocket): Promise<Docket> {
     const [newDocket] = await db
       .insert(dockets)
-      .values(docket)
+      .values([docket])
       .returning();
     return newDocket;
   }

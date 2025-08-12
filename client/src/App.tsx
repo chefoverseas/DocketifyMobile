@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useAuth } from "@/hooks/useAuth";
+import { AuthProvider } from "@/hooks/useAuth";
 import EmailLogin from "@/pages/email-login";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
@@ -24,6 +24,8 @@ import AdminDockets from "@/pages/admin-dockets";
 import AdminDocketDetail from "@/pages/admin-docket-detail";
 import AdminContractDetail from "@/pages/admin-contract-detail";
 import NotFound from "@/pages/not-found";
+
+import { useAuth } from "@/hooks/useAuth";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -78,12 +80,14 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen bg-gray-50">
-          <Toaster />
-          <Router />
-        </div>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <div className="min-h-screen bg-gray-50">
+            <Toaster />
+            <Router />
+          </div>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

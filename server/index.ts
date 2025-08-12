@@ -101,7 +101,7 @@ app.use((req, res, next) => {
   const port = parseInt(process.env.PORT || '5000', 10);
   
   // Check if we're in Replit environment
-  const isReplit = process.env.REPL_ID || process.env.REPLIT_DB_URL;
+  const isReplit = process.env.REPL_ID || process.env.REPLIT_DB_URL || process.env.REPLIT_DOMAINS;
   
   if (isReplit || process.env.NODE_ENV === "production") {
     // In Replit or production, use HTTP server (Replit handles SSL termination)

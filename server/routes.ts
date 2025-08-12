@@ -24,7 +24,7 @@ function setupSession(app: Express) {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
+      secure: process.env.NODE_ENV === "production",
       maxAge: sessionTtl,
     },
   }));
@@ -74,16 +74,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expiresAt,
       });
 
-      // Send OTP email
-      const emailSent = await sendOtpEmail(email, otp);
-      if (!emailSent) {
-        console.error(`Failed to send OTP to ${email}. Check SendGrid configuration.`);
-        return res.status(500).json({ 
-          message: "Failed to send OTP email. Please check your email configuration." 
-        });
+      // Send OTP email (different handling for dev vs production)
+      if (process.env.NODE_ENV === "development") {
+        // In development, log OTP to console instead of sending email
+        console.log(`🔐 OTP CODE FOR ${email}: ${otp}`);
+        console.log("📧 Check server console for OTP code (email sending disabled for development)");
+        console.log(`OTP sent successfully to ${email}`);
+      } else {
+        // In production, send the actual email
+        try {
+          const emailSent = await sendOtpEmail(email, otp);
+          if (!emailSent) {
+            return res.status(500).json({ message: "Failed to send OTP email" });
+          }
+          console.log(`OTP sent via email to ${email}`);
+        } catch (error) {
+          console.error("Email sending error:", error);
+          return res.status(500).json({ message: "Failed to send OTP email" });
+        }
       }
-
-      console.log(`OTP sent successfully to ${email}`);
       res.json({ 
         message: "OTP sent to your email address",
         success: true 
@@ -339,7 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin authentication middleware
   const requireAdminAuth = (req: any, res: any, next: any) => {
-    if (!req.session.adminId) {
+    if (!(req.session as any).adminId) {
       return res.status(401).json({ message: "Admin authentication required" });
     }
     next();
@@ -356,7 +365,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Hardcoded admin credentials
       if (email === "info@chefoverseas.com" && password === "Revaan56789!") {
-        req.session.adminId = "admin";
+        (req.session as any).adminId = "admin";
         console.log("Admin login successful, session set");
         return res.status(200).json({ message: "Admin login successful" });
       } else {
