@@ -5,6 +5,11 @@ import helmet from "helmet";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { loadSSLConfig } from "./ssl-config";
+import { validateEnvironment, logEnvironmentInfo } from "./env-validation";
+
+// Validate environment configuration before starting
+const envConfig = validateEnvironment();
+logEnvironmentInfo(envConfig);
 
 const app = express();
 

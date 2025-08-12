@@ -32,18 +32,18 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
 }
 
 export async function sendOtpEmail(email: string, otp: string): Promise<boolean> {
-  // For now, always use development mode (log OTP to console)
-  // This allows testing without SendGrid domain verification issues
-  console.log(`\n🔐 OTP CODE FOR ${email}: ${otp}`);
-  console.log(`📧 Check server console for OTP code (email sending disabled for development)\n`);
-  return true;
-  
-  // Uncomment below code when SendGrid is properly configured with verified domain
-  /*
+  // In development mode, log OTP to console for testing
+  if (process.env.NODE_ENV === "development") {
+    console.log(`\n🔐 OTP CODE FOR ${email}: ${otp}`);
+    console.log(`📧 Check server console for OTP code (development mode)\n`);
+    return true;
+  }
 
-  // For production, we'll use a verified sender email
-  // You need to verify your domain with SendGrid
-  const fromEmail = 'noreply@chef-overseas.com'; // This needs to be a verified sender in SendGrid
+  // Production mode: Send actual email via SendGrid
+
+  // For production, use a verified sender email
+  // This needs to be a verified sender in SendGrid
+  const fromEmail = 'noreply@chefoverseas.com'; // Update with your verified domain
   
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -101,5 +101,4 @@ Chef Overseas - Document Management System
     console.error('SendGrid OTP email error:', error);
     return false;
   }
-  */
 }
