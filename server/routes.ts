@@ -475,6 +475,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin: Create user
+  app.post("/api/admin/users", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { name, surname, email, phone } = req.body;
+      
+      // Validate required fields
+      if (!name || !surname || !email || !phone) {
+        return res.status(400).json({ 
+          message: "Name, surname, email, and mobile number are required" 
+        });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByPhone(phone);
+      if (existingUser) {
+        return res.status(400).json({ 
+          message: "User with this mobile number already exists" 
+        });
+      }
+
+      // Generate unique UID
+      const uid = await storage.generateUniqueUid();
+      
+      // Create user with passport details
+      const user = await storage.createUser({
+        phone,
+        uid,
+        displayName: `${name} ${surname}`,
+        email,
+        givenName: name,
+        surname: surname,
+      });
+
+      res.json({ user, message: "User created successfully" });
+    } catch (error) {
+      console.error("Create user error:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
   // Contracts routes
   app.get("/api/contracts", async (req, res) => {
     try {
