@@ -331,10 +331,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin routes (will need separate admin authentication)
-  app.get("/api/admin/users", async (req, res) => {
+  // Admin authentication middleware
+  const requireAdminAuth = (req: any, res: any, next: any) => {
+    if (!req.session.adminId) {
+      return res.status(401).json({ message: "Admin authentication required" });
+    }
+    next();
+  };
+
+  // Admin login route
+  app.post("/api/admin/login", async (req, res) => {
     try {
-      // TODO: Add admin authentication check
+      const { email, password } = req.body;
+      
+      // Hardcoded admin credentials
+      if (email === "info@chefoverseas.com" && password === "Revaan56789!") {
+        req.session.adminId = "admin";
+        res.json({ message: "Admin login successful" });
+      } else {
+        res.status(401).json({ message: "Invalid admin credentials" });
+      }
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ message: "Admin login failed" });
+    }
+  });
+
+  // Admin logout route
+  app.post("/api/admin/logout", (req: any, res) => {
+    req.session.adminId = null;
+    res.json({ message: "Admin logged out successfully" });
+  });
+
+  // Admin routes (protected with admin authentication)
+  app.get("/api/admin/users", requireAdminAuth, async (req, res) => {
+    try {
       const users = await storage.getAllUsers();
       res.json({ users });
     } catch (error) {
