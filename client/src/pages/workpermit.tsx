@@ -25,6 +25,10 @@ type WorkPermit = {
 export default function WorkPermitPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/workpermit'],
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 
   const workPermit = (data as any)?.workPermit as WorkPermit | undefined;

@@ -29,6 +29,10 @@ export default function ContractsPage() {
 
   const { data: contractData, isLoading } = useQuery({
     queryKey: ["/api/contracts"],
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 
   const contract: Contract | null = (contractData as any)?.contract || null;
@@ -209,7 +213,6 @@ export default function ContractsPage() {
                           </p>
                           <ContractUploader
                             onUpload={(fileData) => handleFileUpload('companyContractSignedUrl', fileData)}
-                            originalUrl={contract.companyContractOriginalUrl}
                           />
                         </div>
                       ) : (
@@ -311,7 +314,6 @@ export default function ContractsPage() {
                           </p>
                           <ContractUploader
                             onUpload={(fileData) => handleFileUpload('jobOfferSignedUrl', fileData)}
-                            originalUrl={contract.jobOfferOriginalUrl}
                           />
                         </div>
                       ) : (

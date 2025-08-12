@@ -29,22 +29,34 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
   // Otherwise, fetch current user's data (user view)
   const { data: userData } = useQuery({
     queryKey: userId ? [`/api/admin/user/${userId}`] : ['/api/auth/me'],
-    enabled: !!userId || !userId,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 
   const { data: docketData } = useQuery({
     queryKey: userId ? [`/api/admin/docket/${userId}`] : ['/api/docket'],
-    enabled: !!userId || !userId,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 
   const { data: contractData } = useQuery({
     queryKey: userId ? [`/api/admin/contract/${userId}`] : ['/api/contracts'],
-    enabled: !!userId || !userId,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 
   const { data: workPermitData } = useQuery({
     queryKey: userId ? [`/api/admin/workpermit/${userId}`] : ['/api/workpermit'],
-    enabled: !!userId || !userId,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: false,
   });
 
   const user = userId ? (userData as any)?.user : (userData as any)?.user;
