@@ -348,6 +348,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin authentication middleware
   const requireAdminAuth = (req: any, res: any, next: any) => {
+    console.log("Admin auth middleware - session:", req.session);
+    console.log("Admin auth middleware - adminId:", (req.session as any)?.adminId);
+    
     if (!(req.session as any).adminId) {
       return res.status(401).json({ message: "Admin authentication required" });
     }
@@ -410,12 +413,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes (protected with admin authentication)
+  app.get("/api/admin/stats", requireAdminAuth, async (req, res) => {
+    console.log("🔥 Admin stats endpoint hit!");
+    try {
+      const users = await storage.getAllUsers();
+      const totalUsers = users.length;
+      const completedDockets = users.filter(u => u.docketCompleted).length;
+      const pendingDockets = totalUsers - completedDockets;
+      
+      console.log("Stats calculated:", { totalUsers, completedDockets, pendingDockets });
+      
+      res.setHeader('Content-Type', 'application/json');
+      const statsResponse = { 
+        stats: {
+          totalUsers,
+          completedDockets,
+          pendingDockets,
+          contractsPending: 0, // TODO: implement when contract status is added
+          issues: 0 // TODO: implement when issue tracking is added
+        }
+      };
+      
+      console.log("Sending stats response:", statsResponse);
+      return res.status(200).json(statsResponse);
+    } catch (error) {
+      console.error("Get admin stats error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(500).json({ message: "Failed to get stats" });
+    }
+  });
+
   app.get("/api/admin/users", requireAdminAuth, async (req, res) => {
     try {
       const users = await storage.getAllUsers();
+      res.setHeader('Content-Type', 'application/json');
       res.json({ users });
     } catch (error) {
       console.error("Get admin users error:", error);
+      res.setHeader('Content-Type', 'application/json');
       res.status(500).json({ message: "Failed to get users" });
     }
   });
