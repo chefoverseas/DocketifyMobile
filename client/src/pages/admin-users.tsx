@@ -54,7 +54,7 @@ export default function AdminUsersPage() {
     queryKey: ['/api/admin/users'],
   });
 
-  const users = (data || []) as User[];
+  const users = ((data as { users?: User[] })?.users || []) as User[];
 
   // Filter users based on search term
   const filteredUsers = users.filter((user) =>
