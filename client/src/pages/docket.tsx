@@ -8,8 +8,20 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import FileUploader from "@/components/file-uploader";
 import ReferenceForm from "@/components/reference-form";
-import { Check, Clock, Minus, Save, CheckCircle } from "lucide-react";
+import { WorkPermitStatusBadge } from "@/components/work-permit-status-badge";
+import { Check, Clock, Minus, Save, CheckCircle, Briefcase, Download, FileText, AlertCircle, XCircle } from "lucide-react";
+import { format } from "date-fns";
 import type { Docket } from "@shared/schema";
+
+type WorkPermit = {
+  id: number;
+  userId: string;
+  status: "preparation" | "applied" | "awaiting_decision" | "approved" | "rejected";
+  finalDocketUrl: string | null;
+  notes: string | null;
+  lastUpdated: string;
+  createdAt: string;
+};
 
 export default function DocketPage() {
   const { toast } = useToast();
@@ -19,7 +31,12 @@ export default function DocketPage() {
     queryKey: ["/api/docket"],
   });
 
+  const { data: workPermitData, isLoading: workPermitLoading } = useQuery({
+    queryKey: ["/api/workpermit"],
+  });
+
   const docket: Docket | null = docketData?.docket || null;
+  const workPermit: WorkPermit | null = workPermitData?.workPermit || null;
 
   const updateMutation = useMutation({
     mutationFn: async (data: Partial<Docket>) => {
@@ -54,7 +71,7 @@ export default function DocketPage() {
     updateMutation.mutate({ references });
   };
 
-  if (isLoading) {
+  if (isLoading || workPermitLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
@@ -73,6 +90,40 @@ export default function DocketPage() {
   
   const completedSections = sections.filter(s => s.completed).length;
   const progressPercentage = (completedSections / sections.length) * 100;
+
+  const getWorkPermitStatusIcon = (status: string) => {
+    switch (status) {
+      case "preparation":
+        return <Clock className="h-5 w-5 text-gray-500" />;
+      case "applied":
+        return <FileText className="h-5 w-5 text-blue-500" />;
+      case "awaiting_decision":
+        return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+      case "approved":
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case "rejected":
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      default:
+        return <Clock className="h-5 w-5 text-gray-500" />;
+    }
+  };
+
+  const getWorkPermitStatusDescription = (status: string) => {
+    switch (status) {
+      case "preparation":
+        return "Your work permit application is being prepared by our team.";
+      case "applied":
+        return "Your work permit application has been submitted to the embassy.";
+      case "awaiting_decision":
+        return "Your application is under review by the embassy.";
+      case "approved":
+        return "Congratulations! Your work permit has been approved.";
+      case "rejected":
+        return "Unfortunately, your work permit application was not approved.";
+      default:
+        return "Work permit status will be updated here.";
+    }
+  };
 
   const getSectionStatus = (isCompleted: boolean, isOptional = false) => {
     if (isCompleted) {
@@ -98,6 +149,85 @@ export default function DocketPage() {
           </div>
           <Progress value={progressPercentage} className="w-full" />
         </CardContent>
+      </Card>
+
+      {/* Work Permit Status Card */}
+      <Card className="mb-8 border-l-4 border-l-primary">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Briefcase className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="flex items-center space-x-2">
+                  <span>Work Permit Application</span>
+                  {workPermit?.status && getWorkPermitStatusIcon(workPermit.status)}
+                </CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  {workPermit?.status 
+                    ? getWorkPermitStatusDescription(workPermit.status)
+                    : "Work permit application will appear here once your docket is complete."
+                  }
+                </p>
+              </div>
+            </div>
+            {workPermit?.status && (
+              <WorkPermitStatusBadge status={workPermit.status} />
+            )}
+          </div>
+        </CardHeader>
+        {workPermit && (
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Application Date</p>
+                <p className="text-sm text-gray-600">
+                  {format(new Date(workPermit.createdAt), 'MMM dd, yyyy')}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Last Updated</p>
+                <p className="text-sm text-gray-600">
+                  {format(new Date(workPermit.lastUpdated), 'MMM dd, yyyy')}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Status</p>
+                <WorkPermitStatusBadge status={workPermit.status} />
+              </div>
+            </div>
+            
+            {workPermit.finalDocketUrl && (
+              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <h4 className="font-medium text-green-900">Final Docket Available</h4>
+                      <p className="text-sm text-green-700">Your completed work permit documents are ready for download.</p>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={() => window.open(workPermit.finalDocketUrl!, '_blank')}
+                    size="sm"
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download Final Docket
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {workPermit.notes && (
+              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-medium text-blue-900 mb-2">Admin Notes</h4>
+                <p className="text-sm text-blue-800">{workPermit.notes}</p>
+              </div>
+            )}
+          </CardContent>
+        )}
       </Card>
 
       <div className="space-y-6">
