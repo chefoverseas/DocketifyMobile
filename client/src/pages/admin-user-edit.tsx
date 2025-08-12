@@ -77,12 +77,10 @@ export default function AdminUserEdit({ userId }: AdminUserEditProps) {
   }, [user, reset]);
 
   const updateUserMutation = useMutation({
-    mutationFn: (userData: UpdateUserData) => {
+    mutationFn: async (userData: UpdateUserData) => {
       if (!user) throw new Error("User not found");
-      return apiRequest(`/api/admin/users/${user.id}`, {
-        method: "PATCH",
-        body: userData,
-      });
+      const response = await apiRequest("PATCH", `/api/admin/users/${user.id}`, userData);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
