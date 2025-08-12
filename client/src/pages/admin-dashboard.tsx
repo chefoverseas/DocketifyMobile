@@ -14,7 +14,9 @@ import {
   Plus,
   Edit,
   Eye,
-  Download
+  Download,
+  Briefcase,
+  Settings
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import type { User } from "@shared/schema";
@@ -31,12 +33,12 @@ export default function AdminDashboardPage() {
 
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
-    enabled: !!adminData?.admin,
+    enabled: !!(adminData as any)?.admin,
   });
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["/api/admin/users"],
-    enabled: !!adminData?.admin,
+    enabled: !!(adminData as any)?.admin,
   });
 
   const logoutMutation = useMutation({
@@ -61,12 +63,12 @@ export default function AdminDashboardPage() {
     );
   }
 
-  if (!adminData?.admin) {
+  if (!(adminData as any)?.admin) {
     setLocation("/admin/login");
     return null;
   }
 
-  const stats = statsData?.stats || {
+  const stats = (statsData as any)?.stats || {
     totalUsers: 0,
     completedDockets: 0,
     pendingDockets: 0,
@@ -74,7 +76,7 @@ export default function AdminDashboardPage() {
     issues: 0,
   };
 
-  const users: User[] = usersData?.users || [];
+  const users: User[] = (usersData as any)?.users || [];
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -124,9 +126,13 @@ export default function AdminDashboardPage() {
               </p>
             </div>
             <div className="flex space-x-3">
+              <Button variant="outline" onClick={() => setLocation("/admin/workpermits")}>
+                <Briefcase className="h-4 w-4 mr-2" />
+                Work Permits
+              </Button>
               <Button variant="outline" onClick={() => setLocation("/admin/contracts")}>
                 <FileText className="h-4 w-4 mr-2" />
-                Contract Management
+                Contracts
               </Button>
               <Button variant="outline" onClick={handleExportCSV}>
                 <Download className="h-4 w-4 mr-2" />
@@ -214,17 +220,70 @@ export default function AdminDashboardPage() {
           </Card>
         </div>
 
+        {/* Quick Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation("/admin/workpermits")}>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-primary/10 rounded-lg">
+                  <Briefcase className="h-8 w-8 text-primary" />
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Work Permit Management</h3>
+                  <p className="text-sm text-gray-600">Manage work permit applications and status updates</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation("/admin/contracts")}>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-secondary/10 rounded-lg">
+                  <FileText className="h-8 w-8 text-secondary" />
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Contract Management</h3>
+                  <p className="text-sm text-gray-600">Upload and manage company contracts and job offers</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation("/admin/user/new")}>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-accent/10 rounded-lg">
+                  <Plus className="h-8 w-8 text-accent-foreground" />
+                </div>
+                <div className="ml-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Create New User</h3>
+                  <p className="text-sm text-gray-600">Add new candidates to the system</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Users Table */}
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
               <CardTitle>User Management</CardTitle>
-              <Link href="/admin/user/new">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create User
-                </Button>
-              </Link>
+              <div className="flex space-x-2">
+                <Link href="/admin/workpermits">
+                  <Button variant="outline">
+                    <Briefcase className="h-4 w-4 mr-2" />
+                    Work Permits
+                  </Button>
+                </Link>
+                <Link href="/admin/user/new">
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create User
+                  </Button>
+                </Link>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
