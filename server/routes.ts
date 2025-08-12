@@ -2,13 +2,14 @@ import type { Express, Request } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertDocketSchema, insertOtpSessionSchema } from "@shared/schema";
+import { insertUserSchema, insertDocketSchema, insertOtpSessionSchema, insertContractSchema, insertAdminSessionSchema } from "@shared/schema";
 import { z } from "zod";
 import multer, { type FileFilterCallback } from "multer";
 import path from "path";
 import fs from "fs";
 import { randomUUID } from "crypto";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 
 // Configure multer for file uploads
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -92,7 +93,30 @@ function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+async function getAdminSession(req: Request) {
+  try {
+    const sessionToken = req.cookies?.admin_session;
+    if (!sessionToken) return null;
+    
+    const session = await storage.getAdminSession(sessionToken);
+    if (!session || session.expiresAt < new Date()) {
+      if (session) {
+        await storage.deleteAdminSession(sessionToken);
+      }
+      return null;
+    }
+    
+    return session;
+  } catch (error) {
+    console.error("Admin session check error:", error);
+    return null;
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Middleware
+  app.use(cookieParser());
+  
   // Session configuration
   app.use(session({
     secret: process.env.SESSION_SECRET || "your-secret-key",
@@ -153,8 +177,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get or create user
       let user = await storage.getUserByPhone(phone);
       if (!user) {
+        // Generate unique UID for new user
+        const uid = await storage.generateUniqueUid();
         user = await storage.createUser({
           phone,
+          uid,
           displayName: "",
           email: "",
         });
@@ -352,15 +379,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get stats
   app.get("/api/admin/stats", async (req, res) => {
     try {
-      const userId = (req.session as any)?.userId;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-
-      const user = await storage.getUser(userId);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
       }
 
       const stats = await storage.getAdminStats();
@@ -368,6 +389,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Get stats error:", error);
       res.status(500).json({ message: "Failed to get stats" });
+    }
+  });
+
+  // Admin login
+  app.post("/api/admin/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      // Hardcoded admin credentials
+      if (email === "info@chefoverseas.com" && password === "Revaan56789!") {
+        // Generate session token
+        const sessionToken = randomUUID();
+        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        
+        await storage.createAdminSession({
+          sessionToken,
+          email,
+          expiresAt,
+        });
+        
+        // Set cookie
+        res.cookie('admin_session', sessionToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: 'lax',
+          maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        });
+        
+        res.json({ admin: { email } });
+      } else {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+    } catch (error) {
+      console.error("Admin login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Admin logout
+  app.post("/api/admin/logout", async (req, res) => {
+    try {
+      const sessionToken = req.cookies.admin_session;
+      if (sessionToken) {
+        await storage.deleteAdminSession(sessionToken);
+      }
+      
+      res.clearCookie('admin_session');
+      res.json({ message: "Logged out successfully" });
+    } catch (error) {
+      console.error("Admin logout error:", error);
+      res.status(500).json({ message: "Logout failed" });
+    }
+  });
+
+  // Admin: Check session
+  app.get("/api/admin/me", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (adminSession) {
+        res.json({ admin: { email: adminSession.email } });
+      } else {
+        res.status(401).json({ message: "Not authenticated" });
+      }
+    } catch (error) {
+      console.error("Admin check error:", error);
+      res.status(500).json({ message: "Failed to check session" });
+    }
+  });
+
+  // Admin: Get all users
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const users = await storage.getAllUsers();
+      res.json({ users });
+    } catch (error) {
+      console.error("Get admin users error:", error);
+      res.status(500).json({ message: "Failed to get users" });
+    }
+  });
+
+  // Contracts routes
+  app.get("/api/contracts", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const contract = await storage.getContractByUserId(userId);
+      res.json({ contract });
+    } catch (error) {
+      console.error("Get contract error:", error);
+      res.status(500).json({ message: "Failed to get contract" });
+    }
+  });
+
+  app.patch("/api/contracts", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const updateData = insertContractSchema.partial().parse(req.body);
+      const contract = await storage.updateContract(userId, updateData);
+
+      res.json({ contract });
+    } catch (error) {
+      console.error("Update contract error:", error);
+      res.status(500).json({ message: "Failed to update contract" });
     }
   });
 

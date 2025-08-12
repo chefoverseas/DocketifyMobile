@@ -9,6 +9,9 @@ import Landing from "@/pages/landing";
 import OtpVerification from "@/pages/otp-verification";
 import Profile from "@/pages/profile";
 import Docket from "@/pages/docket";
+import Contracts from "@/pages/contracts";
+import AdminLogin from "@/pages/admin-login";
+import AdminDashboard from "@/pages/admin-dashboard";
 import Admin from "@/pages/admin";
 import NotFound from "@/pages/not-found";
 
@@ -19,6 +22,9 @@ function Router() {
       <Route path="/auth/otp" component={OtpVerification} />
       <Route path="/profile" component={Profile} />
       <Route path="/docket" component={Docket} />
+      <Route path="/contracts" component={Contracts} />
+      <Route path="/admin/login" component={AdminLogin} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>

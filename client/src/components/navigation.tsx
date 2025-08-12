@@ -8,7 +8,7 @@ export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
 
-  if (!isAuthenticated || location === "/" || location === "/auth/otp") {
+  if (!isAuthenticated || location === "/" || location === "/auth/otp" || location.startsWith("/admin")) {
     return null;
   }
 
@@ -46,6 +46,16 @@ export default function Navigation() {
                 }`}
               >
                 Docket
+              </Link>
+              <Link 
+                href="/contracts"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive("/contracts") 
+                    ? "text-primary-600 bg-primary-50" 
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                Contracts
               </Link>
               {user?.isAdmin && (
                 <Link 

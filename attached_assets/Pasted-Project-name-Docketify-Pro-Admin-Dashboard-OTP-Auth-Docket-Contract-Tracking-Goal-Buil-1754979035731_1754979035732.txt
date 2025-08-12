@@ -1,0 +1,78 @@
+Project name: Docketify Pro (Admin Dashboard + OTP Auth + Docket + Contract Tracking)
+
+Goal:
+Build a production-ready web application with:
+- Mobile OTP user login (Firebase phone authentication).
+- Profile management for users.
+- Docket page for required documents (passport, certificates, references).
+- Contract tracking module (company contracts & job offers with signature validation).
+- Admin Dashboard with user management (create/update users).
+- Hardcoded Admin login credentials.
+
+Tech Stack:
+- Next.js (React) + Tailwind CSS
+- Firebase Authentication, Firestore, and Storage
+- Serverless API routes for PDF signature validation
+- pdf-lib / pdf-parse for signature detection
+
+Authentication Rules:
+- **User Login**: via mobile OTP (Firebase phone auth)
+- **Admin Login**: fixed credentials — email: `info@chefoverseas.com`, password: `Revaan56789!` (handled locally, no Firebase auth for admin)
+- Admin login session stored securely in cookies (httpOnly, secure, sameSite)
+
+Admin Dashboard Features:
+- Create new user profile:
+  - Given Name (as per passport)
+  - Surname (as per passport)
+  - Email
+  - Mobile number (for OTP login)
+  - Auto-generate UID (8-digit random number)
+- Edit existing user details
+- View all users
+- Access Contract Tracking uploads for each user
+- Access Docket submissions for each user
+- Upload Company Contract and Job Offer PDFs for a user
+- Mark contract/job offer statuses
+
+UID Generation:
+- UID = random 8-digit number (e.g., 10000000–99999999), unique per user
+- Stored in `/users/{uid}/profile` in Firestore
+
+Data Model (Firestore):
+- `/users/{uid}`
+  - uid: number
+  - givenName: string
+  - surname: string
+  - email: string
+  - phone: string
+  - createdAt: timestamp
+  - docketCompleted: boolean
+- `/users/{uid}/docket` — as per earlier spec
+- `/users/{uid}/contracts` — as per earlier spec
+
+Pages to Generate:
+1. `/admin/login` — Admin login page (hardcoded check, set admin session cookie)
+2. `/admin/dashboard` — main dashboard with user list & actions
+3. `/admin/user/[uid]` — user detail page (edit profile, view docket, manage contracts)
+4. `/profile` — user profile page (editable by user)
+5. `/docket` — user docket page (as before)
+6. `/contracts` — user contract tracking page (as before)
+
+Security Rules:
+- Only admin session can access `/admin/*`
+- Firebase rules:
+  - Admin operations use serverless API routes with admin session verification
+  - Users can only edit their own profile/docket/contracts
+
+Sample Components:
+- `AdminLoginForm.jsx`
+- `UserTable.jsx` (list all users, edit buttons)
+- `UserForm.jsx` (create/update user)
+- `FileUploader.jsx` (reusable for contract uploads)
+- `ContractViewer.jsx`
+
+UID Generator Example:
+```js
+function generateUID() {
+  return Math.floor(10000000 + Math.random() * 90000000);
+}
