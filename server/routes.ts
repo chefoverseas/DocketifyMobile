@@ -590,6 +590,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Upload contract documents for users
+  // Get all contracts for admin
+  app.get("/api/admin/contracts", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const contracts = await storage.getAllContracts();
+      res.json({ contracts });
+    } catch (error) {
+      console.error("Get contracts error:", error);
+      res.status(500).json({ message: "Failed to fetch contracts" });
+    }
+  });
+
   app.post("/api/admin/contracts/:userId/company-contract", upload.single('pdf'), async (req, res) => {
     try {
       const adminSession = await getAdminSession(req);

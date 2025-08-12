@@ -38,6 +38,11 @@ export default function AdminContractsPage() {
     enabled: !!adminData?.admin,
   });
 
+  const { data: contractsData, isLoading: contractsLoading } = useQuery({
+    queryKey: ["/api/admin/contracts"],
+    enabled: !!adminData?.admin,
+  });
+
   const uploadCompanyContractMutation = useMutation({
     mutationFn: async ({ userId, file }: { userId: string; file: File }) => {
       const formData = new FormData();
@@ -57,6 +62,7 @@ export default function AdminContractsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contracts"] });
       toast({
         title: "Success",
         description: "Company contract uploaded successfully",
@@ -90,6 +96,7 @@ export default function AdminContractsPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/contracts"] });
       toast({
         title: "Success",
         description: "Job offer uploaded successfully",
@@ -121,7 +128,18 @@ export default function AdminContractsPage() {
   }
 
   const users: User[] = usersData?.users || [];
-  const filteredUsers = users.filter(user => 
+  const contracts: any[] = contractsData?.contracts || [];
+  
+  // Create a combined data structure with user and contract info
+  const usersWithContracts = users.map(user => {
+    const userContract = contracts.find(contract => contract.userId === user.id);
+    return {
+      ...user,
+      contract: userContract || null
+    };
+  });
+
+  const filteredUsers = usersWithContracts.filter(user => 
     user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.phone.includes(searchTerm) ||
     user.uid?.includes(searchTerm)
@@ -159,6 +177,73 @@ export default function AdminContractsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Contract Statistics */}
+        {!contractsLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <FileText className="h-8 w-8 text-blue-600" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-blue-600">Total Contracts</p>
+                    <p className="text-2xl font-bold text-blue-900">{contracts.length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <CheckCircle className="h-8 w-8 text-green-600" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-green-600">Signed Contracts</p>
+                    <p className="text-2xl font-bold text-green-900">
+                      {contracts.filter(c => c.companyContractStatus === "signed" || c.jobOfferStatus === "signed").length}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <Clock className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-yellow-600">Pending Signature</p>
+                    <p className="text-2xl font-bold text-yellow-900">
+                      {contracts.filter(c => c.companyContractStatus === "pending" || c.jobOfferStatus === "pending").length}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <XCircle className="h-8 w-8 text-red-600" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-red-600">Missing Documents</p>
+                    <p className="text-2xl font-bold text-red-900">
+                      {usersWithContracts.filter(u => !u.contract?.companyContractOriginalUrl || !u.contract?.jobOfferOriginalUrl).length}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {/* Search */}
         <Card className="mb-6">
           <CardContent className="p-6">
@@ -182,10 +267,10 @@ export default function AdminContractsPage() {
 
         {/* Users List */}
         <div className="space-y-6">
-          {usersLoading ? (
+          {usersLoading || contractsLoading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Loading users...</p>
+              <p className="mt-2 text-gray-600">Loading contracts...</p>
             </div>
           ) : (
             filteredUsers.map((user) => (
@@ -222,10 +307,49 @@ export default function AdminContractsPage() {
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex items-center justify-between mb-3">
                           <span className="text-sm font-medium">Current Status</span>
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            Pending Upload
-                          </Badge>
+                          {(() => {
+                            const contract = user.contract;
+                            if (!contract || !contract.companyContractOriginalUrl) {
+                              return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                            } else if (contract.companyContractStatus === "signed") {
+                              return <Badge className="bg-green-100 text-green-800">Signed</Badge>;
+                            } else if (contract.companyContractStatus === "pending") {
+                              return <Badge className="bg-blue-100 text-blue-800">Awaiting Signature</Badge>;
+                            } else if (contract.companyContractStatus === "rejected") {
+                              return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
+                            }
+                            return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                          })()}
                         </div>
+
+                        {/* Show uploaded documents */}
+                        {user.contract?.companyContractOriginalUrl && (
+                          <div className="mb-3 p-2 bg-blue-50 rounded">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-blue-700">Original Contract</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={user.contract.companyContractOriginalUrl} target="_blank" rel="noopener noreferrer">
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  View
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {user.contract?.companyContractSignedUrl && (
+                          <div className="mb-3 p-2 bg-green-50 rounded">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-green-700">Signed Contract</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={user.contract.companyContractSignedUrl} target="_blank" rel="noopener noreferrer">
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  View
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                         
                         <div className="space-y-3">
                           <div>
@@ -258,10 +382,49 @@ export default function AdminContractsPage() {
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex items-center justify-between mb-3">
                           <span className="text-sm font-medium">Current Status</span>
-                          <Badge className="bg-yellow-100 text-yellow-800">
-                            Pending Upload
-                          </Badge>
+                          {(() => {
+                            const contract = user.contract;
+                            if (!contract || !contract.jobOfferOriginalUrl) {
+                              return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                            } else if (contract.jobOfferStatus === "signed") {
+                              return <Badge className="bg-green-100 text-green-800">Signed</Badge>;
+                            } else if (contract.jobOfferStatus === "pending") {
+                              return <Badge className="bg-blue-100 text-blue-800">Awaiting Signature</Badge>;
+                            } else if (contract.jobOfferStatus === "rejected") {
+                              return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
+                            }
+                            return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                          })()}
                         </div>
+
+                        {/* Show uploaded documents */}
+                        {user.contract?.jobOfferOriginalUrl && (
+                          <div className="mb-3 p-2 bg-blue-50 rounded">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-blue-700">Original Job Offer</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={user.contract.jobOfferOriginalUrl} target="_blank" rel="noopener noreferrer">
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  View
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {user.contract?.jobOfferSignedUrl && (
+                          <div className="mb-3 p-2 bg-green-50 rounded">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-green-700">Signed Job Offer</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={user.contract.jobOfferSignedUrl} target="_blank" rel="noopener noreferrer">
+                                  <FileText className="h-3 w-3 mr-1" />
+                                  View
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                         
                         <div className="space-y-3">
                           <div>

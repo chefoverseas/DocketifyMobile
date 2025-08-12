@@ -251,6 +251,15 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
+  async getAllContracts(): Promise<Contract[]> {
+    const result = await db
+      .select()
+      .from(contracts)
+      .orderBy(desc(contracts.lastUpdated));
+    
+    return result;
+  }
+
   // Admin session operations
   async createAdminSession(session: InsertAdminSession): Promise<AdminSession> {
     const [adminSession] = await db
