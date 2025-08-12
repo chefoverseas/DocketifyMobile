@@ -16,8 +16,11 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Search
+  Search,
+  ArrowLeft,
+  Download
 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useLocation } from "wouter";
 import type { User } from "@shared/schema";
 
@@ -27,6 +30,7 @@ export default function AdminContractsPage() {
   const [, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
 
   // Check admin authentication
   const { data: adminData, isLoading: adminLoading } = useQuery({
@@ -130,8 +134,25 @@ export default function AdminContractsPage() {
   const users: User[] = usersData?.users || [];
   const contracts: any[] = contractsData?.contracts || [];
   
+  // Create users list from contracts if users API fails
+  const contractUsersMap = new Map();
+  contracts.forEach(contract => {
+    if (contract.userId) {
+      contractUsersMap.set(contract.userId, contract);
+    }
+  });
+
+  // If users data is unavailable, create user list from contracts
+  const allUsers = users.length > 0 ? users : Array.from(contractUsersMap.keys()).map(userId => ({
+    id: userId,
+    displayName: `User ${userId.slice(-6)}`,
+    phone: 'Loading...',
+    email: null,
+    uid: userId.slice(-8).toUpperCase()
+  }));
+  
   // Create a combined data structure with user and contract info
-  const usersWithContracts = users.map(user => {
+  const usersWithContracts = allUsers.map(user => {
     const userContract = contracts.find(contract => contract.userId === user.id);
     return {
       ...user,
@@ -450,9 +471,16 @@ export default function AdminContractsPage() {
 
                   {/* Action Buttons */}
                   <div className="mt-6 flex justify-end space-x-3">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setShowUserDetails(true);
+                      }}
+                    >
                       <FileText className="h-4 w-4 mr-2" />
-                      View Details
+                      Manage Contracts
                     </Button>
                   </div>
                 </CardContent>
@@ -460,7 +488,7 @@ export default function AdminContractsPage() {
             ))
           )}
 
-          {filteredUsers.length === 0 && !usersLoading && (
+          {filteredUsers.length === 0 && !usersLoading && !contractsLoading && (
             <div className="text-center py-8">
               <p className="text-gray-500 dark:text-gray-400">
                 {searchTerm ? "No users found matching your search." : "No users found"}
@@ -468,6 +496,212 @@ export default function AdminContractsPage() {
             </div>
           )}
         </div>
+
+        {/* User Detail Modal */}
+        <Dialog open={showUserDetails} onOpenChange={setShowUserDetails}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <div className="flex items-center space-x-3">
+                <Button variant="ghost" size="sm" onClick={() => setShowUserDetails(false)}>
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <div>
+                  <DialogTitle className="text-xl">
+                    Contract Management - {selectedUser?.displayName || selectedUser?.givenName + " " + selectedUser?.surname || "User"}
+                  </DialogTitle>
+                  <DialogDescription>
+                    Manage company contracts and job offers for this user
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+
+            {selectedUser && (
+              <div className="space-y-6 p-4">
+                {/* User Info Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center space-x-2">
+                      <Users className="h-5 w-5" />
+                      <span>User Information</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium">Name:</span> {selectedUser.displayName || `${selectedUser.givenName} ${selectedUser.surname}` || "N/A"}
+                      </div>
+                      <div>
+                        <span className="font-medium">Phone:</span> {selectedUser.phone || "N/A"}
+                      </div>
+                      <div>
+                        <span className="font-medium">Email:</span> {selectedUser.email || "N/A"}
+                      </div>
+                      <div>
+                        <span className="font-medium">UID:</span> {selectedUser.uid || "N/A"}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Contract Management */}
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Company Contract */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Building2 className="h-5 w-5 text-blue-600" />
+                        <span>Company Contract</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Status */}
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">Status:</span>
+                        {(() => {
+                          const contract = usersWithContracts.find(u => u.id === selectedUser.id)?.contract;
+                          if (!contract || !contract.companyContractOriginalUrl) {
+                            return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                          } else if (contract.companyContractStatus === "signed") {
+                            return <Badge className="bg-green-100 text-green-800">Signed</Badge>;
+                          } else if (contract.companyContractStatus === "pending") {
+                            return <Badge className="bg-blue-100 text-blue-800">Awaiting Signature</Badge>;
+                          }
+                          return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                        })()}
+                      </div>
+
+                      {/* Documents */}
+                      <div className="space-y-2">
+                        {usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.companyContractOriginalUrl && (
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-blue-700">Original Contract</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.companyContractOriginalUrl} target="_blank" rel="noopener noreferrer">
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Download
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.companyContractSignedUrl && (
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-green-700">Signed Contract</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.companyContractSignedUrl} target="_blank" rel="noopener noreferrer">
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Download
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Upload */}
+                      <div>
+                        <Label htmlFor={`modal-company-contract-${selectedUser.id}`}>Upload Company Contract PDF</Label>
+                        <Input
+                          id={`modal-company-contract-${selectedUser.id}`}
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleCompanyContractUpload(selectedUser.id, file);
+                              e.target.value = '';
+                            }
+                          }}
+                          className="mt-2"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Job Offer */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Briefcase className="h-5 w-5 text-green-600" />
+                        <span>Job Offer Letter</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Status */}
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">Status:</span>
+                        {(() => {
+                          const contract = usersWithContracts.find(u => u.id === selectedUser.id)?.contract;
+                          if (!contract || !contract.jobOfferOriginalUrl) {
+                            return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                          } else if (contract.jobOfferStatus === "signed") {
+                            return <Badge className="bg-green-100 text-green-800">Signed</Badge>;
+                          } else if (contract.jobOfferStatus === "pending") {
+                            return <Badge className="bg-blue-100 text-blue-800">Awaiting Signature</Badge>;
+                          }
+                          return <Badge className="bg-yellow-100 text-yellow-800">Pending Upload</Badge>;
+                        })()}
+                      </div>
+
+                      {/* Documents */}
+                      <div className="space-y-2">
+                        {usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.jobOfferOriginalUrl && (
+                          <div className="p-3 bg-blue-50 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-blue-700">Original Job Offer</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.jobOfferOriginalUrl} target="_blank" rel="noopener noreferrer">
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Download
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.jobOfferSignedUrl && (
+                          <div className="p-3 bg-green-50 rounded-lg">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-medium text-green-700">Signed Job Offer</span>
+                              <Button asChild variant="ghost" size="sm">
+                                <a href={usersWithContracts.find(u => u.id === selectedUser.id)?.contract?.jobOfferSignedUrl} target="_blank" rel="noopener noreferrer">
+                                  <Download className="h-4 w-4 mr-1" />
+                                  Download
+                                </a>
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Upload */}
+                      <div>
+                        <Label htmlFor={`modal-job-offer-${selectedUser.id}`}>Upload Job Offer PDF</Label>
+                        <Input
+                          id={`modal-job-offer-${selectedUser.id}`}
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              handleJobOfferUpload(selectedUser.id, file);
+                              e.target.value = '';
+                            }
+                          }}
+                          className="mt-2"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
