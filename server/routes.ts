@@ -379,8 +379,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get stats
   app.get("/api/admin/stats", async (req, res) => {
     try {
-      const adminSession = await getAdminSession(req);
-      if (!adminSession) {
+      const sessionToken = req.cookies.admin_session;
+      if (!sessionToken) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const adminSession = await storage.getAdminSession(sessionToken);
+      if (!adminSession || adminSession.expiresAt < new Date()) {
         return res.status(401).json({ message: "Admin authentication required" });
       }
 
@@ -446,12 +451,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Check session
   app.get("/api/admin/me", async (req, res) => {
     try {
-      const adminSession = await getAdminSession(req);
-      if (adminSession) {
-        res.json({ admin: { email: adminSession.email } });
-      } else {
-        res.status(401).json({ message: "Not authenticated" });
+      const sessionToken = req.cookies.admin_session;
+      if (!sessionToken) {
+        return res.status(401).json({ message: "Not authenticated" });
       }
+
+      const adminSession = await storage.getAdminSession(sessionToken);
+      if (!adminSession || adminSession.expiresAt < new Date()) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      res.json({ admin: { email: adminSession.email } });
     } catch (error) {
       console.error("Admin check error:", error);
       res.status(500).json({ message: "Failed to check session" });
@@ -557,8 +567,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Create user
   app.post("/api/admin/users", async (req, res) => {
     try {
-      const adminSession = await getAdminSession(req);
-      if (!adminSession) {
+      const sessionToken = req.cookies.admin_session;
+      if (!sessionToken) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const adminSession = await storage.getAdminSession(sessionToken);
+      if (!adminSession || adminSession.expiresAt < new Date()) {
         return res.status(401).json({ message: "Admin authentication required" });
       }
 
