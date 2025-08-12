@@ -76,6 +76,8 @@ export const workPermits = pgTable("work_permits", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
   status: text("status").notNull().default("preparation"), // preparation, applied, awaiting_decision, approved, rejected
+  trackingCode: text("tracking_code"),
+  applicationDate: timestamp("application_date"),
   finalDocketUrl: text("final_docket_url"),
   notes: text("notes"),
   lastUpdated: timestamp("last_updated").default(sql`now()`),

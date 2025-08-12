@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
@@ -29,6 +30,8 @@ type WorkPermit = {
   id: number;
   userId: string;
   status: "preparation" | "applied" | "awaiting_decision" | "approved" | "rejected";
+  trackingCode: string | null;
+  applicationDate: string | null;
   finalDocketUrl: string | null;
   notes: string | null;
   lastUpdated: string;
@@ -43,6 +46,7 @@ export default function AdminWorkPermitPage() {
 
   const [status, setStatus] = useState<WorkPermit['status']>("preparation");
   const [notes, setNotes] = useState("");
+  const [trackingCode, setTrackingCode] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
   const { data, isLoading, error } = useQuery({
@@ -50,19 +54,20 @@ export default function AdminWorkPermitPage() {
     enabled: !!userId,
   });
 
-  const workPermit = data?.workPermit as WorkPermit | undefined;
-  const user = data?.user as User | undefined;
+  const workPermit = (data as any)?.workPermit as WorkPermit | undefined;
+  const user = (data as any)?.user as User | undefined;
 
   // Initialize form state when data loads
   useState(() => {
     if (workPermit) {
       setStatus(workPermit.status);
       setNotes(workPermit.notes || "");
+      setTrackingCode(workPermit.trackingCode || "");
     }
   });
 
   const updateWorkPermitMutation = useMutation({
-    mutationFn: async (updateData: { status?: string; notes?: string }) => {
+    mutationFn: async (updateData: { status?: string; notes?: string; trackingCode?: string }) => {
       const response = await fetch(`/api/admin/workpermit/${userId}`, {
         method: "PATCH",
         headers: {
@@ -99,6 +104,7 @@ export default function AdminWorkPermitPage() {
     updateWorkPermitMutation.mutate({
       status,
       notes,
+      trackingCode: trackingCode || undefined,
     });
   };
 
@@ -234,6 +240,22 @@ export default function AdminWorkPermitPage() {
               <span className="font-medium">Status:</span>
               <WorkPermitStatusBadge status={workPermit?.status || "preparation"} />
             </div>
+            {workPermit?.trackingCode && (
+              <div className="flex items-center justify-between">
+                <span className="font-medium">Tracking Code:</span>
+                <span className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
+                  {workPermit.trackingCode}
+                </span>
+              </div>
+            )}
+            {workPermit?.applicationDate && (
+              <div className="flex items-center justify-between">
+                <span className="font-medium">Application Date:</span>
+                <span className="text-sm text-gray-600">
+                  {format(new Date(workPermit.applicationDate), 'PPP')}
+                </span>
+              </div>
+            )}
             {workPermit?.notes && (
               <div>
                 <Label className="font-medium">Current Notes:</Label>
@@ -288,6 +310,22 @@ export default function AdminWorkPermitPage() {
                 </Button>
               </div>
             </div>
+
+            {/* Tracking Code Field - Show when status is applied */}
+            {(status === "applied" || workPermit?.status === "applied") && (
+              <div className="space-y-2">
+                <Label htmlFor="trackingCode">
+                  Tracking Code <span className="text-sm text-gray-500">(Required when status is Applied)</span>
+                </Label>
+                <Input
+                  id="trackingCode"
+                  value={trackingCode}
+                  onChange={(e) => setTrackingCode(e.target.value)}
+                  placeholder="Enter application tracking code (e.g., WP-2025-001234)"
+                  disabled={updateWorkPermitMutation.isPending}
+                />
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="notes">Notes (Optional)</Label>

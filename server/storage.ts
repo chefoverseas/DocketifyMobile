@@ -31,7 +31,7 @@ export interface IStorage {
   // Work permit operations
   getWorkPermitByUserId(userId: string): Promise<WorkPermit | undefined>;
   createWorkPermit(workPermit: InsertWorkPermit): Promise<WorkPermit>;
-  updateWorkPermit(userId: string, updates: Partial<WorkPermit>): Promise<WorkPermit>;
+  updateWorkPermit(userId: string, updates: Partial<InsertWorkPermit>): Promise<WorkPermit>;
   getAllWorkPermits(): Promise<(WorkPermit & { user: User })[]>;
 
   // Admin session operations
@@ -140,7 +140,7 @@ export class DatabaseStorage implements IStorage {
   async createDocket(docket: InsertDocket): Promise<Docket> {
     const [newDocket] = await db
       .insert(dockets)
-      .values(docket)
+      .values([docket])
       .returning();
     return newDocket;
   }
@@ -174,7 +174,7 @@ export class DatabaseStorage implements IStorage {
   async createContract(contract: InsertContract): Promise<Contract> {
     const [newContract] = await db
       .insert(contracts)
-      .values(contract)
+      .values([contract])
       .returning();
     return newContract;
   }
@@ -208,12 +208,12 @@ export class DatabaseStorage implements IStorage {
   async createWorkPermit(workPermit: InsertWorkPermit): Promise<WorkPermit> {
     const [newWorkPermit] = await db
       .insert(workPermits)
-      .values(workPermit)
+      .values([workPermit])
       .returning();
     return newWorkPermit;
   }
 
-  async updateWorkPermit(userId: string, updates: Partial<WorkPermit>): Promise<WorkPermit> {
+  async updateWorkPermit(userId: string, updates: Partial<InsertWorkPermit>): Promise<WorkPermit> {
     // First check if work permit exists
     let workPermit = await this.getWorkPermitByUserId(userId);
     
@@ -221,6 +221,11 @@ export class DatabaseStorage implements IStorage {
       // Create new work permit
       workPermit = await this.createWorkPermit({ userId, ...updates });
     } else {
+      // If status is being set to 'applied' and no application date exists, set it
+      if (updates.status === 'applied' && !workPermit.applicationDate) {
+        updates.applicationDate = new Date();
+      }
+      
       // Update existing work permit
       const [updatedWorkPermit] = await db
         .update(workPermits)
