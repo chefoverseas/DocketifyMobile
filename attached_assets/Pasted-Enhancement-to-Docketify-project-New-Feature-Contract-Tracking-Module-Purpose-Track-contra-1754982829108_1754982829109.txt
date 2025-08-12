@@ -1,0 +1,69 @@
+Enhancement to Docketify project:
+
+New Feature: Contract Tracking Module
+
+Purpose:
+Track contract and job offer documents between Admin and User, with signature verification for returned PDFs.
+
+Roles:
+- Admin: Can upload contract and job offer letter PDFs for each user.
+- User: Can view/download the uploaded contract and job offer, sign them offline, and upload signed copies.
+- System: Validates that the signed PDF contains the user's signature before marking it as "Signed & Accepted."
+
+Data model additions (Firestore):
+- /users/{uid}/contracts
+  - company_contract_original_url: string
+  - company_contract_signed_url: string
+  - company_contract_status: "pending" | "signed" | "rejected"
+  - job_offer_original_url: string
+  - job_offer_signed_url: string
+  - job_offer_status: "pending" | "signed" | "rejected"
+  - lastUpdated: timestamp
+- Optional: store extracted text or metadata for search/verification.
+
+Storage structure:
+- /contracts/{uid}/company/original.pdf
+- /contracts/{uid}/company/signed.pdf
+- /contracts/{uid}/joboffer/original.pdf
+- /contracts/{uid}/joboffer/signed.pdf
+
+UI additions:
+
+1. Admin Pages:
+   - /admin/contracts — list all users, upload Company Contract PDF & Job Offer PDF for each user.
+   - After upload, system sets status to "pending" and notifies the user (optional email/SMS via Firebase Cloud Functions).
+
+2. User Pages:
+   - /contracts — shows:
+     * Company Contract section: original file link + upload signed file button.
+     * Job Offer section: original file link + upload signed file button.
+     * Status badge for each ("Pending", "Signed", "Rejected").
+   - On signed file upload:
+     * Validate PDF signature presence.
+     * If validation passes: status = "signed".
+     * If validation fails: reject upload and show error.
+
+PDF signature validation approaches:
+- Basic: 
+  * Parse PDF using `pdf-lib` or `pdfjs-dist` in Node API route.
+  * Check if PDF contains an image layer or "signature" text in the file.
+  * This is a heuristic — requires user to sign visibly in the document.
+- Advanced:
+  * Use Node library like `node-signpdf` or `pdf-signature-reader` to detect cryptographic digital signatures.
+  * Validate the certificate chain if using e-signatures.
+- Store validation result and reviewer override option for Admin.
+
+Implementation Steps:
+1. Add "contracts" subcollection or embedded doc under user in Firestore.
+2. Create `FileUploader` component variant for PDFs (accept=".pdf") and max size ~15MB.
+3. Create serverless API route `/api/validate-signature`:
+   - Accept uploaded PDF.
+   - Use `pdf-lib` to extract text and/or annotations to detect signature.
+   - Return boolean success/failure.
+4. In User UI, call `/api/validate-signature` before saving signed PDF URL to Firestore.
+5. Restrict access:
+   - Only Admin can upload original company contract/job offer.
+   - Only User can upload signed versions for their own record.
+   - Read access limited to owner and admin.
+
+Security Rules (Firestore):
