@@ -47,7 +47,7 @@ export function AdvancedSearch() {
       const mockResults: SearchResult[] = [
         {
           id: "1",
-          type: "document",
+          type: "document" as const,
           title: "Passport Front Page - John Doe",
           description: "Uploaded 2 days ago, pending review",
           status: "pending",
@@ -56,7 +56,7 @@ export function AdvancedSearch() {
         },
         {
           id: "2", 
-          type: "contract",
+          type: "contract" as const,
           title: "Company Contract - Jane Smith",
           description: "Signed and approved",
           status: "signed",
@@ -65,7 +65,7 @@ export function AdvancedSearch() {
         },
         {
           id: "3",
-          type: "user",
+          type: "user" as const,
           title: "John Doe",
           description: "User profile - Docket 85% complete",
           status: "active",

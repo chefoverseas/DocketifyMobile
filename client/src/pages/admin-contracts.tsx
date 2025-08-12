@@ -39,12 +39,12 @@ export default function AdminContractsPage() {
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["/api/admin/users"],
-    enabled: !!adminData?.admin,
+    enabled: !!(adminData as any)?.admin,
   });
 
   const { data: contractsData, isLoading: contractsLoading } = useQuery({
     queryKey: ["/api/admin/contracts"],
-    enabled: !!adminData?.admin,
+    enabled: !!(adminData as any)?.admin,
   });
 
   const uploadCompanyContractMutation = useMutation({
@@ -126,13 +126,13 @@ export default function AdminContractsPage() {
     );
   }
 
-  if (!adminData?.admin) {
+  if (!(adminData as any)?.admin) {
     setLocation("/admin/login");
     return null;
   }
 
-  const users: User[] = usersData?.users || [];
-  const contracts: any[] = contractsData?.contracts || [];
+  const users: User[] = (usersData as any)?.users || [];
+  const contracts: any[] = (contractsData as any)?.contracts || [];
   
   // Create users list from contracts if users API fails
   const contractUsersMap = new Map();
@@ -162,7 +162,7 @@ export default function AdminContractsPage() {
 
   const filteredUsers = usersWithContracts.filter(user => 
     user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.phone.includes(searchTerm) ||
+    user.phone?.includes(searchTerm) ||
     user.uid?.includes(searchTerm)
   );
 
@@ -302,8 +302,8 @@ export default function AdminContractsPage() {
                       <CardTitle className="flex items-center space-x-2">
                         <Users className="h-5 w-5" />
                         <span>
-                          {user.givenName && user.surname 
-                            ? `${user.givenName} ${user.surname}`
+                          {(user as any).firstName && (user as any).lastName 
+                            ? `${(user as any).firstName} ${(user as any).lastName}`
                             : user.displayName || "Unnamed User"
                           }
                         </span>
@@ -475,7 +475,7 @@ export default function AdminContractsPage() {
                       variant="outline" 
                       size="sm"
                       onClick={() => {
-                        setSelectedUser(user);
+                        setSelectedUser(user as User);
                         setShowUserDetails(true);
                       }}
                     >
