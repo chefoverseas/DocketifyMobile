@@ -547,6 +547,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin docket routes
+  app.get("/api/admin/docket/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      // Get user details
+      const user = await storage.getUser(userId);
+      if (!user) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's docket
+      const docket = await storage.getDocketByUserId(userId);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        user: {
+          id: user.id,
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          phone: user.phone,
+          createdAt: user.createdAt
+        },
+        docket: docket || null 
+      });
+    } catch (error) {
+      console.error("Admin get docket error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get docket" });
+    }
+  });
+
+  app.get("/api/admin/user/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.setHeader('Content-Type', 'application/json');
+      res.json({
+        id: user.id,
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        phone: user.phone,
+        isAdmin: user.isAdmin,
+        createdAt: user.createdAt
+      });
+    } catch (error) {
+      console.error("Admin get user error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get user" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

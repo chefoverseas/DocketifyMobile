@@ -52,7 +52,7 @@ export default function AdminDocketDetail({ userId }: AdminDocketDetailProps) {
   });
 
   const { data: userDocketData, isLoading: docketLoading } = useQuery({
-    queryKey: ["/api/admin/docket", userId],
+    queryKey: [`/api/admin/docket/${userId}`],
     enabled: !!(adminData as any)?.admin && !!userId,
   });
 
