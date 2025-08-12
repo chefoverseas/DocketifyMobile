@@ -905,6 +905,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin dockets endpoint - Get all user dockets
+  app.get("/api/admin/dockets", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const dockets = await storage.getAllDockets();
+      res.json({ dockets });
+    } catch (error) {
+      console.error("Error getting admin dockets:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin docket detail endpoint - Get specific user's docket
+  app.get("/api/admin/docket/:userId", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+      const user = await storage.getUserById(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const docket = await storage.getDocketByUserId(userId);
+      res.json({ user, docket });
+    } catch (error) {
+      console.error("Error getting user docket:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

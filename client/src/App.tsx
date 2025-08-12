@@ -21,6 +21,8 @@ import AdminWorkPermits from "@/pages/admin-workpermits";
 import AdminWorkPermit from "@/pages/admin-workpermit";
 import AdminUserCreate from "@/pages/admin-user-create";
 import AdminUserEdit from "@/pages/admin-user-edit";
+import AdminDockets from "@/pages/admin-dockets";
+import AdminDocketDetail from "@/pages/admin-docket-detail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -42,6 +44,10 @@ function Router() {
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}
+      </Route>
+      <Route path="/admin/dockets" component={AdminDockets} />
+      <Route path="/admin/docket/:userId">
+        {params => <AdminDocketDetail userId={params.userId} />}
       </Route>
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />

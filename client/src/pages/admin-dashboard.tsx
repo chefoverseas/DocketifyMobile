@@ -126,6 +126,10 @@ export default function AdminDashboardPage() {
               </p>
             </div>
             <div className="flex space-x-3">
+              <Button variant="outline" onClick={() => setLocation("/admin/dockets")}>
+                <FileCheck className="h-4 w-4 mr-2" />
+                Dockets
+              </Button>
               <Button variant="outline" onClick={() => setLocation("/admin/workpermits")}>
                 <Briefcase className="h-4 w-4 mr-2" />
                 Work Permits

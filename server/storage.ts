@@ -23,6 +23,7 @@ export interface IStorage {
   getDocketByUserId(userId: string): Promise<Docket | undefined>;
   createDocket(docket: InsertDocket): Promise<Docket>;
   updateDocket(userId: string, updates: Partial<Docket>): Promise<Docket>;
+  getAllDockets(): Promise<Docket[]>;
 
   // Contract operations
   getContractByUserId(userId: string): Promise<Contract | undefined>;
@@ -42,6 +43,8 @@ export interface IStorage {
   cleanupExpiredAdminSessions(): Promise<void>;
 
   // Admin operations
+  getUserById(id: string): Promise<User | undefined>;
+  getAllContracts(): Promise<(Contract & { user: User })[]>;
   getAdminStats(): Promise<{
     totalUsers: number;
     completedDockets: number;
@@ -149,9 +152,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createDocket(docket: InsertDocket): Promise<Docket> {
+    const insertData: InsertDocket = {
+      ...docket,
+      passportVisaUrls: docket.passportVisaUrls || [],
+      educationFiles: docket.educationFiles || [],
+      experienceFiles: docket.experienceFiles || [],
+      otherCertifications: docket.otherCertifications || [],
+      references: docket.references || []
+    };
+
     const [newDocket] = await db
       .insert(dockets)
-      .values([docket])
+      .values([insertData])
       .returning();
     return newDocket;
   }
@@ -167,7 +179,15 @@ export class DatabaseStorage implements IStorage {
       // Update existing docket
       const [updatedDocket] = await db
         .update(dockets)
-        .set({ ...updates, lastUpdated: new Date() })
+        .set({ 
+          ...updates, 
+          lastUpdated: new Date(),
+          passportVisaUrls: Array.isArray(updates.passportVisaUrls) ? updates.passportVisaUrls : docket.passportVisaUrls,
+          educationFiles: Array.isArray(updates.educationFiles) ? updates.educationFiles : docket.educationFiles,
+          experienceFiles: Array.isArray(updates.experienceFiles) ? updates.experienceFiles : docket.experienceFiles,
+          otherCertifications: Array.isArray(updates.otherCertifications) ? updates.otherCertifications : docket.otherCertifications,
+          references: Array.isArray(updates.references) ? updates.references : docket.references
+        })
         .where(eq(dockets.userId, userId))
         .returning();
       docket = updatedDocket;
@@ -262,13 +282,30 @@ export class DatabaseStorage implements IStorage {
     }));
   }
 
-  async getAllContracts(): Promise<Contract[]> {
+  async getAllDockets(): Promise<Docket[]> {
+    const result = await db
+      .select()
+      .from(dockets)
+      .orderBy(desc(dockets.lastUpdated));
+    
+    return result;
+  }
+
+  async getUserById(id: string): Promise<User | undefined> {
+    return this.getUser(id);
+  }
+
+  async getAllContracts(): Promise<(Contract & { user: User })[]> {
     const result = await db
       .select()
       .from(contracts)
+      .leftJoin(users, eq(contracts.userId, users.id))
       .orderBy(desc(contracts.lastUpdated));
     
-    return result;
+    return result.map(({ contracts: contract, users: user }) => ({
+      ...contract!,
+      user: user!
+    }));
   }
 
   // Admin session operations
