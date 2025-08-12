@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
-import Landing from "@/pages/landing";
+import EmailLogin from "@/pages/email-login";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import Docket from "@/pages/docket";
@@ -30,8 +30,18 @@ function Router() {
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+      {!isAuthenticated ? (
+        <Route path="/" component={EmailLogin} />
+      ) : isLoading ? (
+        <Route path="/" component={() => (
+          <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+            <div className="text-center">
+              <img src="/chef-overseas-logo.png" alt="Chef Overseas" className="h-16 w-auto mx-auto mb-4" />
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading...</p>
+            </div>
+          </div>
+        )} />
       ) : (
         <>
           <Route path="/" component={Dashboard} />
