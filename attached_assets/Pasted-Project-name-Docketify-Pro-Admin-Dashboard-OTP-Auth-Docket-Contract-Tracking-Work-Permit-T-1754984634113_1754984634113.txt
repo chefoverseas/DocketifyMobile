@@ -1,0 +1,80 @@
+Project name: Docketify Pro (Admin Dashboard + OTP Auth + Docket + Contract Tracking + Work Permit Tracking)
+
+Goal:
+Build a production-ready web application with:
+- Mobile OTP user login (Firebase phone authentication).
+- Profile page for users.
+- Docket page for required documents.
+- Contract tracking module (company contracts & job offers with signature validation).
+- Work permit tracking module.
+- Admin Dashboard for user management, contracts, and work permits.
+
+New Module: Work Permit Tracking
+
+Purpose:
+Track the work permit application process for each user, allowing the admin to manage statuses and upload final approved documents.
+
+Roles:
+- Admin:
+  - Manage work permit status for each user.
+  - Upload the final work permit docket file (PDF).
+  - Status options:
+    1. Preparation
+    2. Applied
+    3. Awaiting Embassy Decision
+    4. Approved
+    5. Rejected
+- User:
+  - View current work permit status.
+  - Download final approved work permit file when available.
+
+Data Model (Firestore):
+- `/users/{uid}/workpermit`
+  - status: "preparation" | "applied" | "awaiting_decision" | "approved" | "rejected"
+  - final_docket_url: string (URL to PDF uploaded by admin)
+  - lastUpdated: timestamp
+  - notes: optional string for extra details (admin can set)
+
+Storage Paths:
+- `/workpermit/{uid}/final_docket.pdf`
+
+Pages to Generate:
+1. **Admin Pages**
+   - `/admin/workpermit/[uid].js` — Manage work permit for a specific user:
+     - Select status from dropdown.
+     - Upload final docket PDF (only enabled when status = Approved).
+     - Save changes to Firestore.
+     - View history/log of status changes (optional).
+   - Integrate link to this page from `/admin/user/[uid]` dashboard.
+
+2. **User Pages**
+   - `/workpermit.js` — View current status + any uploaded final docket PDF (if Approved).
+   - Show timeline of statuses (optional visual with Tailwind steps component).
+
+Admin Workflow:
+1. Go to a user’s work permit management page.
+2. Choose a status from dropdown.
+3. If "Approved", upload final docket PDF.
+4. Save — updates Firestore and notifies the user (optional Cloud Function for email/SMS).
+5. User sees updated status immediately.
+
+User Workflow:
+1. Log in via OTP.
+2. Go to Work Permit page.
+3. View current status:
+   - If "Approved", download final docket PDF.
+   - If not, see status label and last updated date.
+
+UI Components:
+- `WorkPermitStatusBadge.jsx` — color-coded badge for statuses.
+- `FileUploader.jsx` (existing) — adapted for admin PDF upload.
+- `StatusDropdown.jsx` — admin status selector.
+
+Example Status Colors:
+- Preparation → gray
+- Applied → blue
+- Awaiting Embassy Decision → yellow
+- Approved → green
+- Rejected → red
+
+Firestore Security Rules:

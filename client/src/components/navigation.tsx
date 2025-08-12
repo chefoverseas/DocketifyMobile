@@ -57,6 +57,16 @@ export default function Navigation() {
               >
                 Contracts
               </Link>
+              <Link 
+                href="/workpermit"
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive("/workpermit") 
+                    ? "text-primary-600 bg-primary-50" 
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                Work Permit
+              </Link>
               {user?.isAdmin && (
                 <Link 
                   href="/admin"

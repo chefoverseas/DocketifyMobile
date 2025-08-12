@@ -2,7 +2,7 @@ import type { Express, Request } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertDocketSchema, insertOtpSessionSchema, insertContractSchema, insertAdminSessionSchema } from "@shared/schema";
+import { insertUserSchema, insertDocketSchema, insertOtpSessionSchema, insertContractSchema, insertAdminSessionSchema, insertWorkPermitSchema } from "@shared/schema";
 import { z } from "zod";
 import multer, { type FileFilterCallback } from "multer";
 import path from "path";
@@ -706,6 +706,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Signed document upload error:", error);
       res.status(500).json({ message: "Failed to upload signed document" });
+    }
+  });
+
+  // Work Permit routes
+
+  // User: Get own work permit status
+  app.get("/api/workpermit", async (req, res) => {
+    try {
+      const userId = (req.session as any)?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const workPermit = await storage.getWorkPermitByUserId(userId);
+      res.json({ workPermit });
+    } catch (error) {
+      console.error("Get work permit error:", error);
+      res.status(500).json({ message: "Failed to get work permit status" });
+    }
+  });
+
+  // Admin: Get work permit for specific user
+  app.get("/api/admin/workpermit/:userId", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+      const workPermit = await storage.getWorkPermitByUserId(userId);
+      const user = await storage.getUser(userId);
+
+      res.json({ workPermit, user });
+    } catch (error) {
+      console.error("Get admin work permit error:", error);
+      res.status(500).json({ message: "Failed to get work permit" });
+    }
+  });
+
+  // Admin: Update work permit status and upload final docket
+  app.patch("/api/admin/workpermit/:userId", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+      const updateData = insertWorkPermitSchema.partial().parse(req.body);
+
+      const workPermit = await storage.updateWorkPermit(userId, updateData);
+      res.json({ workPermit });
+    } catch (error) {
+      console.error("Update work permit error:", error);
+      res.status(500).json({ message: "Failed to update work permit" });
+    }
+  });
+
+  // Admin: Upload final docket PDF
+  app.post("/api/admin/workpermit/:userId/upload-docket", upload.single('pdf'), async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const { userId } = req.params;
+      if (!req.file) {
+        return res.status(400).json({ message: "PDF file is required" });
+      }
+
+      if (req.file.mimetype !== 'application/pdf') {
+        return res.status(400).json({ message: "Only PDF files are allowed" });
+      }
+
+      const fileName = `workpermit-${userId}-final-docket-${Date.now()}.pdf`;
+      const finalPath = path.join("uploads", fileName);
+      
+      fs.renameSync(req.file.path, finalPath);
+      const fileUrl = `/uploads/${fileName}`;
+
+      const workPermit = await storage.updateWorkPermit(userId, {
+        finalDocketUrl: fileUrl,
+        status: "approved",
+      });
+
+      res.json({ 
+        message: "Final docket uploaded successfully", 
+        url: fileUrl,
+        workPermit 
+      });
+    } catch (error) {
+      console.error("Upload final docket error:", error);
+      res.status(500).json({ message: "Failed to upload final docket" });
+    }
+  });
+
+  // Admin: Get all work permits overview
+  app.get("/api/admin/workpermits", async (req, res) => {
+    try {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
+        return res.status(401).json({ message: "Admin authentication required" });
+      }
+
+      const workPermits = await storage.getAllWorkPermits();
+      res.json({ workPermits });
+    } catch (error) {
+      console.error("Get all work permits error:", error);
+      res.status(500).json({ message: "Failed to get work permits" });
     }
   });
 

@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, CheckCircle, Clock, AlertTriangle, Download, Search, Plus } from "lucide-react";
+import { Users, CheckCircle, Clock, AlertTriangle, Download, Search, Plus, FileText, Settings } from "lucide-react";
 import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export default function Admin() {
   const { user } = useAuth();
@@ -42,8 +42,8 @@ export default function Admin() {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  const users = usersData?.users || [];
-  const stats = statsData?.stats || {
+  const users = (usersData as any)?.users || [];
+  const stats = (statsData as any)?.stats || {
     totalUsers: 0,
     completedDockets: 0,
     pendingDockets: 0,
@@ -60,13 +60,27 @@ export default function Admin() {
               <p className="text-sm text-muted-foreground">Manage users and export data</p>
             </div>
             <div className="flex space-x-3">
+              <Button asChild variant="outline">
+                <Link href="/admin/workpermits">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Work Permits
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/contracts">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Contracts
+                </Link>
+              </Button>
               <Button onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700">
                 <Download className="w-4 h-4 mr-2" />
                 Export CSV
               </Button>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add User
+              <Button asChild>
+                <Link href="/admin/user/new">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add User
+                </Link>
               </Button>
             </div>
           </div>

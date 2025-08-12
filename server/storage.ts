@@ -1,4 +1,4 @@
-import { users, dockets, otpSessions, contracts, adminSessions, type User, type InsertUser, type Docket, type InsertDocket, type OtpSession, type InsertOtpSession, type Contract, type InsertContract, type AdminSession, type InsertAdminSession } from "@shared/schema";
+import { users, dockets, otpSessions, contracts, adminSessions, workPermits, type User, type InsertUser, type Docket, type InsertDocket, type OtpSession, type InsertOtpSession, type Contract, type InsertContract, type AdminSession, type InsertAdminSession, type WorkPermit, type InsertWorkPermit } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, lt } from "drizzle-orm";
 
@@ -27,6 +27,12 @@ export interface IStorage {
   getContractByUserId(userId: string): Promise<Contract | undefined>;
   createContract(contract: InsertContract): Promise<Contract>;
   updateContract(userId: string, updates: Partial<Contract>): Promise<Contract>;
+
+  // Work permit operations
+  getWorkPermitByUserId(userId: string): Promise<WorkPermit | undefined>;
+  createWorkPermit(workPermit: InsertWorkPermit): Promise<WorkPermit>;
+  updateWorkPermit(userId: string, updates: Partial<WorkPermit>): Promise<WorkPermit>;
+  getAllWorkPermits(): Promise<(WorkPermit & { user: User })[]>;
 
   // Admin session operations
   createAdminSession(session: InsertAdminSession): Promise<AdminSession>;
@@ -191,6 +197,53 @@ export class DatabaseStorage implements IStorage {
     }
     
     return contract;
+  }
+
+  // Work permit operations
+  async getWorkPermitByUserId(userId: string): Promise<WorkPermit | undefined> {
+    const [workPermit] = await db.select().from(workPermits).where(eq(workPermits.userId, userId));
+    return workPermit || undefined;
+  }
+
+  async createWorkPermit(workPermit: InsertWorkPermit): Promise<WorkPermit> {
+    const [newWorkPermit] = await db
+      .insert(workPermits)
+      .values(workPermit)
+      .returning();
+    return newWorkPermit;
+  }
+
+  async updateWorkPermit(userId: string, updates: Partial<WorkPermit>): Promise<WorkPermit> {
+    // First check if work permit exists
+    let workPermit = await this.getWorkPermitByUserId(userId);
+    
+    if (!workPermit) {
+      // Create new work permit
+      workPermit = await this.createWorkPermit({ userId, ...updates });
+    } else {
+      // Update existing work permit
+      const [updatedWorkPermit] = await db
+        .update(workPermits)
+        .set({ ...updates, lastUpdated: new Date() })
+        .where(eq(workPermits.userId, userId))
+        .returning();
+      workPermit = updatedWorkPermit;
+    }
+    
+    return workPermit;
+  }
+
+  async getAllWorkPermits(): Promise<(WorkPermit & { user: User })[]> {
+    const result = await db
+      .select()
+      .from(workPermits)
+      .leftJoin(users, eq(workPermits.userId, users.id))
+      .orderBy(desc(workPermits.lastUpdated));
+
+    return result.map(({ work_permits, users: user }) => ({
+      ...work_permits,
+      user: user!
+    }));
   }
 
   // Admin session operations

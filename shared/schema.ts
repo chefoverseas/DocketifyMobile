@@ -72,6 +72,16 @@ export const adminSessions = pgTable("admin_sessions", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const workPermits = pgTable("work_permits", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  status: text("status").notNull().default("preparation"), // preparation, applied, awaiting_decision, approved, rejected
+  finalDocketUrl: text("final_docket_url"),
+  notes: text("notes"),
+  lastUpdated: timestamp("last_updated").default(sql`now()`),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 export const usersRelations = relations(users, ({ one }) => ({
   docket: one(dockets, {
     fields: [users.id],
@@ -80,6 +90,10 @@ export const usersRelations = relations(users, ({ one }) => ({
   contract: one(contracts, {
     fields: [users.id],
     references: [contracts.userId],
+  }),
+  workPermit: one(workPermits, {
+    fields: [users.id],
+    references: [workPermits.userId],
   }),
 }));
 
@@ -93,6 +107,13 @@ export const docketsRelations = relations(dockets, ({ one }) => ({
 export const contractsRelations = relations(contracts, ({ one }) => ({
   user: one(users, {
     fields: [contracts.userId],
+    references: [users.id],
+  }),
+}));
+
+export const workPermitsRelations = relations(workPermits, ({ one }) => ({
+  user: one(users, {
+    fields: [workPermits.userId],
     references: [users.id],
   }),
 }));
@@ -123,6 +144,12 @@ export const insertAdminSessionSchema = createInsertSchema(adminSessions).omit({
   createdAt: true,
 });
 
+export const insertWorkPermitSchema = createInsertSchema(workPermits).omit({
+  id: true,
+  lastUpdated: true,
+  createdAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Docket = typeof dockets.$inferSelect;
@@ -133,3 +160,5 @@ export type Contract = typeof contracts.$inferSelect;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 export type AdminSession = typeof adminSessions.$inferSelect;
 export type InsertAdminSession = z.infer<typeof insertAdminSessionSchema>;
+export type WorkPermit = typeof workPermits.$inferSelect;
+export type InsertWorkPermit = z.infer<typeof insertWorkPermitSchema>;
