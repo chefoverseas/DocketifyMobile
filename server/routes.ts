@@ -118,6 +118,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Middleware
   app.use(cookieParser());
   
+
+  
   // Session configuration
   app.use(session({
     secret: process.env.SESSION_SECRET || "your-secret-key",
@@ -322,26 +324,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin: Get all users (requires admin privilege)
-  app.get("/api/admin/users", async (req, res) => {
-    try {
-      const userId = (req.session as any)?.userId;
-      
-      if (!userId) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
 
-      const user = await storage.getUser(userId);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
-      const users = await storage.getAllUsers();
-      res.json({ users });
-    } catch (error) {
-      console.error("Get users error:", error);
-      res.status(500).json({ message: "Failed to get users" });
-    }
-  });
 
   // Admin: Export users CSV
   app.get("/api/admin/export-csv", async (req, res) => {
@@ -419,6 +402,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: 'lax',
+          path: '/',
           maxAge: 24 * 60 * 60 * 1000, // 24 hours
         });
         
@@ -451,13 +435,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Check session
   app.get("/api/admin/me", async (req, res) => {
     try {
-      const sessionToken = req.cookies.admin_session;
-      if (!sessionToken) {
-        return res.status(401).json({ message: "Not authenticated" });
-      }
-
-      const adminSession = await storage.getAdminSession(sessionToken);
-      if (!adminSession || adminSession.expiresAt < new Date()) {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
         return res.status(401).json({ message: "Not authenticated" });
       }
 
@@ -471,13 +450,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin: Get all users
   app.get("/api/admin/users", async (req, res) => {
     try {
-      const sessionToken = req.cookies.admin_session;
-      if (!sessionToken) {
-        return res.status(401).json({ message: "Admin authentication required" });
-      }
-
-      const adminSession = await storage.getAdminSession(sessionToken);
-      if (!adminSession || adminSession.expiresAt < new Date()) {
+      const adminSession = await getAdminSession(req);
+      if (!adminSession) {
         return res.status(401).json({ message: "Admin authentication required" });
       }
 
