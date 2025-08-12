@@ -1,0 +1,110 @@
+Project name: Docketify (mobile-OTP auth + user profile + document docket)
+
+Goal:
+Build a production-ready starter web application where:
+- Users authenticate by mobile number + OTP (SMS).
+- After login, users have a Profile page.
+- There's a Docket page to collect required documents and at least 2 professional references.
+- Files (photos, passport pages, certificates, offer letter, experience letters) are uploaded and stored.
+- Data stored in a database and file storage. Basic validation, progress UI and security rules included.
+
+Tech stack (preferred):
+- Frontend: Next.js (React) with Tailwind CSS.
+- Auth & Backend: Firebase (Authentication with Phone OTP, Firestore DB, Firebase Storage).
+  - Rationale: Firebase phone auth simplifies OTP flows; Storage manages files; Firestore stores metadata.
+- Optional: If Firebase unavailable, easily switch to Twilio (OTP) + Node/Express backend + S3-compatible storage.
+
+Environment variables to configure:
+- NEXT_PUBLIC_FIREBASE_API_KEY
+- NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+- NEXT_PUBLIC_FIREBASE_PROJECT_ID
+- NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+- NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+- NEXT_PUBLIC_FIREBASE_APP_ID
+(Also enable Phone sign-in method and add your app domain in Firebase Console.)
+
+Data model (Firestore):
+- /users/{uid}
+  - phone: string
+  - displayName: string
+  - email: string (optional)
+  - createdAt: timestamp
+  - profilePhotoUrl: string
+  - docketCompleted: boolean
+- /users/{uid}/docket (single doc or subcollection)
+  - passport_front_url
+  - passport_last_url
+  - passport_visa_urls: array
+  - passport_photo_url
+  - education_files: array (meta objects)
+  - experience_files: array
+  - offer_letter_url
+  - address_proofs: {permanent_url, current_url}
+  - other_certifications: array
+  - references: array of objects [{fullName, company, designation, phone, email}]
+  - lastUpdated: timestamp
+
+UX Requirements:
+- OTP flow with reCAPTCHA (Firebase web requires reCAPTCHA verifier).
+- Friendly validation & progress bar on Docket page (show uploaded count).
+- File upload: accept images + PDFs, max file size ~10MB (configurable).
+- Preview uploaded files, allow re-upload/removal before saving.
+- Save step-by-step; show unsaved changes warning.
+- Admin export: CSV endpoint to list users & docket status (simple Firestore query).
+
+Key pages/components to generate:
+1. / — landing with sign-in (phone input)
+2. /auth/otp — verify OTP
+3. /profile — profile summary & edit
+4. /docket — docket form with grouped sections:
+   - Passport (front, last page, visa pages array)
+   - Passport photo (face)
+   - Education (multiple uploads)
+   - Experience letters (multiple)
+   - Offer letter
+   - Address proofs (permanent, current)
+   - Other certifications (multiple)
+   - Professional references (min 2; add/remove UI)
+   - Submit & Save draft
+5. /admin (protected boolean flag) — CSV export, list users
+
+Important implementation notes:
+- Use Firebase Storage to store files. Store secure download URLs or storage paths in Firestore.
+- Restrict file access via Firebase Storage rules to authenticated owners (security).
+- For phone OTP, implement Firebase RecaptchaVerifier for web, fallback to invisible recaptcha.
+- Validate minimum 2 references before allowing final submit.
+
+Deliverables (in repo):
+- package.json, next.config.js, tailwind config
+- firebase initialization (lib/firebase.js)
+- pages: index.js, auth/otp.js, profile.js, docket.js, admin.js
+- components: PhoneSignIn.jsx, OtpForm.jsx, FileUploader.jsx, DocketForm.jsx, ReferenceList.jsx
+- README with setup steps and env var steps
+- exports/adminExport.js script (serverless API route) to CSV
+
+Sample code snippets (minimal, but complete enough to run):
+
+1) lib/firebase.js
+```js
+// lib/firebase.js
+import { initializeApp, getApps } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+};
+
+if (!getApps().length) {
+  initializeApp(firebaseConfig);
+}
+
+export const auth = getAuth();
+export const db = getFirestore();
+export const storage = getStorage();
