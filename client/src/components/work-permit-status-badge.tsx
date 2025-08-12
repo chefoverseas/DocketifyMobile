@@ -25,7 +25,7 @@ const statusConfig = {
     className: "bg-yellow-100 text-yellow-800 hover:bg-yellow-200",
   },
   approved: {
-    label: "Approved",
+    label: "Embassy Approved",
     variant: "default" as const,
     className: "bg-green-100 text-green-800 hover:bg-green-200",
   },

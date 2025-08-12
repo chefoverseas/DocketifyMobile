@@ -35,8 +35,8 @@ export default function DocketPage() {
     queryKey: ["/api/workpermit"],
   });
 
-  const docket: Docket | null = docketData?.docket || null;
-  const workPermit: WorkPermit | null = workPermitData?.workPermit || null;
+  const docket: Docket | null = (docketData as any)?.docket || null;
+  const workPermit: WorkPermit | null = (workPermitData as any)?.workPermit || null;
 
   const updateMutation = useMutation({
     mutationFn: async (data: Partial<Docket>) => {
@@ -80,12 +80,12 @@ export default function DocketPage() {
     { key: 'passportFrontUrl', completed: !!docket?.passportFrontUrl },
     { key: 'passportPhotoUrl', completed: !!docket?.passportPhotoUrl },
     { key: 'resumeUrl', completed: !!docket?.resumeUrl },
-    { key: 'educationFiles', completed: docket?.educationFiles?.length > 0 },
-    { key: 'experienceFiles', completed: docket?.experienceFiles?.length > 0 },
+    { key: 'educationFiles', completed: (docket?.educationFiles as any)?.length > 0 },
+    { key: 'experienceFiles', completed: (docket?.experienceFiles as any)?.length > 0 },
     { key: 'offerLetterUrl', completed: !!docket?.offerLetterUrl },
     { key: 'addressProofs', completed: !!docket?.permanentAddressUrl },
-    { key: 'certifications', completed: docket?.otherCertifications?.length > 0 },
-    { key: 'references', completed: docket?.references?.length >= 2 },
+    { key: 'certifications', completed: (docket?.otherCertifications as any)?.length > 0 },
+    { key: 'references', completed: (docket?.references as any)?.length >= 2 },
   ];
   
   const completedSections = sections.filter(s => s.completed).length;
@@ -113,11 +113,11 @@ export default function DocketPage() {
       case "preparation":
         return "Your work permit application is being prepared by our team.";
       case "applied":
-        return "Your work permit application has been submitted to the embassy.";
+        return "Your work permit application has been submitted to the embassy. Final documents available for download.";
       case "awaiting_decision":
         return "Your application is under review by the embassy.";
       case "approved":
-        return "Congratulations! Your work permit has been approved.";
+        return "Congratulations! Your work permit has been approved by the embassy.";
       case "rejected":
         return "Unfortunately, your work permit application was not approved.";
       default:
@@ -198,20 +198,20 @@ export default function DocketPage() {
               </div>
             </div>
             
-            {workPermit.finalDocketUrl && (
-              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            {workPermit.finalDocketUrl && (workPermit.status === 'applied' || workPermit.status === 'awaiting_decision' || workPermit.status === 'approved') && (
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <FileText className="h-5 w-5 text-blue-600" />
                     <div>
-                      <h4 className="font-medium text-green-900">Final Docket Available</h4>
-                      <p className="text-sm text-green-700">Your completed work permit documents are ready for download.</p>
+                      <h4 className="font-medium text-blue-900">Final Docket Available</h4>
+                      <p className="text-sm text-blue-700">Your completed work permit application documents are ready for download.</p>
                     </div>
                   </div>
                   <Button 
                     onClick={() => window.open(workPermit.finalDocketUrl!, '_blank')}
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-blue-600 hover:bg-blue-700"
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Download Final Docket
@@ -258,24 +258,24 @@ export default function DocketPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Front Page</label>
                 <FileUploader
-                  currentFile={docket?.passportFrontUrl}
-                  onUpload={(fileData) => handleFileUpload('passportFrontUrl', fileData.url)}
+                  currentFile={docket?.passportFrontUrl || undefined}
+                  onUpload={(fileData) => handleFileUpload('passportFrontUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Last Page</label>
                 <FileUploader
-                  currentFile={docket?.passportLastUrl}
-                  onUpload={(fileData) => handleFileUpload('passportLastUrl', fileData.url)}
+                  currentFile={docket?.passportLastUrl || undefined}
+                  onUpload={(fileData) => handleFileUpload('passportLastUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Photo</label>
                 <FileUploader
-                  currentFile={docket?.passportPhotoUrl}
-                  onUpload={(fileData) => handleFileUpload('passportPhotoUrl', fileData.url)}
+                  currentFile={docket?.passportPhotoUrl || undefined}
+                  onUpload={(fileData) => handleFileUpload('passportPhotoUrl', (fileData as any).url)}
                   accept="image/*"
                 />
               </div>
@@ -342,8 +342,8 @@ export default function DocketPage() {
           </CardHeader>
           <CardContent>
             <FileUploader
-              currentFiles={docket?.educationFiles || []}
-              onUpload={(files) => handleArrayFileUpload('educationFiles', files)}
+              currentFiles={(docket?.educationFiles as any) || []}
+              onUpload={(files) => handleArrayFileUpload('educationFiles', files as any)}
               multiple={true}
               accept="image/*,application/pdf"
             />
@@ -374,8 +374,8 @@ export default function DocketPage() {
           </CardHeader>
           <CardContent>
             <FileUploader
-              currentFiles={docket?.experienceFiles || []}
-              onUpload={(files) => handleArrayFileUpload('experienceFiles', files)}
+              currentFiles={(docket?.experienceFiles as any) || []}
+              onUpload={(files) => handleArrayFileUpload('experienceFiles', files as any)}
               multiple={true}
               accept="image/*,application/pdf"
             />
@@ -406,8 +406,8 @@ export default function DocketPage() {
           </CardHeader>
           <CardContent>
             <FileUploader
-              currentFile={docket?.offerLetterUrl}
-              onUpload={(fileData) => handleFileUpload('offerLetterUrl', fileData.url)}
+              currentFile={docket?.offerLetterUrl || undefined}
+              onUpload={(fileData) => handleFileUpload('offerLetterUrl', (fileData as any).url)}
               accept="image/*,application/pdf"
             />
           </CardContent>
@@ -440,16 +440,16 @@ export default function DocketPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Permanent Address Proof</label>
                 <FileUploader
-                  currentFile={docket?.permanentAddressUrl}
-                  onUpload={(fileData) => handleFileUpload('permanentAddressUrl', fileData.url)}
+                  currentFile={docket?.permanentAddressUrl || undefined}
+                  onUpload={(fileData) => handleFileUpload('permanentAddressUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Current Address Proof</label>
                 <FileUploader
-                  currentFile={docket?.currentAddressUrl}
-                  onUpload={(fileData) => handleFileUpload('currentAddressUrl', fileData.url)}
+                  currentFile={docket?.currentAddressUrl || undefined}
+                  onUpload={(fileData) => handleFileUpload('currentAddressUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -481,8 +481,8 @@ export default function DocketPage() {
           </CardHeader>
           <CardContent>
             <FileUploader
-              currentFiles={docket?.otherCertifications || []}
-              onUpload={(files) => handleArrayFileUpload('otherCertifications', files)}
+              currentFiles={(docket?.otherCertifications as any) || []}
+              onUpload={(files) => handleArrayFileUpload('otherCertifications', files as any)}
               multiple={true}
               accept="image/*,application/pdf"
             />
@@ -494,9 +494,9 @@ export default function DocketPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getSectionStatus(docket?.references?.length >= 2).bg}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getSectionStatus((docket?.references as any)?.length >= 2).bg}`}>
                   {(() => {
-                    const status = getSectionStatus(docket?.references?.length >= 2);
+                    const status = getSectionStatus((docket?.references as any)?.length >= 2);
                     const Icon = status.icon;
                     return <Icon className={`h-4 w-4 ${status.color}`} />;
                   })()}
@@ -506,14 +506,14 @@ export default function DocketPage() {
                   <p className="text-sm text-muted-foreground">Minimum 2 professional references required</p>
                 </div>
               </div>
-              <Badge className={getSectionStatus(docket?.references?.length >= 2).badgeColor}>
-                {getSectionStatus(docket?.references?.length >= 2).badge} ({docket?.references?.length || 0}/2)
+              <Badge className={getSectionStatus((docket?.references as any)?.length >= 2).badgeColor}>
+                {getSectionStatus((docket?.references as any)?.length >= 2).badge} ({(docket?.references as any)?.length || 0}/2)
               </Badge>
             </div>
           </CardHeader>
           <CardContent>
             <ReferenceForm
-              references={docket?.references || []}
+              references={(docket?.references as any) || []}
               onUpdate={handleReferencesUpdate}
             />
           </CardContent>

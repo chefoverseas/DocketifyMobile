@@ -47,11 +47,11 @@ export default function WorkPermitPage() {
       case "preparation":
         return "Your work permit application is being prepared by our team.";
       case "applied":
-        return "Your work permit application has been submitted to the embassy.";
+        return "Your work permit application has been submitted to the embassy. Final documents available for download.";
       case "awaiting_decision":
         return "Your application is under review by the embassy. Please wait for their decision.";
       case "approved":
-        return "Congratulations! Your work permit has been approved. You can download your final documents below.";
+        return "Congratulations! Your work permit has been approved by the embassy.";
       case "rejected":
         return "Unfortunately, your work permit application was not approved. Please contact our support team for assistance.";
       default:
@@ -172,7 +172,7 @@ export default function WorkPermitPage() {
         </Card>
 
         {/* Download Section */}
-        {workPermit?.status === "approved" && workPermit?.finalDocketUrl && (
+        {workPermit?.finalDocketUrl && (workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") && (
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
@@ -180,17 +180,17 @@ export default function WorkPermitPage() {
                 Final Documents
               </CardTitle>
               <CardDescription>
-                Your approved work permit documents are ready for download
+                Your work permit application documents are ready for download
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <FileText className="h-6 w-6 text-green-600" />
+                    <FileText className="h-6 w-6 text-blue-600" />
                     <div>
-                      <p className="font-medium text-green-900">Final Work Permit Docket</p>
-                      <p className="text-sm text-green-700">Approved work permit and supporting documents</p>
+                      <p className="font-medium text-blue-900">Final Work Permit Docket</p>
+                      <p className="text-sm text-blue-700">Complete work permit application and supporting documents</p>
                     </div>
                   </div>
                   <Button asChild>
