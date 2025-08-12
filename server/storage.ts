@@ -188,18 +188,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createDocket(docket: InsertDocket): Promise<Docket> {
-    const insertData: InsertDocket = {
-      ...docket,
-      passportVisaUrls: docket.passportVisaUrls || [],
-      educationFiles: docket.educationFiles || [],
-      experienceFiles: docket.experienceFiles || [],
-      otherCertifications: docket.otherCertifications || [],
-      references: docket.references || []
-    };
-
     const [newDocket] = await db
       .insert(dockets)
-      .values([insertData])
+      .values(docket)
       .returning();
     return newDocket;
   }
