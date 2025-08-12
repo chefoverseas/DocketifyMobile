@@ -53,6 +53,14 @@ export default function AdminDashboardPage() {
     },
   });
 
+  // CRITICAL: All hooks must be called before any early returns
+  // Redirect effect to avoid state update during render
+  useEffect(() => {
+    if (!adminLoading && !(adminData as any)?.admin) {
+      setLocation("/admin/login");
+    }
+  }, [adminLoading, adminData, setLocation]);
+
   if (adminLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -63,13 +71,6 @@ export default function AdminDashboardPage() {
       </div>
     );
   }
-
-  // Redirect effect to avoid state update during render
-  useEffect(() => {
-    if (!adminLoading && !(adminData as any)?.admin) {
-      setLocation("/admin/login");
-    }
-  }, [adminLoading, adminData, setLocation]);
 
   if (!(adminData as any)?.admin) {
     return null;

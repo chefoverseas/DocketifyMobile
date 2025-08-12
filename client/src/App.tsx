@@ -62,8 +62,12 @@ function Router() {
       <Route path="/admin/workpermits" component={AdminWorkPermits} />
       <Route path="/admin/workpermit/:userId" component={AdminWorkPermit} />
       <Route path="/admin/user/new" component={AdminUserCreate} />
-      <Route path="/admin/user/:userId/edit" component={AdminUserEdit} />
-      <Route path="/admin/user/:userId" component={AdminUserDetail} />
+      <Route path="/admin/user/:userId/edit">
+        {params => <AdminUserEdit userId={params.userId} />}
+      </Route>
+      <Route path="/admin/user/:userId">
+        {params => <AdminUserDetail userId={params.userId} />}
+      </Route>
       <Route path="/admin/dockets" component={AdminDockets} />
       <Route path="/admin/docket/:userId">
         {params => <AdminDocketDetail userId={params.userId} />}
