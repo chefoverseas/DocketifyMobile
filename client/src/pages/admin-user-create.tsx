@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, UserPlus } from "lucide-react";
@@ -16,8 +17,26 @@ const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   surname: z.string().min(2, "Surname must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  countryCode: z.string().min(1, "Country code is required"),
+  phone: z.string().min(8, "Phone number must be at least 8 digits"),
 });
+
+// Country codes with their display names
+const countryCodes = [
+  { code: "+1", name: "United States/Canada", flag: "🇺🇸" },
+  { code: "+44", name: "United Kingdom", flag: "🇬🇧" },
+  { code: "+91", name: "India", flag: "🇮🇳" },
+  { code: "+971", name: "UAE", flag: "🇦🇪" },
+  { code: "+65", name: "Singapore", flag: "🇸🇬" },
+  { code: "+60", name: "Malaysia", flag: "🇲🇾" },
+  { code: "+66", name: "Thailand", flag: "🇹🇭" },
+  { code: "+84", name: "Vietnam", flag: "🇻🇳" },
+  { code: "+63", name: "Philippines", flag: "🇵🇭" },
+  { code: "+62", name: "Indonesia", flag: "🇮🇩" },
+  { code: "+61", name: "Australia", flag: "🇦🇺" },
+  { code: "+64", name: "New Zealand", flag: "🇳🇿" },
+  { code: "+49", name: "Germany", flag: "🇩🇪" },
+];
 
 type CreateUserData = z.infer<typeof createUserSchema>;
 
@@ -25,19 +44,32 @@ export default function AdminUserCreatePage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
+  const [selectedCountryCode, setSelectedCountryCode] = useState("+91"); // Default to India
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<CreateUserData>({
     resolver: zodResolver(createUserSchema),
+    defaultValues: {
+      countryCode: "+91"
+    }
   });
 
   const createUserMutation = useMutation({
     mutationFn: async (data: CreateUserData) => {
-      const response = await apiRequest("POST", "/api/admin/users", data);
+      // Combine country code and phone number
+      const fullPhone = data.countryCode + data.phone;
+      const userData = {
+        name: data.name,
+        surname: data.surname,
+        email: data.email,
+        phone: fullPhone,
+      };
+      const response = await apiRequest("POST", "/api/admin/users", userData);
       return response.json();
     },
     onSuccess: (data) => {
@@ -48,6 +80,7 @@ export default function AdminUserCreatePage() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       reset();
+      setSelectedCountryCode("+91");
       setLocation("/admin/dashboard");
     },
     onError: (error: any) => {
@@ -146,19 +179,46 @@ export default function AdminUserCreatePage() {
 
               <div className="space-y-2">
                 <Label htmlFor="phone">Mobile Number <span className="text-red-500">*</span></Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  {...register("phone")}
-                  placeholder="Enter mobile number (e.g., +1234567890)"
-                  disabled={createUserMutation.isPending}
-                  required
-                />
+                <div className="flex gap-2">
+                  <Select 
+                    value={selectedCountryCode} 
+                    onValueChange={(value) => {
+                      setSelectedCountryCode(value);
+                      setValue("countryCode", value);
+                    }}
+                  >
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countryCodes.map((country) => (
+                        <SelectItem key={country.code} value={country.code}>
+                          <div className="flex items-center gap-2">
+                            <span>{country.flag}</span>
+                            <span>{country.code}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    {...register("phone")}
+                    placeholder="Enter mobile number (e.g., 9876543210)"
+                    disabled={createUserMutation.isPending}
+                    className="flex-1"
+                    required
+                  />
+                </div>
                 {errors.phone && (
                   <p className="text-sm text-red-600">{errors.phone.message}</p>
                 )}
+                {errors.countryCode && (
+                  <p className="text-sm text-red-600">{errors.countryCode.message}</p>
+                )}
                 <p className="text-xs text-gray-500">
-                  User will receive OTP verification codes on this number for login
+                  Select country code and enter mobile number. User will receive OTP verification codes on this number for login.
                 </p>
               </div>
 
