@@ -49,7 +49,7 @@ export default function AdminUserEdit({ userId }: AdminUserEditProps) {
   const users = Array.isArray((usersData as any)?.users) ? (usersData as any).users : [];
   
   // Find user by ID or UID
-  const user = users.find((u: any) => u.id === userId || u.uid === userId);
+  const user = users.length > 0 ? users.find((u: any) => u.id === userId || u.uid === userId) : undefined;
 
   const {
     register,

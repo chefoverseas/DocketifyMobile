@@ -30,8 +30,13 @@ interface User {
   createdAt: string;
 }
 
-export default function AdminContractUpload() {
-  const { userId } = useParams();
+interface AdminContractUploadProps {
+  userId?: string;
+}
+
+export default function AdminContractUpload({ userId: propUserId }: AdminContractUploadProps) {
+  const { userId: paramUserId } = useParams<{ userId: string }>();
+  const userId = propUserId || paramUserId;
 
   const { data: userData, isLoading: userLoading } = useQuery({
     queryKey: [`/api/admin/user/${userId}`],
