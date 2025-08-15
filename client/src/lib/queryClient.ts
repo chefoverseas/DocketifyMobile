@@ -2,18 +2,29 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
+    const contentType = res.headers.get("content-type");
+    
     try {
-      // Try to parse JSON error first
-      const clonedRes = res.clone();
-      const json = await clonedRes.json();
-      throw new Error(json.message || `HTTP ${res.status}`);
+      // Only try to parse JSON if content-type indicates JSON
+      if (contentType && contentType.includes("application/json")) {
+        const clonedRes = res.clone();
+        const json = await clonedRes.json();
+        throw new Error(json.message || `HTTP ${res.status}`);
+      } else {
+        // For non-JSON responses, get text directly
+        const text = await res.text();
+        if (text.includes('<!DOCTYPE')) {
+          throw new Error(`Authentication required - please log in again`);
+        }
+        throw new Error(`${res.status}: ${text || res.statusText}`);
+      }
     } catch (jsonError) {
-      // If JSON parsing fails, fall back to text
+      // If anything fails, fall back to basic error
       const text = await res.text();
       if (text.includes('<!DOCTYPE')) {
-        throw new Error(`Authentication required - please log in again`);
+        throw new Error(`Server returned HTML page - authentication may be required`);
       }
-      throw new Error(`${res.status}: ${text || res.statusText}`);
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
     }
   }
 }
@@ -49,7 +60,19 @@ export const getQueryFn: <T>(options: {
     }
 
     await throwIfResNotOk(res);
-    return await res.json();
+    
+    // Check if response is JSON before parsing
+    const contentType = res.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return await res.json();
+    } else {
+      // If not JSON, get text and check if it's HTML
+      const text = await res.text();
+      if (text.includes('<!DOCTYPE')) {
+        throw new Error('Server returned HTML instead of JSON - authentication may be required');
+      }
+      throw new Error(`Expected JSON response but received: ${contentType || 'unknown content type'}`);
+    }
   };
 
 export const queryClient = new QueryClient({

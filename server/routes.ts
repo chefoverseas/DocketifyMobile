@@ -616,6 +616,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Catch-all handler for undefined API routes
+  // This must be registered LAST to ensure all defined routes are matched first
+  app.use('/api/*', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(404).json({ 
+      message: `API endpoint not found: ${req.method} ${req.path}`,
+      error: "Not Found"
+    });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
