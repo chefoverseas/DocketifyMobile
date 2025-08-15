@@ -115,6 +115,9 @@ export default function FileUploader({
   };
 
   const getFileIcon = (filename: string) => {
+    if (!filename || typeof filename !== 'string') {
+      return <Image className="h-5 w-5 text-blue-500" />;
+    }
     const lowerName = filename.toLowerCase();
     if (lowerName.includes('.pdf')) {
       return <File className="h-5 w-5 text-red-500" />;
@@ -132,7 +135,7 @@ export default function FileUploader({
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {getFileIcon(currentFile)}
+              {getFileIcon(currentFile?.name || currentFile)}
               <div>
                 <p className="text-sm font-medium text-green-700">File uploaded</p>
                 <p className="text-xs text-green-600">Click to replace</p>
@@ -142,7 +145,7 @@ export default function FileUploader({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => window.open(currentFile, '_blank')}
+                onClick={() => window.open(currentFile?.url || currentFile, '_blank')}
               >
                 <Eye className="h-4 w-4" />
               </Button>
