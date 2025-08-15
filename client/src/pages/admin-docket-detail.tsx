@@ -118,7 +118,7 @@ export default function AdminDocketDetail({ userId }: AdminDocketDetailProps) {
   const progress = calculateProgress();
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes || bytes === 0 || isNaN(bytes)) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -168,7 +168,7 @@ export default function AdminDocketDetail({ userId }: AdminDocketDetailProps) {
     );
   };
 
-  const FilesGrid = ({ files, label }: { files: FileData[]; label: string }) => {
+  const FilesGrid = ({ files, label }: { files: any[]; label: string }) => {
     if (!files || files.length === 0) {
       return (
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
@@ -180,29 +180,44 @@ export default function AdminDocketDetail({ userId }: AdminDocketDetailProps) {
 
     return (
       <div className="space-y-3">
-        {files.map((file, index) => (
-          <div key={index} className="border border-gray-200 rounded-lg p-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <File className="h-5 w-5 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                  <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+        {files.map((fileResponse, index) => {
+          // Handle both old format (direct FileData) and new format (API response with nested file)
+          const file = fileResponse.file || fileResponse;
+          const fileName = file.originalName || file.name || 'Unknown File';
+          const fileUrl = file.url || '';
+          const fileSize = file.size || 0;
+          
+          return (
+            <div key={index} className="border border-gray-200 rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <File className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{fileName}</p>
+                    <p className="text-xs text-gray-500">{formatFileSize(fileSize)}</p>
+                  </div>
+                </div>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" onClick={() => window.open(fileUrl, '_blank')}>
+                    <Eye className="h-4 w-4 mr-1" />
+                    View
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    const link = document.createElement('a');
+                    link.href = fileUrl;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}>
+                    <Download className="h-4 w-4 mr-1" />
+                    Download
+                  </Button>
                 </div>
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" onClick={() => window.open(file.url, '_blank')}>
-                  <Eye className="h-4 w-4 mr-1" />
-                  View
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Download className="h-4 w-4 mr-1" />
-                  Download
-                </Button>
-              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
