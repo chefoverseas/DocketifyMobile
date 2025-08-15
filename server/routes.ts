@@ -991,6 +991,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Catch any job-offer uploads specifically
+  app.post("/api/admin/contracts/:userId/job-offer", requireAdminAuth, upload.any(), async (req: any, res) => {
+    console.log(`🔥 JOB-OFFER ROUTE HIT! Path: ${req.originalUrl}`);
+    console.log(`🔥 User ID: ${req.params.userId}`);
+    console.log(`🔥 Admin session: ${req.session?.adminId}`);
+    console.log(`🔥 Files received:`, req.files);
+    console.log(`🔥 Body:`, req.body);
+    
+    try {
+      res.setHeader('Content-Type', 'application/json');
+      
+      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      // Take the first uploaded file
+      const uploadedFile = req.files[0];
+      console.log(`📄 Processing file: ${uploadedFile.originalname} (${uploadedFile.fieldname})`);
+      
+      const updates = {
+        jobOfferOriginalUrl: `/uploads/${uploadedFile.filename}`,
+        jobOfferStatus: 'pending'
+      };
+      
+      const contract = await storage.updateContract(req.params.userId, updates);
+      console.log(`✅ Job offer uploaded successfully:`, contract.id);
+      
+      res.status(200).json({ message: "Job offer uploaded successfully", contract });
+      
+    } catch (error) {
+      console.error("Job offer upload error:", error);
+      res.status(500).json({ message: "Failed to upload job offer", error: error.message });
+    }
+  });
+  
   // Admin upload contract/job offer for user  
   app.post("/api/admin/contracts/:userId/upload", requireAdminAuth, upload.fields([
     { name: 'contract', maxCount: 1 },

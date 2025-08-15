@@ -13,7 +13,8 @@ Preferred communication style: Simple, everyday language.
 - **Admin Contract Upload**: Admins can upload company contracts and job offer letters for specific users through dedicated interface
 - **User Document Download**: Users can download original contract documents and job offers from their contract management page
 - **Digital Signature Workflow**: Users can upload signed versions of documents back to the system for admin review
-- **API Routes Fixed**: Resolved route ordering issue that was causing 404 errors for contract management endpoints
+- **API Routes Fixed**: Resolved complex routing issue - frontend sends requests to specific endpoints (/company-contract, /job-offer) instead of generic /upload
+- **Upload System Working**: Company contract uploads fully operational, job offer uploads being finalized
 - **Database Integration**: Full contract tracking with status management (pending, signed) and file URL storage
 - **Navigation Integration**: Added contract management to both user and admin navigation with dedicated pages
 - **File Upload Support**: Support for PDF, DOC, DOCX formats with 10MB file size limits and proper validation
