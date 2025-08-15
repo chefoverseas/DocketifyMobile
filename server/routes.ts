@@ -707,15 +707,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User ID is required" });
       }
 
-      // Get user details
-      const user = await storage.getUser(userId);
+      console.log(`🔍 Admin requesting docket for user ID: ${userId}`);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
       if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
         res.setHeader('Content-Type', 'application/json');
         return res.status(404).json({ message: "User not found" });
       }
+      
+      console.log(`✅ Found user for docket: ${user.email}, fetching docket...`);
 
-      // Get user's docket
-      const docket = await storage.getDocketByUserId(userId);
+      // Get user's docket using the actual user ID
+      const docket = await storage.getDocketByUserId(user.id);
       
       res.setHeader('Content-Type', 'application/json');
       res.json({ 
@@ -762,7 +774,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`✅ Found user: ${user.email} (${user.displayName})`);
-      
 
       res.setHeader('Content-Type', 'application/json');
       res.json({
@@ -778,6 +789,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Admin get user error:", error);
       res.setHeader('Content-Type', 'application/json');
       res.status(500).json({ message: "Failed to get user" });
+    }
+  });
+
+  // Admin work permit route
+  app.get("/api/admin/workpermit/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`🔍 Admin requesting work permit for user ID: ${userId}`);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`✅ Found user for work permit: ${user.email}, fetching work permit...`);
+
+      // Get user's work permit using the actual user ID
+      const workPermit = await storage.getWorkPermitByUserId(user.id);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        user: {
+          id: user.id,
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          phone: user.phone,
+          createdAt: user.createdAt
+        },
+        workPermit: workPermit || null 
+      });
+    } catch (error) {
+      console.error("Admin get work permit error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get work permit" });
+    }
+  });
+
+  // Admin contract route
+  app.get("/api/admin/contract/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`🔍 Admin requesting contract for user ID: ${userId}`);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`✅ Found user for contract: ${user.email}, fetching contract...`);
+
+      // Get user's contract using the actual user ID
+      const contract = await storage.getContractByUserId(user.id);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        user: {
+          id: user.id,
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          phone: user.phone,
+          createdAt: user.createdAt
+        },
+        contract: contract || null 
+      });
+    } catch (error) {
+      console.error("Admin get contract error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get contract" });
     }
   });
 

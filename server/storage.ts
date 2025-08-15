@@ -171,11 +171,6 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users).orderBy(desc(users.createdAt));
   }
 
-  async getUserByUid(uid: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.uid, uid));
-    return user || undefined;
-  }
-
   async generateUniqueUid(): Promise<string> {
     let uid: string;
     let existingUser: User | undefined;
