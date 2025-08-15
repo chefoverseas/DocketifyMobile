@@ -4,6 +4,9 @@ import { storage } from "./storage";
 import { sendOtpEmail } from "./sendgrid";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
 
 // Simple session setup for email OTP
 function setupSession(app: Express) {
@@ -37,6 +40,43 @@ const requireAuth = (req: any, res: any, next: any) => {
   }
   next();
 };
+
+// Configure multer for file uploads
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const storage_config = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage_config,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      'image/jpeg', 'image/png', 'image/gif',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only images, PDFs, and Word documents are allowed.'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session middleware
@@ -186,6 +226,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Alias for /api/auth/user - some frontend components expect /api/auth/me
+  app.get('/api/auth/me', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        id: user.id,
+        email: user.email,
+        displayName: user.displayName,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+        isAdmin: user.isAdmin,
+        docketCompleted: user.docketCompleted
+      });
+    } catch (error) {
+      console.error("Get user error:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Logout
   app.post('/api/auth/logout', (req: any, res) => {
     req.session.destroy((err: any) => {
@@ -194,6 +260,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       res.json({ message: "Logged out successfully" });
     });
+  });
+
+  // File upload route
+  app.post('/api/upload', requireAuth, upload.single('file'), (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+
+      const fileInfo = {
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        path: req.file.path,
+        url: `/uploads/${req.file.filename}`
+      };
+
+      res.json({
+        message: 'File uploaded successfully',
+        file: fileInfo
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ message: 'Failed to upload file' });
+    }
+  });
+
+  // Serve uploaded files
+  app.use('/uploads', requireAuth, (req: any, res, next) => {
+    res.setHeader('Content-Type', 'application/octet-stream');
+    next();
+  });
+  
+  app.use('/uploads', (req, res, next) => {
+    const filePath = path.join(uploadsDir, req.path);
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).json({ message: 'File not found' });
+    }
   });
 
   // User profile routes
@@ -308,8 +415,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Work permit routes (protected)
+  // Work permit routes (protected) - with both URL formats for compatibility
   app.get("/api/work-permit", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const workPermit = await storage.getWorkPermitByUserId(userId);
+      res.json({ workPermit: workPermit || null });
+    } catch (error) {
+      console.error("Get work permit error:", error);
+      res.status(500).json({ message: "Failed to get work permit" });
+    }
+  });
+
+  // Alias for compatibility with frontend
+  app.get("/api/workpermit", requireAuth, async (req: any, res) => {
     try {
       const userId = req.session.userId;
       const workPermit = await storage.getWorkPermitByUserId(userId);
@@ -333,7 +452,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/workpermit", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const workPermitData = { ...req.body, userId };
+      
+      const workPermit = await storage.createWorkPermit(workPermitData);
+      res.json({ workPermit });
+    } catch (error) {
+      console.error("Create work permit error:", error);
+      res.status(500).json({ message: "Failed to create work permit" });
+    }
+  });
+
   app.patch("/api/work-permit", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const updates = req.body;
+      
+      const workPermit = await storage.updateWorkPermit(userId, updates);
+      res.json({ workPermit });
+    } catch (error) {
+      console.error("Update work permit error:", error);
+      res.status(500).json({ message: "Failed to update work permit" });
+    }
+  });
+
+  app.patch("/api/workpermit", requireAuth, async (req: any, res) => {
     try {
       const userId = req.session.userId;
       const updates = req.body;
@@ -621,8 +766,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/*', (req, res) => {
     res.setHeader('Content-Type', 'application/json');
     res.status(404).json({ 
-      message: `API endpoint not found: ${req.method} ${req.path}`,
-      error: "Not Found"
+      message: `API endpoint not found: ${req.method} ${req.originalUrl}`,
+      error: "Not Found",
+      requestedPath: req.originalUrl
     });
   });
 
