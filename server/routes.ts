@@ -323,15 +323,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/profile", requireAuth, async (req: any, res) => {
     try {
       const userId = req.session.userId;
-      const { displayName, phone, firstName, lastName } = req.body;
+      const updateData: any = {};
+      
+      // Only include fields that are actually provided
+      if (req.body.displayName !== undefined) updateData.displayName = req.body.displayName;
+      if (req.body.phone !== undefined) updateData.phone = req.body.phone;
+      if (req.body.firstName !== undefined) updateData.firstName = req.body.firstName;
+      if (req.body.lastName !== undefined) updateData.lastName = req.body.lastName;
+      if (req.body.docketCompleted !== undefined) updateData.docketCompleted = req.body.docketCompleted;
 
-      const updatedUser = await storage.updateUser(userId, {
-        displayName,
-        phone,
-        firstName,
-        lastName,
-      });
+      // Check if we have any fields to update
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ message: "No valid fields provided for update" });
+      }
 
+      const updatedUser = await storage.updateUser(userId, updateData);
       res.json({ user: updatedUser });
     } catch (error) {
       console.error("Update profile error:", error);
