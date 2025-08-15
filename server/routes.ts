@@ -369,12 +369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.session.userId;
       const updates = req.body;
       
-      console.log("Docket update for user:", userId, "with updates:", JSON.stringify(updates, null, 2));
-      
       const docket = await storage.updateDocket(userId, updates);
-      
-      console.log("Docket updated successfully:", JSON.stringify(docket, null, 2));
-      
       res.json({ docket });
     } catch (error) {
       console.error("Update docket error:", error);

@@ -75,6 +75,40 @@ export default function DocketPage() {
     updateMutation.mutate({ references });
   };
 
+  const handleSaveAsDraft = () => {
+    // Update user to mark as having draft
+    updateMutation.mutate({}, {
+      onSuccess: () => {
+        toast({
+          title: "Draft Saved",
+          description: "Your progress has been saved as draft",
+        });
+      }
+    });
+  };
+
+  const handleSubmitCompleteDocket = async () => {
+    try {
+      // Mark docket as completed and notify user
+      await apiRequest("PATCH", "/api/profile", { docketCompleted: true });
+      
+      toast({
+        title: "Docket Submitted Successfully",
+        description: "Your complete docket has been submitted for review",
+      });
+      
+      // Refresh data to show updated status
+      queryClient.invalidateQueries({ queryKey: ["/api/docket"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    } catch (error: any) {
+      toast({
+        title: "Submission Error",
+        description: error.message || "Failed to submit docket",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (isLoading || workPermitLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
@@ -292,7 +326,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Front Page</label>
                 <FileUploader
                   currentFile={docket?.passportFrontUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('passportFrontUrl', (fileData as any).file?.url)}
+                  onUpload={(fileData) => handleFileUpload('passportFrontUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -300,7 +334,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Last Page</label>
                 <FileUploader
                   currentFile={docket?.passportLastUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('passportLastUrl', (fileData as any).file?.url)}
+                  onUpload={(fileData) => handleFileUpload('passportLastUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -308,7 +342,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Photo</label>
                 <FileUploader
                   currentFile={docket?.passportPhotoUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('passportPhotoUrl', (fileData as any).file?.url)}
+                  onUpload={(fileData) => handleFileUpload('passportPhotoUrl', (fileData as any).url)}
                   accept="image/*"
                 />
               </div>
@@ -343,7 +377,7 @@ export default function DocketPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Resume / CV Document</label>
               <FileUploader
                 currentFile={docket?.resumeUrl || undefined}
-                onUpload={(fileData) => handleFileUpload('resumeUrl', (fileData as any).file?.url)}
+                onUpload={(fileData) => handleFileUpload('resumeUrl', (fileData as any).url)}
                 accept=".pdf,.doc,.docx"
                 description="Upload your resume in PDF, DOC, or DOCX format"
               />
@@ -440,7 +474,7 @@ export default function DocketPage() {
           <CardContent>
             <FileUploader
               currentFile={docket?.offerLetterUrl || undefined}
-              onUpload={(fileData) => handleFileUpload('offerLetterUrl', (fileData as any).file?.url)}
+              onUpload={(fileData) => handleFileUpload('offerLetterUrl', (fileData as any).url)}
               accept="image/*,application/pdf"
             />
           </CardContent>
@@ -474,7 +508,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Permanent Address Proof</label>
                 <FileUploader
                   currentFile={docket?.permanentAddressUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('permanentAddressUrl', (fileData as any).file?.url)}
+                  onUpload={(fileData) => handleFileUpload('permanentAddressUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -482,7 +516,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Current Address Proof</label>
                 <FileUploader
                   currentFile={docket?.currentAddressUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('currentAddressUrl', (fileData as any).file?.url)}
+                  onUpload={(fileData) => handleFileUpload('currentAddressUrl', (fileData as any).url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -561,6 +595,7 @@ export default function DocketPage() {
               variant="outline" 
               className="flex-1"
               disabled={updateMutation.isPending}
+              onClick={handleSaveAsDraft}
             >
               <Save className="w-4 h-4 mr-2" />
               Save as Draft
@@ -568,9 +603,10 @@ export default function DocketPage() {
             <Button 
               className="flex-1"
               disabled={updateMutation.isPending || completedSections < 6} // Require at least 6/8 sections
+              onClick={handleSubmitCompleteDocket}
             >
               <CheckCircle className="w-4 h-4 mr-2" />
-              Submit Complete Docket
+              Submit Complete Docket ({completedSections}/{sections.length})
             </Button>
           </div>
         </CardContent>

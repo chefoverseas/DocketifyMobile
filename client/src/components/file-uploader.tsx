@@ -60,11 +60,23 @@ export default function FileUploader({
       if (multiple) {
         const uploadPromises = acceptedFiles.map(file => uploadMutation.mutateAsync(file));
         const uploadedFiles = await Promise.all(uploadPromises);
-        const newFiles = [...currentFiles, ...uploadedFiles];
+        // Extract the file data from the API response for multiple files
+        const fileData = uploadedFiles.map(response => ({
+          name: response.file.originalName,
+          url: response.file.url,
+          size: response.file.size
+        }));
+        const newFiles = [...currentFiles, ...fileData];
         onUpload(newFiles);
       } else {
         const uploadedFile = await uploadMutation.mutateAsync(acceptedFiles[0]);
-        onUpload(uploadedFile);
+        // Extract the file data from the API response for single file
+        const fileData = {
+          name: uploadedFile.file.originalName,
+          url: uploadedFile.file.url,
+          size: uploadedFile.file.size
+        };
+        onUpload(fileData);
       }
       
       toast({
