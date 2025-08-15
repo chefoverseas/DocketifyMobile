@@ -46,10 +46,10 @@ export default function AdminUserEdit({ userId }: AdminUserEditProps) {
     queryKey: ['/api/admin/users'],
   });
 
-  const users = (usersData || []) as User[];
+  const users = Array.isArray((usersData as any)?.users) ? (usersData as any).users : [];
   
   // Find user by ID or UID
-  const user = users.find(u => u.id === userId || u.uid === userId);
+  const user = users.find((u: any) => u.id === userId || u.uid === userId);
 
   const {
     register,
@@ -103,7 +103,7 @@ export default function AdminUserEdit({ userId }: AdminUserEditProps) {
     updateUserMutation.mutate(data);
   };
 
-  if (usersLoading) {
+  if (usersLoading || !usersData) {
     return (
       <div className="container mx-auto py-8">
         <div className="flex items-center justify-center">
