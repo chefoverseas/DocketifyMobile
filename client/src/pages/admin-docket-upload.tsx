@@ -180,6 +180,11 @@ export default function AdminDocketUpload({ userId: propUserId }: AdminDocketUpl
               userId={userId} 
               isAdminMode={true}
               isLoading={isUploading || completeDocketMutation.isPending}
+              onSubmit={(data) => {
+                // Save docket data first
+                console.log("Admin saving docket data:", data);
+                // You could add API call here to save the docket data
+              }}
               onComplete={() => {
                 completeDocketMutation.mutate();
               }}

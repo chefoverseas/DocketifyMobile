@@ -352,13 +352,15 @@ export default function AdminUsersPage() {
                         View Details
                       </Button>
                     </Link>
-                    {!user.docketCompleted && (
-                      <Link href={`/admin/user/${user.id}/upload-docket`}>
-                        <Button size="sm" variant="outline" className="text-orange-600 border-orange-200 hover:bg-orange-50">
-                          Upload Docket
-                        </Button>
-                      </Link>
-                    )}
+                    <Link href={`/admin/user/${user.id}/upload-docket`}>
+                      <Button 
+                        size="sm" 
+                        variant={user.docketCompleted ? "secondary" : "outline"} 
+                        className={user.docketCompleted ? "text-gray-600" : "text-orange-600 border-orange-200 hover:bg-orange-50"}
+                      >
+                        {user.docketCompleted ? "View Docket" : "Upload Docket"}
+                      </Button>
+                    </Link>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button

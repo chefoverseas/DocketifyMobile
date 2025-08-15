@@ -332,14 +332,24 @@ export default function DocketForm({
               </Button>
             )}
             {isAdminMode ? (
-              <Button 
-                type="button" 
-                onClick={() => onComplete && onComplete()} 
-                disabled={isLoading}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-              >
-                {isLoading ? "Completing..." : "Complete User's Docket"}
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  type="submit" 
+                  variant="outline"
+                  disabled={isLoading}
+                  className="mr-4"
+                >
+                  {isLoading ? "Saving..." : "Save Documents"}
+                </Button>
+                <Button 
+                  type="button" 
+                  onClick={() => onComplete && onComplete()} 
+                  disabled={isLoading}
+                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  {isLoading ? "Completing..." : "Complete User's Docket"}
+                </Button>
+              </div>
             ) : (
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? "Submitting..." : "Submit Docket"}
