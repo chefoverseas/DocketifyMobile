@@ -41,6 +41,7 @@ type User = {
   email: string;
   phone: string;
   isAdmin: boolean;
+  docketCompleted: boolean;
   createdAt: string;
 };
 
@@ -248,6 +249,41 @@ export default function AdminUsersPage() {
           </Card>
         </div>
 
+        {/* Docket Status Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Completed Dockets</p>
+                  <p className="text-2xl font-bold text-green-900">
+                    {users.filter(u => u.docketCompleted).length}
+                  </p>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <span className="text-green-600 font-semibold">✓</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">Pending Dockets</p>
+                  <p className="text-2xl font-bold text-yellow-900">
+                    {users.filter(u => !u.docketCompleted).length}
+                  </p>
+                </div>
+                <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                  <span className="text-yellow-600 font-semibold">⏳</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Search Bar */}
         <Card className="mb-6">
           <CardContent className="pt-6">
@@ -283,6 +319,15 @@ export default function AdminUsersPage() {
                       {user.isAdmin && (
                         <Badge variant="secondary">Admin</Badge>
                       )}
+                      <Badge 
+                        className={
+                          user.docketCompleted 
+                            ? "bg-green-100 text-green-800 border-green-200" 
+                            : "bg-yellow-100 text-yellow-800 border-yellow-200"
+                        }
+                      >
+                        {user.docketCompleted ? "Docket Complete" : "Docket Pending"}
+                      </Badge>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
