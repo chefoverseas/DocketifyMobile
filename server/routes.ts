@@ -957,22 +957,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Catch any company-contract uploads specifically
-  app.post("/api/admin/contracts/:userId/company-contract", requireAdminAuth, upload.single('file'), async (req: any, res) => {
+  app.post("/api/admin/contracts/:userId/company-contract", requireAdminAuth, upload.any(), async (req: any, res) => {
     console.log(`🔥 COMPANY-CONTRACT ROUTE HIT! Path: ${req.originalUrl}`);
     console.log(`🔥 User ID: ${req.params.userId}`);
     console.log(`🔥 Admin session: ${req.session?.adminId}`);
-    console.log(`🔥 File received:`, req.file);
+    console.log(`🔥 Files received:`, req.files);
     console.log(`🔥 Body:`, req.body);
     
     try {
       res.setHeader('Content-Type', 'application/json');
       
-      if (!req.file) {
+      if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
         return res.status(400).json({ message: "No file uploaded" });
       }
       
+      // Take the first uploaded file
+      const uploadedFile = req.files[0];
+      console.log(`📄 Processing file: ${uploadedFile.originalname} (${uploadedFile.fieldname})`);
+      
       const updates = {
-        companyContractOriginalUrl: `/uploads/${req.file.filename}`,
+        companyContractOriginalUrl: `/uploads/${uploadedFile.filename}`,
         companyContractStatus: 'pending'
       };
       
