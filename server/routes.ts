@@ -947,12 +947,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Contract Management Routes
   
+  // Debug route to catch any contract upload requests
+  app.post("/api/admin/contracts/:userId/*", (req: any, res, next) => {
+    console.log(`🔍 CONTRACT ROUTE INTERCEPTED: ${req.originalUrl}`);
+    console.log(`🔍 Method: ${req.method}`);
+    console.log(`🔍 Params:`, req.params);
+    console.log(`🔍 Path: ${req.path}`);
+    next();
+  });
+  
+  // Catch any company-contract uploads specifically
+  app.post("/api/admin/contracts/:userId/company-contract", requireAdminAuth, upload.single('file'), async (req: any, res) => {
+    console.log(`🔥 COMPANY-CONTRACT ROUTE HIT! Path: ${req.originalUrl}`);
+    console.log(`🔥 User ID: ${req.params.userId}`);
+    console.log(`🔥 Admin session: ${req.session?.adminId}`);
+    console.log(`🔥 File received:`, req.file);
+    console.log(`🔥 Body:`, req.body);
+    
+    try {
+      res.setHeader('Content-Type', 'application/json');
+      
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      const updates = {
+        companyContractOriginalUrl: `/uploads/${req.file.filename}`,
+        companyContractStatus: 'pending'
+      };
+      
+      const contract = await storage.updateContract(req.params.userId, updates);
+      console.log(`✅ Company contract uploaded successfully:`, contract.id);
+      
+      res.status(200).json({ message: "Company contract uploaded successfully", contract });
+      
+    } catch (error) {
+      console.error("Company contract upload error:", error);
+      res.status(500).json({ message: "Failed to upload company contract", error: error.message });
+    }
+  });
+  
   // Admin upload contract/job offer for user  
   app.post("/api/admin/contracts/:userId/upload", requireAdminAuth, upload.fields([
     { name: 'contract', maxCount: 1 },
     { name: 'jobOffer', maxCount: 1 }
   ]), async (req: any, res) => {
-    console.log(`🔥 CONTRACT UPLOAD HIT! Path: ${req.originalUrl}`);
+    console.log(`🔥 UPLOAD ROUTE HIT! Path: ${req.originalUrl}`);
     console.log(`🔥 User ID: ${req.params.userId}`);
     console.log(`🔥 Admin session: ${req.session?.adminId}`);
     console.log(`🔥 Files received:`, req.files);
