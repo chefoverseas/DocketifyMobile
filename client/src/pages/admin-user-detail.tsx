@@ -81,11 +81,15 @@ export default function AdminUserDetail({ userId: propUserId }: AdminUserDetailP
                       <FileText className="h-5 w-5 mr-2 text-orange-600" />
                       Upload Docket for {user?.displayName || user?.phone || 'User'}
                     </DialogTitle>
+                    <p className="text-sm text-gray-600 mt-2">
+                      Upload documents and complete the docket on behalf of this user. Once completed, their status will be marked as "Docket Complete".
+                    </p>
                   </DialogHeader>
                   <div className="mt-4">
                     <DocketForm 
                       userId={userId} 
                       isAdminMode={true}
+                      isLoading={completeDocketMutation.isPending}
                       onComplete={() => {
                         completeDocketMutation.mutate();
                       }}

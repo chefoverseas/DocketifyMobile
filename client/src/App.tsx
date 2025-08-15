@@ -23,6 +23,7 @@ import AdminUserDetail from "@/pages/admin-user-detail";
 import AdminDockets from "@/pages/admin-dockets";
 import AdminDocketDetail from "@/pages/admin-docket-detail";
 import AdminContractDetail from "@/pages/admin-contract-detail";
+import AdminDocketUpload from "@/pages/admin-docket-upload";
 import NotFound from "@/pages/not-found";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -64,6 +65,9 @@ function Router() {
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}
+      </Route>
+      <Route path="/admin/user/:userId/upload-docket">
+        {params => <AdminDocketUpload userId={params.userId} />}
       </Route>
       <Route path="/admin/user/:userId">
         {params => <AdminUserDetail userId={params.userId} />}
