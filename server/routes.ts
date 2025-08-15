@@ -947,24 +947,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Contract Management Routes
   
-  // Test endpoint to debug contract upload issues
-  app.post("/api/admin/contracts/:userId/test", requireAdminAuth, (req: any, res) => {
-    console.log(`🧪 TEST: Admin session check for user: ${req.params.userId}`);
-    console.log(`🧪 TEST: Admin session:`, req.session?.adminId);
-    console.log(`🧪 TEST: Headers:`, req.headers);
-    res.json({ 
-      message: "Test successful", 
-      userId: req.params.userId,
-      adminId: req.session?.adminId,
-      authenticated: !!req.session?.adminId 
-    });
-  });
-  
-  // Admin upload contract/job offer for user
-  app.post("/api/admin/contracts/:userId/upload", requireAdminAuth, upload.fields([
+  // Admin upload contract/job offer for user - handle any path variants
+  app.post("/api/admin/contracts/:userId/:uploadType", requireAdminAuth, upload.fields([
     { name: 'contract', maxCount: 1 },
     { name: 'jobOffer', maxCount: 1 }
   ]), async (req: any, res) => {
+    console.log(`🔥 CONTRACT UPLOAD HIT! Path: ${req.originalUrl}`);
+    console.log(`🔥 Upload type: ${req.params.uploadType}`);
+    console.log(`🔥 User ID: ${req.params.userId}`);
+    console.log(`🔥 Admin session: ${req.session?.adminId}`);
+    
+    // Handle different upload types (upload, company-contract, job-offer, etc.)
+    const { uploadType } = req.params;
     try {
       const { userId } = req.params;
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
