@@ -748,6 +748,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin docket completion endpoint
+  app.post("/api/admin/docket/:userId/complete", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`📝 Admin completing docket for user ID: ${userId}`);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`✅ Found user for docket completion: ${user.email}`);
+
+      // Mark user's docket as completed
+      await storage.updateUser(user.id, { docketCompleted: true });
+      
+      console.log(`✅ Docket completed successfully for user: ${user.email}`);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        success: true,
+        message: "Docket completed successfully",
+        user: {
+          id: user.id,
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          phone: user.phone,
+          docketCompleted: true
+        }
+      });
+    } catch (error) {
+      console.error("Admin docket completion error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to complete docket" });
+    }
+  });
+
   app.get("/api/admin/user/:userId", requireAdminAuth, async (req, res) => {
     try {
       const userId = req.params.userId;

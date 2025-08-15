@@ -352,6 +352,11 @@ export default function AdminUsersPage() {
                         View Details
                       </Button>
                     </Link>
+                    <Link href={`/admin/user/${user.id}`}>
+                      <Button size="sm" variant="outline" className="text-orange-600 border-orange-200 hover:bg-orange-50">
+                        Upload Docket
+                      </Button>
+                    </Link>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button

@@ -45,11 +45,21 @@ type DocketFormData = z.infer<typeof docketSchema>;
 
 interface DocketFormProps {
   docket?: Docket | null;
-  onSubmit: (data: Partial<DocketFormData>) => void;
+  onSubmit?: (data: Partial<DocketFormData>) => void;
+  onComplete?: () => void;
   isLoading?: boolean;
+  userId?: string;
+  isAdminMode?: boolean;
 }
 
-export default function DocketForm({ docket, onSubmit, isLoading = false }: DocketFormProps) {
+export default function DocketForm({ 
+  docket, 
+  onSubmit, 
+  onComplete,
+  isLoading = false, 
+  userId,
+  isAdminMode = false 
+}: DocketFormProps) {
   const form = useForm<DocketFormData>({
     resolver: zodResolver(docketSchema),
     defaultValues: {
@@ -67,7 +77,9 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
   });
 
   const handleSubmit = (data: DocketFormData) => {
-    onSubmit(data);
+    if (onSubmit) {
+      onSubmit(data);
+    }
   };
 
   return (
@@ -314,12 +326,25 @@ export default function DocketForm({ docket, onSubmit, isLoading = false }: Dock
           </Card>
 
           <div className="flex justify-end space-x-4">
-            <Button type="button" variant="outline" disabled={isLoading}>
-              Save as Draft
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Submitting..." : "Submit Docket"}
-            </Button>
+            {!isAdminMode && (
+              <Button type="button" variant="outline" disabled={isLoading}>
+                Save as Draft
+              </Button>
+            )}
+            {isAdminMode ? (
+              <Button 
+                type="button" 
+                onClick={() => onComplete && onComplete()} 
+                disabled={isLoading}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                {isLoading ? "Completing..." : "Complete User's Docket"}
+              </Button>
+            ) : (
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? "Submitting..." : "Submit Docket"}
+              </Button>
+            )}
           </div>
         </form>
       </Form>
