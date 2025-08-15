@@ -292,7 +292,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Front Page</label>
                 <FileUploader
                   currentFile={docket?.passportFrontUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('passportFrontUrl', (fileData as any).url)}
+                  onUpload={(fileData) => handleFileUpload('passportFrontUrl', (fileData as any).file?.url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -300,7 +300,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Last Page</label>
                 <FileUploader
                   currentFile={docket?.passportLastUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('passportLastUrl', (fileData as any).url)}
+                  onUpload={(fileData) => handleFileUpload('passportLastUrl', (fileData as any).file?.url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -308,7 +308,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Passport Photo</label>
                 <FileUploader
                   currentFile={docket?.passportPhotoUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('passportPhotoUrl', (fileData as any).url)}
+                  onUpload={(fileData) => handleFileUpload('passportPhotoUrl', (fileData as any).file?.url)}
                   accept="image/*"
                 />
               </div>
@@ -343,7 +343,7 @@ export default function DocketPage() {
               <label className="block text-sm font-medium text-gray-700 mb-2">Resume / CV Document</label>
               <FileUploader
                 currentFile={docket?.resumeUrl || undefined}
-                onUpload={(fileData) => handleFileUpload('resumeUrl', (fileData as any).url)}
+                onUpload={(fileData) => handleFileUpload('resumeUrl', (fileData as any).file?.url)}
                 accept=".pdf,.doc,.docx"
                 description="Upload your resume in PDF, DOC, or DOCX format"
               />
@@ -440,7 +440,7 @@ export default function DocketPage() {
           <CardContent>
             <FileUploader
               currentFile={docket?.offerLetterUrl || undefined}
-              onUpload={(fileData) => handleFileUpload('offerLetterUrl', (fileData as any).url)}
+              onUpload={(fileData) => handleFileUpload('offerLetterUrl', (fileData as any).file?.url)}
               accept="image/*,application/pdf"
             />
           </CardContent>
@@ -474,7 +474,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Permanent Address Proof</label>
                 <FileUploader
                   currentFile={docket?.permanentAddressUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('permanentAddressUrl', (fileData as any).url)}
+                  onUpload={(fileData) => handleFileUpload('permanentAddressUrl', (fileData as any).file?.url)}
                   accept="image/*,application/pdf"
                 />
               </div>
@@ -482,7 +482,7 @@ export default function DocketPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Current Address Proof</label>
                 <FileUploader
                   currentFile={docket?.currentAddressUrl || undefined}
-                  onUpload={(fileData) => handleFileUpload('currentAddressUrl', (fileData as any).url)}
+                  onUpload={(fileData) => handleFileUpload('currentAddressUrl', (fileData as any).file?.url)}
                   accept="image/*,application/pdf"
                 />
               </div>
