@@ -947,6 +947,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Contract Management Routes
   
+  // Test endpoint to debug contract upload issues
+  app.post("/api/admin/contracts/:userId/test", requireAdminAuth, (req: any, res) => {
+    console.log(`🧪 TEST: Admin session check for user: ${req.params.userId}`);
+    console.log(`🧪 TEST: Admin session:`, req.session?.adminId);
+    console.log(`🧪 TEST: Headers:`, req.headers);
+    res.json({ 
+      message: "Test successful", 
+      userId: req.params.userId,
+      adminId: req.session?.adminId,
+      authenticated: !!req.session?.adminId 
+    });
+  });
+  
   // Admin upload contract/job offer for user
   app.post("/api/admin/contracts/:userId/upload", requireAdminAuth, upload.fields([
     { name: 'contract', maxCount: 1 },
@@ -957,6 +970,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
       
       console.log(`📄 Admin uploading contracts for user: ${userId}`);
+      console.log(`📋 Request body:`, req.body);
+      console.log(`📁 Files received:`, files);
+      console.log(`📁 File keys:`, Object.keys(files || {}));
+      
+      // Set response type first
+      res.setHeader('Content-Type', 'application/json');
       
       const updates: any = {};
       
@@ -975,15 +994,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (Object.keys(updates).length === 0) {
+        console.log(`❌ No files found in upload request`);
         return res.status(400).json({ message: "No files uploaded" });
       }
       
+      console.log(`💾 Updating contract with:`, updates);
       const contract = await storage.updateContract(userId, updates);
-      res.json({ message: "Files uploaded successfully", contract });
+      console.log(`✅ Contract updated successfully:`, contract.id);
+      
+      res.status(200).json({ message: "Files uploaded successfully", contract });
       
     } catch (error) {
       console.error("Admin contract upload error:", error);
-      res.status(500).json({ message: "Failed to upload contract files" });
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to upload contract files", error: error.message });
     }
   });
   
