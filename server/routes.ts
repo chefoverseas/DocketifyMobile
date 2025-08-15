@@ -744,11 +744,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User ID is required" });
       }
 
-      const user = await storage.getUser(userId);
+      console.log(`🔍 Admin requesting user details for ID: ${userId}`);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
       if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
         res.setHeader('Content-Type', 'application/json');
         return res.status(404).json({ message: "User not found" });
       }
+      
+      console.log(`✅ Found user: ${user.email} (${user.displayName})`);
+      
 
       res.setHeader('Content-Type', 'application/json');
       res.json({

@@ -27,7 +27,7 @@ interface UserNavigationHubProps {
 export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigationHubProps) {
   // If userId is provided, fetch that user's data (admin view)
   // Otherwise, fetch current user's data (user view)
-  const { data: userData } = useQuery({
+  const { data: userData, error: userError, isLoading: userLoading } = useQuery({
     queryKey: userId ? [`/api/admin/user/${userId}`] : ['/api/auth/me'],
     enabled: true, // Always enabled
     refetchInterval: false,
@@ -38,7 +38,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
 
   const { data: docketData } = useQuery({
     queryKey: userId ? [`/api/admin/docket/${userId}`] : ['/api/docket'],
-    enabled: !!userData && userId !== undefined, // Only fetch when user data is available and for admin views
+    enabled: !!userData && !!userId, // Only fetch when user data is available and userId is provided
     refetchInterval: false,
     refetchOnWindowFocus: false,
     staleTime: 10 * 60 * 1000, // 10 minutes
@@ -47,7 +47,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
 
   const { data: contractData } = useQuery({
     queryKey: userId ? [`/api/admin/contract/${userId}`] : ['/api/contracts'],
-    enabled: !!userData && userId !== undefined, // Only fetch when user data is available and for specific use cases
+    enabled: !!userData && !!userId, // Only fetch when user data is available and userId is provided
     refetchInterval: false,
     refetchOnWindowFocus: false,
     staleTime: 10 * 60 * 1000, // 10 minutes
@@ -56,7 +56,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
 
   const { data: workPermitData } = useQuery({
     queryKey: userId ? [`/api/admin/workpermit/${userId}`] : ['/api/workpermit'],
-    enabled: !!userData && userId !== undefined, // Only fetch when user data is available and for specific use cases
+    enabled: !!userData && !!userId, // Only fetch when user data is available and userId is provided
     refetchInterval: false,
     refetchOnWindowFocus: false,
     staleTime: 10 * 60 * 1000, // 10 minutes
@@ -67,6 +67,53 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
   const docket = userId ? (docketData as any)?.docket : (docketData as any)?.docket;
   const contract = userId ? (contractData as any)?.contract : (contractData as any)?.contract;
   const workPermit = userId ? (workPermitData as any)?.workPermit : (workPermitData as any)?.workPermit;
+
+  // Show loading state
+  if (userLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state with user-friendly message
+  if (userError) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {userId ? "User Details Not Available" : "Authentication Required"}
+              </h3>
+              <p className="text-gray-500 mb-4">
+                {userId 
+                  ? "Unable to load user details. The user may not exist or you may not have permission to view their information."
+                  : "Please log in to view your dashboard."
+                }
+              </p>
+              {userId && (
+                <Link href="/admin/users">
+                  <Button variant="outline">
+                    Back to Users List
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const calculateDocketProgress = () => {
     if (!docket) return { completed: 0, total: 9, percentage: 0 };
