@@ -945,17 +945,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Catch-all handler for undefined API routes
-  // This must be registered LAST to ensure all defined routes are matched first
-  app.use('/api/*', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(404).json({ 
-      message: `API endpoint not found: ${req.method} ${req.originalUrl}`,
-      error: "Not Found",
-      requestedPath: req.originalUrl
-    });
-  });
-
   // Contract Management Routes
   
   // Admin upload contract/job offer for user
@@ -1059,6 +1048,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Get admin contracts error:", error);
       res.status(500).json({ message: "Failed to get contracts" });
     }
+  });
+
+  // Catch-all handler for undefined API routes
+  // This must be registered LAST to ensure all defined routes are matched first
+  app.use('/api/*', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(404).json({ 
+      message: `API endpoint not found: ${req.method} ${req.originalUrl}`,
+      error: "Not Found",
+      requestedPath: req.originalUrl
+    });
   });
 
   const httpServer = createServer(app);
