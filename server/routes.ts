@@ -956,6 +956,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Contract Management Routes
+  
+  // Admin upload contract/job offer for user
+  app.post("/api/admin/contracts/:userId/upload", requireAdminAuth, upload.fields([
+    { name: 'contract', maxCount: 1 },
+    { name: 'jobOffer', maxCount: 1 }
+  ]), async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      
+      console.log(`📄 Admin uploading contracts for user: ${userId}`);
+      
+      const updates: any = {};
+      
+      if (files.contract && files.contract[0]) {
+        const contractFile = files.contract[0];
+        updates.companyContractOriginalUrl = `/uploads/${contractFile.filename}`;
+        updates.companyContractStatus = 'pending';
+        console.log(`✅ Contract uploaded: ${contractFile.filename}`);
+      }
+      
+      if (files.jobOffer && files.jobOffer[0]) {
+        const jobOfferFile = files.jobOffer[0];
+        updates.jobOfferOriginalUrl = `/uploads/${jobOfferFile.filename}`;
+        updates.jobOfferStatus = 'pending';
+        console.log(`✅ Job offer uploaded: ${jobOfferFile.filename}`);
+      }
+      
+      if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+      
+      const contract = await storage.updateContract(userId, updates);
+      res.json({ message: "Files uploaded successfully", contract });
+      
+    } catch (error) {
+      console.error("Admin contract upload error:", error);
+      res.status(500).json({ message: "Failed to upload contract files" });
+    }
+  });
+  
+  // User get contracts (download original documents)
+  app.get("/api/contracts", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const contract = await storage.getContract(userId);
+      res.json({ contract });
+    } catch (error) {
+      console.error("Get user contracts error:", error);
+      res.status(500).json({ message: "Failed to get contracts" });
+    }
+  });
+  
+  // User upload signed contract/job offer
+  app.post("/api/contracts/upload-signed", requireAuth, upload.fields([
+    { name: 'signedContract', maxCount: 1 },
+    { name: 'signedJobOffer', maxCount: 1 }
+  ]), async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      
+      console.log(`📝 User uploading signed contracts: ${userId}`);
+      
+      const updates: any = {};
+      
+      if (files.signedContract && files.signedContract[0]) {
+        const signedContractFile = files.signedContract[0];
+        updates.companyContractSignedUrl = `/uploads/${signedContractFile.filename}`;
+        updates.companyContractStatus = 'signed';
+        console.log(`✅ Signed contract uploaded: ${signedContractFile.filename}`);
+      }
+      
+      if (files.signedJobOffer && files.signedJobOffer[0]) {
+        const signedJobOfferFile = files.signedJobOffer[0];
+        updates.jobOfferSignedUrl = `/uploads/${signedJobOfferFile.filename}`;
+        updates.jobOfferStatus = 'signed';
+        console.log(`✅ Signed job offer uploaded: ${signedJobOfferFile.filename}`);
+      }
+      
+      if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ message: "No signed files uploaded" });
+      }
+      
+      const contract = await storage.updateContract(userId, updates);
+      res.json({ message: "Signed documents uploaded successfully", contract });
+      
+    } catch (error) {
+      console.error("User signed contract upload error:", error);
+      res.status(500).json({ message: "Failed to upload signed documents" });
+    }
+  });
+  
+  // Admin get all contracts
+  app.get("/api/admin/contracts", requireAdminAuth, async (req, res) => {
+    try {
+      const contracts = await storage.getAllContracts();
+      res.json({ contracts });
+    } catch (error) {
+      console.error("Get admin contracts error:", error);
+      res.status(500).json({ message: "Failed to get contracts" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -48,8 +48,10 @@ export interface IStorage {
 
   // Contract operations
   getContractByUserId(userId: string): Promise<Contract | undefined>;
+  getContract(userId: string): Promise<Contract | undefined>;
   createContract(contract: InsertContract): Promise<Contract>;
   updateContract(userId: string, updates: Partial<Contract>): Promise<Contract>;
+  getAllContracts(): Promise<(Contract & { user: User })[]>;
 
   // Work permit operations
   getWorkPermitByUserId(userId: string): Promise<WorkPermit | undefined>;
@@ -270,6 +272,10 @@ export class DatabaseStorage implements IStorage {
   async getContractByUserId(userId: string): Promise<Contract | undefined> {
     const [contract] = await db.select().from(contracts).where(eq(contracts.userId, userId));
     return contract || undefined;
+  }
+
+  async getContract(userId: string): Promise<Contract | undefined> {
+    return this.getContractByUserId(userId);
   }
 
   async createContract(contract: InsertContract): Promise<Contract> {

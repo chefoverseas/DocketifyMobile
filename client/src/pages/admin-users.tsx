@@ -361,6 +361,15 @@ export default function AdminUsersPage() {
                         {user.docketCompleted ? "View Docket" : "Upload Docket"}
                       </Button>
                     </Link>
+                    <Link href={`/admin/user/${user.id}/upload-contracts`}>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                      >
+                        Contracts
+                      </Button>
+                    </Link>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
