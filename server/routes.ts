@@ -1066,6 +1066,195 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Work visa routes (user-facing and admin)
+  
+  // Get user's work visa status
+  app.get("/api/work-visa", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const workVisa = await storage.getWorkVisaByUserId(userId);
+      res.json({ workVisa: workVisa || null });
+    } catch (error) {
+      console.error("Error fetching work visa:", error);
+      res.status(500).json({ message: "Failed to fetch work visa" });
+    }
+  });
+
+  // Admin: Get all work visas
+  app.get("/api/admin/workvisas", requireAdminAuth, async (req, res) => {
+    try {
+      console.log("🔍 Admin requesting all work visas");
+      const workVisas = await storage.getAllWorkVisas();
+      
+      // Transform the data to include work visa info for each user
+      const workVisaRecords = await Promise.all(workVisas.map(async ({ user, ...workVisa }) => {
+        return {
+          user,
+          workVisa
+        };
+      }));
+
+      console.log(`✅ Found ${workVisaRecords.length} work visa records`);
+      
+      res.json({ workVisas: workVisaRecords });
+    } catch (error) {
+      console.error("Error fetching all work visas:", error);
+      res.status(500).json({ message: "Failed to fetch work visas" });
+    }
+  });
+
+  // Admin: Get specific user's work visa
+  app.get("/api/admin/workvisa/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`🔍 Admin requesting work visa for user ID: ${userId}`);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`✅ Found user for work visa: ${user.email}, fetching work visa...`);
+
+      const workVisa = await storage.getWorkVisaByUserId(user.id);
+      
+      res.json({ 
+        user: {
+          id: user.id,
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          phone: user.phone
+        },
+        workVisa: workVisa || null
+      });
+    } catch (error) {
+      console.error("Admin get work visa error:", error);
+      res.status(500).json({ message: "Failed to fetch user work visa" });
+    }
+  });
+
+  // Admin: Update work visa status and details
+  app.patch("/api/admin/workvisa/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const { status, trackingCode, notes, visaType, embassyLocation, interviewDate } = req.body;
+
+      console.log(`🔄 Admin updating work visa for user ID: ${userId}`);
+      console.log(`📝 Updates:`, { status, trackingCode, notes, visaType, embassyLocation, interviewDate });
+
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      console.log(`✅ Found user for work visa update: ${user.email}`);
+
+      const updates: any = {};
+      if (status !== undefined) updates.status = status;
+      if (trackingCode !== undefined) updates.trackingCode = trackingCode;
+      if (notes !== undefined) updates.notes = notes;
+      if (visaType !== undefined) updates.visaType = visaType;
+      if (embassyLocation !== undefined) updates.embassyLocation = embassyLocation;
+      if (interviewDate !== undefined) updates.interviewDate = new Date(interviewDate);
+
+      const updatedWorkVisa = await storage.updateWorkVisa(user.id, updates);
+
+      console.log(`✅ Work visa updated successfully for user: ${user.email}`);
+
+      res.json({ 
+        message: "Work visa updated successfully",
+        workVisa: updatedWorkVisa,
+        user: {
+          id: user.id,
+          uid: user.uid,
+          displayName: user.displayName,
+          email: user.email,
+          phone: user.phone
+        }
+      });
+    } catch (error) {
+      console.error("Admin update work visa error:", error);
+      res.status(500).json({ message: "Failed to update work visa" });
+    }
+  });
+
+  // Admin: Upload final visa document
+  app.post("/api/admin/workvisa/:userId/upload-visa", requireAdminAuth, upload.any(), async (req: any, res) => {
+    try {
+      const userId = req.params.userId;
+      
+      console.log(`📄 Admin uploading visa document for user ID: ${userId}`);
+      console.log(`📁 Files received:`, req.files?.map((f: any) => ({ name: f.originalname, size: f.size })));
+
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      console.log(`✅ Found user for visa upload: ${user.email}`);
+
+      if (!req.files || req.files.length === 0) {
+        console.log(`❌ No files uploaded for user: ${user.email}`);
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
+      // For work visa, we typically expect one main visa document
+      const visaFile = req.files[0];
+      const visaPath = `/uploads/${visaFile.filename}`;
+
+      console.log(`📋 Uploading visa file: ${visaFile.filename}`);
+
+      // Update work visa with the file URL and set status to approved
+      const updatedWorkVisa = await storage.updateWorkVisa(user.id, {
+        finalVisaUrl: visaPath,
+        status: 'approved'
+      });
+
+      console.log(`✅ Visa document uploaded successfully for user: ${user.email}`);
+
+      res.json({ 
+        message: "Visa document uploaded successfully",
+        workVisa: updatedWorkVisa,
+        finalVisaUrl: visaPath
+      });
+    } catch (error) {
+      console.error("Admin visa upload error:", error);
+      res.status(500).json({ message: "Failed to upload visa document" });
+    }
+  });
+
   // Admin contract route
   app.get("/api/admin/contract/:userId", requireAdminAuth, async (req, res) => {
     try {

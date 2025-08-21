@@ -99,6 +99,21 @@ export const workPermits = pgTable("work_permits", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+export const workVisas = pgTable("work_visas", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  status: text("status").notNull().default("preparation"), // preparation, applied, awaiting_decision, approved, rejected, interview_scheduled
+  trackingCode: text("tracking_code"),
+  applicationDate: timestamp("application_date"),
+  interviewDate: timestamp("interview_date"),
+  visaType: text("visa_type"), // e.g., "H1B", "L1", "O1", etc.
+  embassyLocation: text("embassy_location"),
+  finalVisaUrl: text("final_visa_url"),
+  notes: text("notes"),
+  lastUpdated: timestamp("last_updated").default(sql`now()`),
+  createdAt: timestamp("created_at").default(sql`now()`),
+});
+
 export const notifications = pgTable("notifications", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -126,6 +141,10 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     fields: [users.id],
     references: [workPermits.userId],
   }),
+  workVisa: one(workVisas, {
+    fields: [users.id],
+    references: [workVisas.userId],
+  }),
   notifications: many(notifications),
 }));
 
@@ -146,6 +165,13 @@ export const contractsRelations = relations(contracts, ({ one }) => ({
 export const workPermitsRelations = relations(workPermits, ({ one }) => ({
   user: one(users, {
     fields: [workPermits.userId],
+    references: [users.id],
+  }),
+}));
+
+export const workVisasRelations = relations(workVisas, ({ one }) => ({
+  user: one(users, {
+    fields: [workVisas.userId],
     references: [users.id],
   }),
 }));
@@ -189,6 +215,12 @@ export const insertWorkPermitSchema = createInsertSchema(workPermits).omit({
   createdAt: true,
 });
 
+export const insertWorkVisaSchema = createInsertSchema(workVisas).omit({
+  id: true,
+  lastUpdated: true,
+  createdAt: true,
+});
+
 export const insertNotificationSchema = createInsertSchema(notifications).omit({
   id: true,
   createdAt: true,
@@ -208,5 +240,7 @@ export type AdminSession = typeof adminSessions.$inferSelect;
 export type InsertAdminSession = z.infer<typeof insertAdminSessionSchema>;
 export type WorkPermit = typeof workPermits.$inferSelect;
 export type InsertWorkPermit = z.infer<typeof insertWorkPermitSchema>;
+export type WorkVisa = typeof workVisas.$inferSelect;
+export type InsertWorkVisa = z.infer<typeof insertWorkVisaSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;

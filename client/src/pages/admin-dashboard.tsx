@@ -32,7 +32,8 @@ import {
   Shield,
   Bell,
   Zap,
-  CheckCircle
+  CheckCircle,
+  Plane
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import type { User } from "@shared/schema";
@@ -75,6 +76,14 @@ export default function AdminDashboardPage() {
   // Get contracts data for detailed status
   const { data: contractsData } = useQuery({
     queryKey: ["/api/admin/contracts"],
+    enabled: !!(adminData as any)?.admin,
+    refetchInterval: 30000,
+    retry: false,
+  });
+
+  // Get work visas data for detailed status
+  const { data: workVisasData } = useQuery({
+    queryKey: ["/api/admin/workvisas"],
     enabled: !!(adminData as any)?.admin,
     refetchInterval: 30000,
     retry: false,
@@ -154,6 +163,23 @@ export default function AdminDashboardPage() {
     acc.total = (acc.total || 0) + 1;
     return acc;
   }, { complete: 0, partial: 0, empty: 0, total: 0 });
+
+  // Calculate detailed work visa status
+  const workVisas = (workVisasData as any)?.workVisas || [];
+  const workVisaStats = workVisas.reduce((acc: any, wv: any) => {
+    const status = wv.workVisa?.status || 'not_started';
+    acc[status] = (acc[status] || 0) + 1;
+    acc.total = (acc.total || 0) + 1;
+    return acc;
+  }, {
+    preparation: 0,
+    applied: 0,
+    awaiting_decision: 0,
+    approved: 0,
+    rejected: 0,
+    not_started: 0,
+    total: 0
+  });
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -373,7 +399,7 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
         {/* Interactive Management Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
           <Card 
             className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-100"
             onClick={() => setLocation("/admin/workpermits")}
@@ -412,6 +438,48 @@ export default function AdminDashboardPage() {
                   Total: {workPermitStats.total}
                 </Badge>
                 <span className="text-3xl font-bold text-blue-600">{workPermitStats.approved}</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-orange-50 to-amber-100"
+            onClick={() => setLocation("/admin/workvisas")}
+          >
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="p-5 bg-orange-500 rounded-xl group-hover:bg-orange-600 transition-colors shadow-lg">
+                  <Plane className="h-10 w-10 text-white" />
+                </div>
+                <ChevronRight className="h-6 w-6 text-gray-400 group-hover:text-orange-500 transition-colors" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors leading-tight">
+                Work Visas
+              </h3>
+              <p className="text-gray-600 mb-4 text-base leading-relaxed">Manage work visa applications and approvals</p>
+              
+              {/* Detailed Work Visa Status */}
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Approved:</span>
+                  <span className="font-semibold text-green-600">{workVisaStats.approved}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Under Review:</span>
+                  <span className="font-semibold text-yellow-600">{workVisaStats.awaiting_decision}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">In Preparation:</span>
+                  <span className="font-semibold text-blue-600">{workVisaStats.preparation}</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Badge className="bg-orange-100 text-orange-700 px-3 py-2 text-sm">
+                  <Activity className="h-4 w-4 mr-2" />
+                  Total: {workVisaStats.total}
+                </Badge>
+                <span className="text-3xl font-bold text-orange-600">{workVisaStats.approved}</span>
               </div>
             </CardContent>
           </Card>

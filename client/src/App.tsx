@@ -10,6 +10,7 @@ import Profile from "@/pages/profile";
 import Docket from "@/pages/docket";
 import Contracts from "@/pages/contracts";
 import WorkPermit from "@/pages/workpermit";
+import WorkVisa from "@/pages/workvisa";
 import AdminLogin from "@/pages/admin-login";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Admin from "@/pages/admin";
@@ -17,6 +18,7 @@ import AdminContracts from "@/pages/admin-contracts";
 import AdminUsers from "@/pages/admin-users";
 import AdminWorkPermits from "@/pages/admin-workpermits";
 import AdminWorkPermit from "@/pages/admin-workpermit";
+import AdminWorkVisas from "@/pages/admin-workvisas";
 import AdminUserCreate from "@/pages/admin-user-create";
 import AdminUserEdit from "@/pages/admin-user-edit";
 import AdminUserDetail from "@/pages/admin-user-detail";
@@ -54,6 +56,7 @@ function Router() {
           <Route path="/docket" component={Docket} />
           <Route path="/contracts" component={Contracts} />
           <Route path="/workpermit" component={WorkPermit} />
+          <Route path="/workvisa" component={WorkVisa} />
         </>
       )}
       {/* Admin routes - separate authentication */}
@@ -63,6 +66,7 @@ function Router() {
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/workpermits" component={AdminWorkPermits} />
       <Route path="/admin/workpermit/:userId" component={AdminWorkPermit} />
+      <Route path="/admin/workvisas" component={AdminWorkVisas} />
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}

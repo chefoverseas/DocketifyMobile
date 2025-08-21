@@ -23,7 +23,8 @@ import {
   AlertCircle,
   Star,
   User,
-  MoreHorizontal
+  MoreHorizontal,
+  Plane
 } from "lucide-react";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 import { Link } from "wouter";
@@ -55,8 +56,8 @@ export default function Dashboard() {
 
   // Calculate real progress percentages
   const calculateDocketProgress = () => {
-    if (!docketData?.docket) return 0;
-    const docket = docketData.docket;
+    if (!(docketData as any)?.docket) return 0;
+    const docket = (docketData as any).docket;
     let completed = 0;
     let total = 10; // 10 main sections in docket
 
@@ -76,8 +77,8 @@ export default function Dashboard() {
   };
 
   const getContractStatus = () => {
-    if (!contractData?.contract) return { status: 'Not Started', color: 'gray', count: 0 };
-    const contract = contractData.contract;
+    if (!(contractData as any)?.contract) return { status: 'Not Started', color: 'gray', count: 0 };
+    const contract = (contractData as any).contract;
     let pending = 0;
     let signed = 0;
     let available = 0;
@@ -103,8 +104,8 @@ export default function Dashboard() {
   };
 
   const getWorkPermitStatus = () => {
-    if (!workPermitData?.workPermit) return { status: 'Not Started', color: 'gray' };
-    const status = workPermitData.workPermit.status;
+    if (!(workPermitData as any)?.workPermit) return { status: 'Not Started', color: 'gray' };
+    const status = (workPermitData as any).workPermit.status;
     
     const statusMap = {
       'preparation': { status: 'In Preparation', color: 'blue' },
@@ -114,7 +115,7 @@ export default function Dashboard() {
       'rejected': { status: 'Rejected', color: 'red' }
     };
     
-    return statusMap[status] || { status: 'Unknown', color: 'gray' };
+    return (statusMap as any)[status] || { status: 'Unknown', color: 'gray' };
   };
 
   const calculateOverallProgress = () => {
@@ -208,7 +209,7 @@ export default function Dashboard() {
                     {user?.profileImageUrl ? (
                       <img 
                         src={user.profileImageUrl} 
-                        alt={user.displayName || user.name || 'Profile'} 
+                        alt={user.displayName || (user as any)?.name || 'Profile'} 
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -225,7 +226,7 @@ export default function Dashboard() {
                 {/* Profile Info */}
                 <div className="flex-1 text-center md:text-left text-white">
                   <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
-                    Welcome back, {user?.displayName || user?.name || 'User'}!
+                    Welcome back, {user?.displayName || (user as any)?.name || 'User'}!
                   </h1>
                   <p className="text-orange-100 mb-3 text-xl leading-relaxed">
                     ID: {user?.uid || 'Not assigned'} • Member since {new Date().getFullYear()}
@@ -244,13 +245,13 @@ export default function Dashboard() {
                       <User className="h-4 w-4 mr-2" />
                       Active User
                     </Badge>
-                    {docketData?.docket && (
+                    {(docketData as any)?.docket && (
                       <Badge className="bg-green-500/20 text-white border-green-300/30 px-3 py-2 text-sm">
                         <CheckCircle className="h-4 w-4 mr-2" />
                         Docket Created
                       </Badge>
                     )}
-                    {contractData?.contract && (
+                    {(contractData as any)?.contract && (
                       <Badge className="bg-blue-500/20 text-white border-blue-300/30 px-3 py-2 text-sm">
                         <Briefcase className="h-4 w-4 mr-2" />
                         Contract Active
@@ -407,15 +408,15 @@ export default function Dashboard() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-gray-900">{workPermitStatus.status}</span>
-                  <Link href="/work-permit">
+                  <Link href="/workpermit">
                     <Button size="sm" variant="ghost" className="text-orange-600 hover:bg-orange-50">
                       <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>
                 </div>
                 <p className="text-sm text-gray-600">
-                  {workPermitData?.workPermit?.trackingCode ? 
-                    `Tracking: ${workPermitData.workPermit.trackingCode}` : 
+                  {(workPermitData as any)?.workPermit?.trackingCode ? 
+                    `Tracking: ${(workPermitData as any).workPermit.trackingCode}` : 
                     'Track your application status'
                   }
                 </p>
@@ -466,14 +467,14 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {workPermitData?.workPermit?.status === 'approved' && (
+                {(workPermitData as any)?.workPermit?.status === 'approved' && (
                   <div className="flex items-start p-4 bg-green-50 rounded-lg border border-green-200 animate-pulse">
                     <CheckCircle className="h-5 w-5 text-green-600 mr-3 mt-0.5" />
                     <div className="flex-1">
                       <p className="font-medium text-green-900">Work Permit Approved!</p>
                       <p className="text-sm text-green-700">Your work permit application has been approved by the embassy</p>
                       <p className="text-xs text-green-600 mt-1">
-                        {workPermitData.workPermit.trackingCode && `Tracking: ${workPermitData.workPermit.trackingCode}`}
+                        {(workPermitData as any).workPermit.trackingCode && `Tracking: ${(workPermitData as any).workPermit.trackingCode}`}
                       </p>
                     </div>
                   </div>
@@ -547,10 +548,16 @@ export default function Dashboard() {
                     Contracts
                   </Button>
                 </Link>
-                <Link href="/work-permit">
+                <Link href="/workpermit">
                   <Button variant="outline" className="w-full justify-start hover:bg-orange-50 border-orange-200">
                     <Clock className="h-4 w-4 mr-3" />
                     Work Permit
+                  </Button>
+                </Link>
+                <Link href="/workvisa">
+                  <Button variant="outline" className="w-full justify-start hover:bg-blue-50 border-blue-200">
+                    <Plane className="h-4 w-4 mr-3" />
+                    Work Visa
                   </Button>
                 </Link>
                 <Link href="/profile">

@@ -5,6 +5,7 @@ import {
   contracts, 
   adminSessions, 
   workPermits, 
+  workVisas,
   notifications,
   type User, 
   type UpsertUser,
@@ -19,6 +20,8 @@ import {
   type InsertAdminSession, 
   type WorkPermit, 
   type InsertWorkPermit,
+  type WorkVisa,
+  type InsertWorkVisa,
   type Notification,
   type InsertNotification
 } from "@shared/schema";
@@ -61,6 +64,12 @@ export interface IStorage {
   createWorkPermit(workPermit: InsertWorkPermit): Promise<WorkPermit>;
   updateWorkPermit(userId: string, updates: Partial<InsertWorkPermit>): Promise<WorkPermit>;
   getAllWorkPermits(): Promise<(WorkPermit & { user: User })[]>;
+
+  // Work visa operations
+  getWorkVisaByUserId(userId: string): Promise<WorkVisa | undefined>;
+  createWorkVisa(workVisa: InsertWorkVisa): Promise<WorkVisa>;
+  updateWorkVisa(userId: string, updates: Partial<InsertWorkVisa>): Promise<WorkVisa>;
+  getAllWorkVisas(): Promise<(WorkVisa & { user: User })[]>;
 
   // Admin session operations
   createAdminSession(session: InsertAdminSession): Promise<AdminSession>;
@@ -376,6 +385,58 @@ export class DatabaseStorage implements IStorage {
 
     return result.map(({ work_permits, users: user }) => ({
       ...work_permits,
+      user: user!
+    }));
+  }
+
+  // Work visa operations
+  async getWorkVisaByUserId(userId: string): Promise<WorkVisa | undefined> {
+    const [workVisa] = await db.select().from(workVisas).where(eq(workVisas.userId, userId));
+    return workVisa || undefined;
+  }
+
+  async createWorkVisa(workVisa: InsertWorkVisa): Promise<WorkVisa> {
+    const [newWorkVisa] = await db
+      .insert(workVisas)
+      .values([workVisa])
+      .returning();
+    return newWorkVisa;
+  }
+
+  async updateWorkVisa(userId: string, updates: Partial<InsertWorkVisa>): Promise<WorkVisa> {
+    // First check if work visa exists
+    let workVisa = await this.getWorkVisaByUserId(userId);
+    
+    if (!workVisa) {
+      // Create new work visa
+      workVisa = await this.createWorkVisa({ userId, ...updates });
+    } else {
+      // If status is being set to 'applied' and no application date exists, set it
+      if (updates.status === 'applied' && !workVisa.applicationDate) {
+        updates.applicationDate = new Date();
+      }
+      
+      // Update existing work visa
+      const [updatedWorkVisa] = await db
+        .update(workVisas)
+        .set({ ...updates, lastUpdated: new Date() })
+        .where(eq(workVisas.userId, userId))
+        .returning();
+      workVisa = updatedWorkVisa;
+    }
+    
+    return workVisa;
+  }
+
+  async getAllWorkVisas(): Promise<(WorkVisa & { user: User })[]> {
+    const result = await db
+      .select()
+      .from(workVisas)
+      .leftJoin(users, eq(workVisas.userId, users.id))
+      .orderBy(desc(workVisas.lastUpdated));
+
+    return result.map(({ work_visas, users: user }) => ({
+      ...work_visas,
       user: user!
     }));
   }
