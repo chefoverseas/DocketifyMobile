@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Camera, Upload, Loader } from "lucide-react";
 
@@ -76,6 +76,12 @@ export function SimplePhotoUpload({
       const { photoUrl } = await updateResponse.json();
       
       onPhotoUpdated(photoUrl);
+      
+      // Force cache invalidation for all related queries
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/admin/user/${userUid}`] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/admin/user/${userId}`] });
       
       toast({
         title: "Success",
