@@ -17,7 +17,8 @@ import {
   Mail,
   Calendar,
   MapPin,
-  Camera
+  Camera,
+  Plane
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -81,10 +82,20 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
     retry: false,
   });
 
+  const { data: workVisaData } = useQuery({
+    queryKey: userId ? [`/api/admin/workvisa/${userId}`] : ['/api/work-visa'],
+    enabled: !!userData && !!userId, // Only fetch when user data is available and userId is provided
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    retry: false,
+  });
+
   const user = userId ? (userData as any) : (userData as any)?.user;
   const docket = userId ? (docketData as any)?.docket : (docketData as any)?.docket;
   const contract = userId ? (contractData as any)?.contract : (contractData as any)?.contract;
   const workPermit = userId ? (workPermitData as any)?.workPermit : (workPermitData as any)?.workPermit;
+  const workVisa = userId ? (workVisaData as any)?.workVisa : (workVisaData as any)?.workVisa;
 
   // Show loading state
   if (userLoading) {
@@ -187,9 +198,29 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
     }
   };
 
+  const getWorkVisaStatus = () => {
+    if (!workVisa) return { status: "Not Started", color: "bg-gray-100 text-gray-800" };
+    
+    switch (workVisa.status) {
+      case "approved":
+        return { status: "Approved", color: "bg-green-100 text-green-800" };
+      case "applied":
+        return { status: "Applied", color: "bg-blue-100 text-blue-800" };
+      case "awaiting_decision":
+        return { status: "Awaiting Decision", color: "bg-yellow-100 text-yellow-800" };
+      case "preparation":
+        return { status: "In Preparation", color: "bg-orange-100 text-orange-800" };
+      case "rejected":
+        return { status: "Rejected", color: "bg-red-100 text-red-800" };
+      default:
+        return { status: "Not Started", color: "bg-gray-100 text-gray-800" };
+    }
+  };
+
   const docketProgress = calculateDocketProgress();
   const contractStatus = getContractStatus();
   const workPermitStatus = getWorkPermitStatus();
+  const workVisaStatus = getWorkVisaStatus();
 
   const baseUrl = userId ? `/admin` : '';
 
@@ -310,7 +341,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
       )}
 
       {/* Navigation Hub Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Docket Card */}
         <Card className="hover:shadow-lg transition-shadow">
           <CardHeader>
@@ -452,6 +483,64 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
             <Link href={userId ? `/admin/workpermit/${userId}` : '/workpermit'}>
               <Button className="w-full" variant="outline">
                 View Work Permit
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        {/* Work Visa Card */}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Plane className="h-5 w-5 mr-2 text-orange-600" />
+                Work Visa
+              </div>
+              <Badge className={workVisaStatus.color}>
+                {workVisaStatus.status}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {workVisa && (
+              <div className="space-y-2 text-sm text-gray-600">
+                {workVisa.trackingCode && (
+                  <div>
+                    <p className="font-medium">Tracking Code</p>
+                    <p className="font-mono text-xs bg-gray-100 p-1 rounded">{workVisa.trackingCode}</p>
+                  </div>
+                )}
+                {workVisa.visaType && (
+                  <div>
+                    <p className="font-medium">Visa Type</p>
+                    <p>{workVisa.visaType}</p>
+                  </div>
+                )}
+                {workVisa.applicationDate && (
+                  <div>
+                    <p className="font-medium">Application Date</p>
+                    <p>{format(new Date(workVisa.applicationDate), 'MMM dd, yyyy')}</p>
+                  </div>
+                )}
+                {workVisa.embassy && (
+                  <div>
+                    <p className="font-medium">Embassy</p>
+                    <p>{workVisa.embassy}</p>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {workVisa?.lastUpdated && (
+              <p className="text-xs text-gray-500">
+                Last updated: {format(new Date(workVisa.lastUpdated), 'MMM dd, yyyy')}
+              </p>
+            )}
+            
+            <Link href={userId ? `/admin/workvisas` : '/workvisa'}>
+              <Button className="w-full" variant="outline">
+                View Work Visa
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </Link>
