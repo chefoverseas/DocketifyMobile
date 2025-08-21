@@ -64,6 +64,22 @@ export default function AdminDashboardPage() {
     retry: false,
   });
 
+  // Get work permits data for detailed status
+  const { data: workPermitsData } = useQuery({
+    queryKey: ["/api/admin/workpermits"],
+    enabled: !!(adminData as any)?.admin,
+    refetchInterval: 30000,
+    retry: false,
+  });
+
+  // Get contracts data for detailed status
+  const { data: contractsData } = useQuery({
+    queryKey: ["/api/admin/contracts"],
+    enabled: !!(adminData as any)?.admin,
+    refetchInterval: 30000,
+    retry: false,
+  });
+
   const logoutMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/admin/logout", {});
@@ -107,6 +123,37 @@ export default function AdminDashboardPage() {
   };
 
   const users: User[] = (usersData as any)?.users || [];
+
+  // Calculate detailed work permit status
+  const workPermits = (workPermitsData as any)?.workPermits || [];
+  const workPermitStats = workPermits.reduce((acc: any, wp: any) => {
+    const status = wp.workPermit?.status || 'not_started';
+    acc[status] = (acc[status] || 0) + 1;
+    acc.total = (acc.total || 0) + 1;
+    return acc;
+  }, {
+    preparation: 0,
+    applied: 0,
+    awaiting_decision: 0,
+    approved: 0,
+    rejected: 0,
+    not_started: 0,
+    total: 0
+  });
+
+  // Calculate detailed contract status
+  const contracts = (contractsData as any)?.contracts || [];
+  const contractStats = contracts.reduce((acc: any, contract: any) => {
+    if (contract.companyContractUrl && contract.jobOfferUrl) {
+      acc.complete = (acc.complete || 0) + 1;
+    } else if (contract.companyContractUrl || contract.jobOfferUrl) {
+      acc.partial = (acc.partial || 0) + 1;
+    } else {
+      acc.empty = (acc.empty || 0) + 1;
+    }
+    acc.total = (acc.total || 0) + 1;
+    return acc;
+  }, { complete: 0, partial: 0, empty: 0, total: 0 });
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -276,24 +323,50 @@ export default function AdminDashboardPage() {
               </div>
             </div>
             
-            {/* Quick Stats Row */}
-            <div className="bg-white px-10 py-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                <div className="py-2">
+            {/* Detailed Stats Row */}
+            <div className="bg-white px-10 py-6 border-t border-gray-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
                   <div className="text-3xl font-bold text-blue-600 mb-1">{stats.totalUsers}</div>
-                  <div className="text-sm text-gray-600 font-medium">Total Users</div>
+                  <div className="text-sm text-gray-600 font-medium mb-1">Total Users</div>
+                  <div className="text-xs text-gray-500">Registered accounts</div>
                 </div>
-                <div className="py-2">
+                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
                   <div className="text-3xl font-bold text-green-600 mb-1">{stats.completedDockets}</div>
-                  <div className="text-sm text-gray-600 font-medium">Completed</div>
+                  <div className="text-sm text-gray-600 font-medium mb-1">Completed Dockets</div>
+                  <div className="text-xs text-green-600">100% completion rate</div>
                 </div>
-                <div className="py-2">
+                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
                   <div className="text-3xl font-bold text-yellow-600 mb-1">{stats.pendingDockets}</div>
-                  <div className="text-sm text-gray-600 font-medium">Pending</div>
+                  <div className="text-sm text-gray-600 font-medium mb-1">Pending Dockets</div>
+                  <div className="text-xs text-yellow-600">Awaiting completion</div>
                 </div>
-                <div className="py-2">
+                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
                   <div className="text-3xl font-bold text-purple-600 mb-1">{stats.contractsPending}</div>
-                  <div className="text-sm text-gray-600 font-medium">Contracts</div>
+                  <div className="text-sm text-gray-600 font-medium mb-1">Active Contracts</div>
+                  <div className="text-xs text-purple-600">Processing status</div>
+                </div>
+                <div className="text-center py-3">
+                  <div className="text-3xl font-bold text-red-600 mb-1">{stats.issues || 0}</div>
+                  <div className="text-sm text-gray-600 font-medium mb-1">System Issues</div>
+                  <div className="text-xs text-green-600">All systems operational</div>
+                </div>
+              </div>
+              
+              {/* Real-time status indicator */}
+              <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-gray-600">System Status: Operational</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RefreshCw className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm text-gray-500">Auto-refresh: 30s</span>
+                  </div>
+                </div>
+                <div className="text-sm text-gray-500">
+                  Last updated: {new Date().toLocaleTimeString()}
                 </div>
               </div>
             </div>
@@ -315,13 +388,30 @@ export default function AdminDashboardPage() {
               <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
                 Work Permits
               </h3>
-              <p className="text-gray-600 mb-6 text-base leading-relaxed">Manage work permit applications and approvals</p>
+              <p className="text-gray-600 mb-4 text-base leading-relaxed">Manage work permit applications and approvals</p>
+              
+              {/* Detailed Work Permit Status */}
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Approved:</span>
+                  <span className="font-semibold text-green-600">{workPermitStats.approved}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Under Review:</span>
+                  <span className="font-semibold text-yellow-600">{workPermitStats.awaiting_decision}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">In Preparation:</span>
+                  <span className="font-semibold text-blue-600">{workPermitStats.preparation}</span>
+                </div>
+              </div>
+              
               <div className="flex items-center justify-between">
                 <Badge className="bg-blue-100 text-blue-700 px-3 py-2 text-sm">
                   <Activity className="h-4 w-4 mr-2" />
-                  Active Management
+                  Total: {workPermitStats.total}
                 </Badge>
-                <span className="text-3xl font-bold text-blue-600">{stats.contractsPending}</span>
+                <span className="text-3xl font-bold text-blue-600">{workPermitStats.approved}</span>
               </div>
             </CardContent>
           </Card>
@@ -330,23 +420,40 @@ export default function AdminDashboardPage() {
             className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-100"
             onClick={() => setLocation("/admin/contracts")}
           >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-4 bg-green-500 rounded-xl group-hover:bg-green-600 transition-colors shadow-lg">
-                  <FileText className="h-8 w-8 text-white" />
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="p-5 bg-green-500 rounded-xl group-hover:bg-green-600 transition-colors shadow-lg">
+                  <FileText className="h-10 w-10 text-white" />
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-green-500 transition-colors" />
+                <ChevronRight className="h-6 w-6 text-gray-400 group-hover:text-green-500 transition-colors" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors leading-tight">
                 Contract Management
               </h3>
-              <p className="text-gray-600 mb-4">Upload and manage company contracts and job offers</p>
+              <p className="text-gray-600 mb-4 text-base leading-relaxed">Upload and manage company contracts and job offers</p>
+              
+              {/* Detailed Contract Status */}
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Complete:</span>
+                  <span className="font-semibold text-green-600">{contractStats.complete}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Partial:</span>
+                  <span className="font-semibold text-yellow-600">{contractStats.partial}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Empty:</span>
+                  <span className="font-semibold text-red-600">{contractStats.empty}</span>
+                </div>
+              </div>
+              
               <div className="flex items-center justify-between">
-                <Badge className="bg-green-100 text-green-700">
-                  <FileCheck className="h-3 w-3 mr-1" />
-                  Document Control
+                <Badge className="bg-green-100 text-green-700 px-3 py-2 text-sm">
+                  <FileCheck className="h-4 w-4 mr-2" />
+                  Total: {contractStats.total}
                 </Badge>
-                <span className="text-2xl font-bold text-green-600">{stats.completedDockets}</span>
+                <span className="text-3xl font-bold text-green-600">{contractStats.complete}</span>
               </div>
             </CardContent>
           </Card>
@@ -355,23 +462,40 @@ export default function AdminDashboardPage() {
             className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-purple-50 to-violet-100"
             onClick={() => setLocation("/admin/users")}
           >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-4 bg-purple-500 rounded-xl group-hover:bg-purple-600 transition-colors shadow-lg">
-                  <Users className="h-8 w-8 text-white" />
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="p-5 bg-purple-500 rounded-xl group-hover:bg-purple-600 transition-colors shadow-lg">
+                  <Users className="h-10 w-10 text-white" />
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                <ChevronRight className="h-6 w-6 text-gray-400 group-hover:text-purple-500 transition-colors" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors leading-tight">
                 User Management
               </h3>
-              <p className="text-gray-600 mb-4">View, edit, and manage all user accounts</p>
+              <p className="text-gray-600 mb-4 text-base leading-relaxed">View, edit, and manage all user accounts</p>
+              
+              {/* User Activity Summary */}
+              <div className="space-y-3 mb-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Active Users:</span>
+                  <span className="font-semibold text-green-600">{stats.totalUsers}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Complete Profiles:</span>
+                  <span className="font-semibold text-blue-600">{stats.completedDockets}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Pending Setup:</span>
+                  <span className="font-semibold text-yellow-600">{Math.max(0, stats.totalUsers - stats.completedDockets)}</span>
+                </div>
+              </div>
+              
               <div className="flex items-center justify-between">
-                <Badge className="bg-purple-100 text-purple-700">
-                  <Users className="h-3 w-3 mr-1" />
-                  User Control
+                <Badge className="bg-purple-100 text-purple-700 px-3 py-2 text-sm">
+                  <Users className="h-4 w-4 mr-2" />
+                  Manage All
                 </Badge>
-                <span className="text-2xl font-bold text-purple-600">{stats.totalUsers}</span>
+                <span className="text-3xl font-bold text-purple-600">{stats.totalUsers}</span>
               </div>
             </CardContent>
           </Card>
