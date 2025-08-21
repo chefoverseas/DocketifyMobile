@@ -21,6 +21,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  photoUrl: text("photo_url"), // New field for admin-uploaded photos
   phone: text("phone"), // Optional field for profile
   uid: text("uid").unique(), // 8-digit unique identifier
   givenName: text("given_name"),

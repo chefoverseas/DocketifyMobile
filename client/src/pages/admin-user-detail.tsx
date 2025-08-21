@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { UserNavigationHub } from "@/components/user-navigation-hub";
 import DocketForm from "@/components/docket-form";
+import { AdminUserPhotoUpload } from "@/components/AdminUserPhotoUpload";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, User, Upload, FileText } from "lucide-react";

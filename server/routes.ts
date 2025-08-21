@@ -1420,6 +1420,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Object Storage Routes for Admin Photo Upload
+  
+  // Get upload URL for user photos (admin only)
+  app.post("/api/admin/user-photo/upload", requireAdminAuth, async (req, res) => {
+    try {
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error generating upload URL:", error);
+      res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  });
+
+  // Update user photo URL after upload (admin only)
+  app.put("/api/admin/user/:uid/photo", requireAdminAuth, async (req, res) => {
+    const { uid } = req.params;
+    const { photoURL } = req.body;
+
+    if (!photoURL) {
+      return res.status(400).json({ error: "Photo URL is required" });
+    }
+
+    try {
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      
+      // Set ACL policy for public photo access
+      const normalizedPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        photoURL,
+        {
+          owner: "admin",
+          visibility: "public", // User photos should be publicly accessible
+        }
+      );
+
+      // Update user in database
+      const user = await storage.updateUserPhoto(uid, normalizedPath);
+      
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.json({ 
+        message: "Photo updated successfully",
+        photoUrl: normalizedPath,
+        user 
+      });
+    } catch (error) {
+      console.error("Error updating user photo:", error);
+      res.status(500).json({ error: "Failed to update photo" });
+    }
+  });
+
+  // Serve object storage files
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const { ObjectStorageService } = await import("./objectStorage");
+      const objectStorageService = new ObjectStorageService();
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error: any) {
+      console.error("Error serving object:", error);
+      if (error?.name === "ObjectNotFoundError") {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
   // Catch-all handler for undefined API routes
   // This must be registered LAST to ensure all defined routes are matched first
   app.use('/api/*', (req, res) => {

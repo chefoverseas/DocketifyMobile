@@ -135,6 +135,18 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async updateUserPhoto(uid: string, photoUrl: string): Promise<User | null> {
+    const [user] = await db
+      .update(users)
+      .set({ 
+        photoUrl,
+        updatedAt: new Date()
+      })
+      .where(eq(users.uid, uid))
+      .returning();
+    return user || null;
+  }
+
   async deleteUser(id: string): Promise<void> {
     console.log(`🗑️  Starting cascading deletion for user: ${id}`);
     

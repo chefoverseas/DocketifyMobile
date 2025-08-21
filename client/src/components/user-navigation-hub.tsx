@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { AdminUserPhotoUpload } from "./AdminUserPhotoUpload";
 import { Link } from "wouter";
 import { 
   User, 
@@ -15,7 +16,8 @@ import {
   Phone,
   Mail,
   Calendar,
-  MapPin
+  MapPin,
+  Camera
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -24,7 +26,23 @@ interface UserNavigationHubProps {
   showUserInfo?: boolean;
 }
 
+// Add function to handle photo update and refresh the user data
+function useUserPhotoUpdate(userId?: string) {
+  const queryClient = useQueryClient();
+  
+  const handlePhotoUpdate = (newPhotoUrl: string) => {
+    // Invalidate queries to refresh user data
+    if (userId) {
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/user/${userId}`] });
+    }
+    queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+  };
+
+  return { handlePhotoUpdate };
+}
+
 export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigationHubProps) {
+  const { handlePhotoUpdate } = useUserPhotoUpdate(userId);
   // If userId is provided, fetch that user's data (admin view)
   // Otherwise, fetch current user's data (user view)
   const { data: userData, error: userError, isLoading: userLoading } = useQuery({
@@ -222,32 +240,68 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div>
-                <p className="text-sm font-medium text-gray-700">Name</p>
-                <p className="text-lg font-semibold text-gray-900">{user.displayName}</p>
-              </div>
-              <div className="flex items-center">
-                <Mail className="h-4 w-4 text-gray-400 mr-2" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Email</p>
-                  <p className="text-sm text-gray-900">{user.email}</p>
+            <div className="space-y-6">
+              {/* Photo Upload Section - Only for Admin */}
+              {userId && (
+                <div className="border-b border-gray-200 pb-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0">
+                      {user.photoUrl ? (
+                        <img
+                          src={user.photoUrl}
+                          alt={user.displayName || 'User'}
+                          className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-gray-300">
+                          <User className="h-8 w-8 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">User Photo</h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Upload or update the user's profile photo. This will be visible in their profile and documents.
+                      </p>
+                      <AdminUserPhotoUpload
+                        userId={user.id}
+                        userUid={user.uid}
+                        currentPhotoUrl={user.photoUrl}
+                        onPhotoUpdated={handlePhotoUpdate}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center">
-                <Phone className="h-4 w-4 text-gray-400 mr-2" />
+              )}
+
+              {/* User Information Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-700">Phone</p>
-                  <p className="text-sm text-gray-900">{user.phone}</p>
+                  <p className="text-sm font-medium text-gray-700">Name</p>
+                  <p className="text-lg font-semibold text-gray-900">{user.displayName}</p>
                 </div>
-              </div>
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                <div>
-                  <p className="text-sm font-medium text-gray-700">Joined</p>
-                  <p className="text-sm text-gray-900">
-                    {user.createdAt ? format(new Date(user.createdAt), 'MMM dd, yyyy') : 'N/A'}
-                  </p>
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 text-gray-400 mr-2" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Email</p>
+                    <p className="text-sm text-gray-900">{user.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 text-gray-400 mr-2" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Phone</p>
+                    <p className="text-sm text-gray-900">{user.phone}</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <Calendar className="h-4 w-4 text-gray-400 mr-2" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">Joined</p>
+                    <p className="text-sm text-gray-900">
+                      {user.createdAt ? format(new Date(user.createdAt), 'MMM dd, yyyy') : 'N/A'}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
