@@ -5,6 +5,7 @@ import {
   contracts, 
   adminSessions, 
   workPermits, 
+  notifications,
   type User, 
   type UpsertUser,
   type InsertUser, 
@@ -17,7 +18,9 @@ import {
   type AdminSession, 
   type InsertAdminSession, 
   type WorkPermit, 
-  type InsertWorkPermit 
+  type InsertWorkPermit,
+  type Notification,
+  type InsertNotification
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, lt } from "drizzle-orm";
@@ -75,6 +78,13 @@ export interface IStorage {
     contractsPending: number;
     issues: number;
   }>;
+
+  // Notification operations
+  getUserNotifications(userId: string): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationAsRead(notificationId: string, userId: string): Promise<Notification>;
+  markAllNotificationsAsRead(userId: string): Promise<number>;
+  dismissNotification(notificationId: string, userId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -438,6 +448,71 @@ export class DatabaseStorage implements IStorage {
       contractsPending,
       issues: 0, // Can be implemented based on specific business logic
     };
+  }
+
+  // Notification operations
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    const userNotifications = await db
+      .select()
+      .from(notifications)
+      .where(and(eq(notifications.userId, userId), eq(notifications.dismissed, false)))
+      .orderBy(desc(notifications.createdAt));
+    
+    return userNotifications;
+  }
+
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const [created] = await db
+      .insert(notifications)
+      .values(notification)
+      .returning();
+    
+    return created;
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<Notification> {
+    const [updated] = await db
+      .update(notifications)
+      .set({ 
+        read: true,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(notifications.id, notificationId),
+        eq(notifications.userId, userId)
+      ))
+      .returning();
+    
+    return updated;
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<number> {
+    const result = await db
+      .update(notifications)
+      .set({ 
+        read: true,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(notifications.userId, userId),
+        eq(notifications.read, false)
+      ))
+      .returning();
+    
+    return result.length;
+  }
+
+  async dismissNotification(notificationId: string, userId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ 
+        dismissed: true,
+        updatedAt: new Date()
+      })
+      .where(and(
+        eq(notifications.id, notificationId),
+        eq(notifications.userId, userId)
+      ));
   }
 }
 

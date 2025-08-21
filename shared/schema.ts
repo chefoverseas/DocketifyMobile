@@ -98,7 +98,21 @@ export const workPermits = pgTable("work_permits", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
-export const usersRelations = relations(users, ({ one }) => ({
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // info, warning, success, error
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  actionUrl: text("action_url"),
+  priority: text("priority").notNull().default("medium"), // low, medium, high
+  read: boolean("read").default(false),
+  dismissed: boolean("dismissed").default(false),
+  createdAt: timestamp("created_at").default(sql`now()`),
+  updatedAt: timestamp("updated_at").default(sql`now()`),
+});
+
+export const usersRelations = relations(users, ({ one, many }) => ({
   docket: one(dockets, {
     fields: [users.id],
     references: [dockets.userId],
@@ -111,6 +125,7 @@ export const usersRelations = relations(users, ({ one }) => ({
     fields: [users.id],
     references: [workPermits.userId],
   }),
+  notifications: many(notifications),
 }));
 
 export const docketsRelations = relations(dockets, ({ one }) => ({
@@ -130,6 +145,13 @@ export const contractsRelations = relations(contracts, ({ one }) => ({
 export const workPermitsRelations = relations(workPermits, ({ one }) => ({
   user: one(users, {
     fields: [workPermits.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
     references: [users.id],
   }),
 }));
@@ -166,6 +188,12 @@ export const insertWorkPermitSchema = createInsertSchema(workPermits).omit({
   createdAt: true,
 });
 
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -179,3 +207,5 @@ export type AdminSession = typeof adminSessions.$inferSelect;
 export type InsertAdminSession = z.infer<typeof insertAdminSessionSchema>;
 export type WorkPermit = typeof workPermits.$inferSelect;
 export type InsertWorkPermit = z.infer<typeof insertWorkPermitSchema>;
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;

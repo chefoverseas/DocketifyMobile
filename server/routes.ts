@@ -1319,6 +1319,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Notification Management Routes
+  
+  // Get user notifications
+  app.get("/api/notifications", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      console.log(`🔔 Getting notifications for user: ${userId}`);
+      
+      const notifications = await storage.getUserNotifications(userId);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ notifications });
+    } catch (error) {
+      console.error("Get notifications error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get notifications" });
+    }
+  });
+
+  // Mark notification as read
+  app.patch("/api/notifications/:notificationId/read", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { notificationId } = req.params;
+      
+      console.log(`🔔 Marking notification as read: ${notificationId} for user: ${userId}`);
+      
+      const notification = await storage.markNotificationAsRead(notificationId, userId);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ notification, success: true });
+    } catch (error) {
+      console.error("Mark notification as read error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  // Mark all notifications as read
+  app.patch("/api/notifications/mark-all-read", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      
+      console.log(`🔔 Marking all notifications as read for user: ${userId}`);
+      
+      const updatedNotifications = await storage.markAllNotificationsAsRead(userId);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ updatedCount: updatedNotifications, success: true });
+    } catch (error) {
+      console.error("Mark all notifications as read error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to mark all notifications as read" });
+    }
+  });
+
+  // Dismiss notification
+  app.delete("/api/notifications/:notificationId", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session.userId;
+      const { notificationId } = req.params;
+      
+      console.log(`🔔 Dismissing notification: ${notificationId} for user: ${userId}`);
+      
+      await storage.dismissNotification(notificationId, userId);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Dismiss notification error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to dismiss notification" });
+    }
+  });
+
+  // Admin create notification for user
+  app.post("/api/admin/notifications/:userId", requireAdminAuth, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const { type, title, message, actionUrl, priority } = req.body;
+      
+      console.log(`🔔 Admin creating notification for user: ${userId}`);
+      
+      const notification = await storage.createNotification({
+        userId,
+        type: type || 'info',
+        title,
+        message,
+        actionUrl: actionUrl || null,
+        priority: priority || 'medium'
+      });
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ notification, success: true });
+    } catch (error) {
+      console.error("Admin create notification error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to create notification" });
+    }
+  });
+
   // Catch-all handler for undefined API routes
   // This must be registered LAST to ensure all defined routes are matched first
   app.use('/api/*', (req, res) => {

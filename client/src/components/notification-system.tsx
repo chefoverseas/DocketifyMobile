@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, CheckCircle, AlertCircle, Clock, X, FileText, Briefcase, Shield } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { Bell, CheckCircle, AlertCircle, Clock, X, FileText, Briefcase, Shield, RefreshCw, Wifi, WifiOff } from "lucide-react";
 
 interface Notification {
   id: string;
@@ -18,40 +20,21 @@ interface Notification {
 
 export function NotificationSystem() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      type: "warning",
-      title: "Document Review Required",
-      message: "Your passport documents need admin review",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      read: false,
-      actionUrl: "/docket",
-      priority: "high"
-    },
-    {
-      id: "2", 
-      type: "success",
-      title: "Contract Uploaded",
-      message: "Your signed contract was successfully submitted",
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      read: false,
-      actionUrl: "/contracts",
-      priority: "medium"
-    },
-    {
-      id: "3",
-      type: "info",
-      title: "Work Permit Update",
-      message: "Your application status changed to 'Under Review'",
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-      read: true,
-      actionUrl: "/workpermit",
-      priority: "medium"
-    }
-  ]);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  // Real-time notification fetching
+  const { data: notificationsData, isLoading, refetch, isError } = useQuery({
+    queryKey: ['/api/notifications'],
+    refetchInterval: 30000, // Refetch every 30 seconds for real-time updates
+    refetchIntervalInBackground: true,
+    staleTime: 0, // Always consider data stale for real-time updates
+  });
+
+  const notifications = notificationsData?.notifications || [];
+  const unreadCount = notifications.filter((n: Notification) => !n.read).length;
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -62,18 +45,131 @@ export function NotificationSystem() {
     }
   };
 
+  // Mark notification as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: (notificationId: string) => 
+      apiRequest(`/api/notifications/${notificationId}/read`, { method: 'PATCH' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
+      setLastSyncTime(new Date());
+    },
+    onError: () => {
+      toast({
+        title: "Sync Error",
+        description: "Failed to mark notification as read",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Mark all as read mutation
+  const markAllAsReadMutation = useMutation({
+    mutationFn: () => 
+      apiRequest('/api/notifications/mark-all-read', { method: 'PATCH' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
+      setLastSyncTime(new Date());
+      toast({
+        title: "Notifications Updated",
+        description: "All notifications marked as read",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Sync Error",
+        description: "Failed to mark all notifications as read",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Dismiss notification mutation
+  const dismissNotificationMutation = useMutation({
+    mutationFn: (notificationId: string) => 
+      apiRequest(`/api/notifications/${notificationId}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
+      setLastSyncTime(new Date());
+    },
+    onError: () => {
+      toast({
+        title: "Sync Error",
+        description: "Failed to dismiss notification",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Manual sync function
+  const handleManualSync = async () => {
+    try {
+      await refetch();
+      setLastSyncTime(new Date());
+      toast({
+        title: "Notifications Synced",
+        description: "Successfully refreshed notifications",
+      });
+    } catch (error) {
+      toast({
+        title: "Sync Failed",
+        description: "Unable to refresh notifications",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Online/offline detection
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      refetch(); // Auto-sync when coming back online
+      toast({
+        title: "Back Online",
+        description: "Notifications synced",
+      });
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      toast({
+        title: "Offline Mode",
+        description: "Notifications will sync when back online",
+        variant: "destructive"
+      });
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [refetch, toast]);
+
+  // Auto-sync on window focus
+  useEffect(() => {
+    const handleFocus = () => {
+      if (isOnline) {
+        refetch();
+        setLastSyncTime(new Date());
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [isOnline, refetch]);
+
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, read: true } : n)
-    );
+    markAsReadMutation.mutate(id);
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    markAllAsReadMutation.mutate();
   };
 
   const dismissNotification = (id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    dismissNotificationMutation.mutate(id);
   };
 
   const formatTime = (timestamp: Date) => {
@@ -93,9 +189,18 @@ export function NotificationSystem() {
         variant="outline"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative"
+        className={`relative transition-colors ${
+          isError ? 'border-red-300 bg-red-50' : 
+          !isOnline ? 'border-yellow-300 bg-yellow-50' : 
+          'border-gray-300'
+        }`}
       >
-        <Bell className="h-4 w-4" />
+        <div className="flex items-center space-x-1">
+          <Bell className="h-4 w-4" />
+          {!isOnline && <WifiOff className="h-3 w-3 text-yellow-600" />}
+          {isError && <AlertCircle className="h-3 w-3 text-red-600" />}
+          {isLoading && <RefreshCw className="h-3 w-3 animate-spin text-blue-600" />}
+        </div>
         {unreadCount > 0 && (
           <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center p-0">
             {unreadCount}
@@ -107,11 +212,58 @@ export function NotificationSystem() {
         <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
           <div className="p-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold">Notifications</h3>
+              <div>
+                <h3 className="text-lg font-semibold">Notifications</h3>
+                <div className="flex items-center space-x-2 mt-1">
+                  <div className={`flex items-center space-x-1 text-xs ${
+                    isError ? 'text-red-600' : 
+                    !isOnline ? 'text-yellow-600' : 
+                    'text-green-600'
+                  }`}>
+                    {isError ? <WifiOff className="h-3 w-3" /> : 
+                     !isOnline ? <WifiOff className="h-3 w-3" /> : 
+                     <Wifi className="h-3 w-3" />}
+                    <span>
+                      {isError ? 'Sync Error' : 
+                       !isOnline ? 'Offline' : 
+                       'Online'}
+                    </span>
+                  </div>
+                  {lastSyncTime && (
+                    <span className="text-xs text-gray-500">
+                      • Last sync: {formatTime(lastSyncTime)}
+                    </span>
+                  )}
+                </div>
+              </div>
               <div className="flex items-center space-x-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleManualSync}
+                  disabled={isLoading}
+                  className="text-xs"
+                >
+                  {isLoading ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-3 w-3" />
+                  )}
+                  Sync
+                </Button>
                 {unreadCount > 0 && (
-                  <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-                    Mark all read
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={markAllAsRead}
+                    disabled={markAllAsReadMutation.isPending}
+                    className="text-xs"
+                  >
+                    {markAllAsReadMutation.isPending ? (
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                    ) : (
+                      "Mark all read"
+                    )}
                   </Button>
                 )}
                 <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
@@ -140,8 +292,8 @@ export function NotificationSystem() {
                       key={notification.id}
                       className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${
                         !notification.read ? "bg-blue-50" : ""
-                      }`}
-                      onClick={() => markAsRead(notification.id)}
+                      } ${markAsReadMutation.isPending ? "opacity-50" : ""}`}
+                      onClick={() => !markAsReadMutation.isPending && markAsRead(notification.id)}
                     >
                       <div className="flex items-start space-x-3">
                         {getIcon(notification.type)}
@@ -158,6 +310,9 @@ export function NotificationSystem() {
                                   High
                                 </Badge>
                               )}
+                              {!notification.read && markAsReadMutation.isPending && (
+                                <RefreshCw className="h-3 w-3 animate-spin text-blue-600" />
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -165,9 +320,14 @@ export function NotificationSystem() {
                                   e.stopPropagation();
                                   dismissNotification(notification.id);
                                 }}
+                                disabled={dismissNotificationMutation.isPending}
                                 className="p-1 h-auto"
                               >
-                                <X className="h-3 w-3" />
+                                {dismissNotificationMutation.isPending ? (
+                                  <RefreshCw className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <X className="h-3 w-3" />
+                                )}
                               </Button>
                             </div>
                           </div>
@@ -176,7 +336,7 @@ export function NotificationSystem() {
                           </p>
                           <div className="flex items-center justify-between mt-2">
                             <p className="text-xs text-gray-500">
-                              {formatTime(notification.timestamp)}
+                              {formatTime(new Date(notification.timestamp))}
                             </p>
                             {notification.actionUrl && (
                               <Button variant="ghost" size="sm" className="text-xs">
