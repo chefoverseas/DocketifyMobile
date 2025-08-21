@@ -9,13 +9,16 @@ import { Bell, CheckCircle, AlertCircle, Clock, X, FileText, Briefcase, Shield, 
 
 interface Notification {
   id: string;
+  userId: string;
   type: "info" | "warning" | "success" | "error";
   title: string;
   message: string;
-  timestamp: Date;
-  read: boolean;
   actionUrl?: string;
   priority: "low" | "medium" | "high";
+  read: boolean;
+  dismissed: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export function NotificationSystem() {
@@ -285,7 +288,7 @@ export function NotificationSystem() {
                   .sort((a, b) => {
                     if (a.priority === "high" && b.priority !== "high") return -1;
                     if (b.priority === "high" && a.priority !== "high") return 1;
-                    return b.timestamp.getTime() - a.timestamp.getTime();
+                    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                   })
                   .map((notification) => (
                     <div
@@ -336,7 +339,7 @@ export function NotificationSystem() {
                           </p>
                           <div className="flex items-center justify-between mt-2">
                             <p className="text-xs text-gray-500">
-                              {formatTime(new Date(notification.timestamp))}
+                              {formatTime(new Date(notification.createdAt))}
                             </p>
                             {notification.actionUrl && (
                               <Button variant="ghost" size="sm" className="text-xs">
