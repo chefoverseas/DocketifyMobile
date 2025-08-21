@@ -290,15 +290,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Serve uploaded files
-  app.use('/uploads', requireAuth, (req: any, res, next) => {
-    res.setHeader('Content-Type', 'application/octet-stream');
-    next();
-  });
-  
+  // Serve uploaded files - public access for photos
   app.use('/uploads', (req, res, next) => {
     const filePath = path.join(uploadsDir, req.path);
     if (fs.existsSync(filePath)) {
+      // Set appropriate content type for images
+      res.setHeader('Cache-Control', 'public, max-age=3600');
       res.sendFile(filePath);
     } else {
       res.status(404).json({ message: 'File not found' });
@@ -1475,20 +1472,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Serve uploaded files
-  app.get("/uploads/:filename", (req, res) => {
-    const { filename } = req.params;
-    const filePath = path.join(process.cwd(), 'uploads', filename);
-    
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: "File not found" });
-    }
-    
-    // Set appropriate headers
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.sendFile(filePath);
-  });
+
 
   // Serve object storage files
   app.get("/objects/:objectPath(*)", async (req, res) => {
