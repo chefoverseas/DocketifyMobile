@@ -23,6 +23,7 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { useLocation, Link } from "wouter";
 import type { User } from "@shared/schema";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 export default function AdminContractsPage() {
   const { toast } = useToast();
@@ -183,6 +184,13 @@ export default function AdminContractsPage() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
               <div className="mb-6 lg:mb-0">
                 <div className="flex items-center space-x-4 mb-4">
+                  <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+                    <img 
+                      src={chefOverseasLogo} 
+                      alt="Chef Overseas Logo" 
+                      className="h-8 w-auto object-contain"
+                    />
+                  </div>
                   <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
                     <FileText className="h-8 w-8 text-white" />
                   </div>

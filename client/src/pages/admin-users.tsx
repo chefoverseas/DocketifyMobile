@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "wouter";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 const updateUserSchema = z.object({
   displayName: z.string().min(2, "Name must be at least 2 characters"),
@@ -190,6 +191,13 @@ export default function AdminUsersPage() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
               <div className="mb-6 lg:mb-0">
                 <div className="flex items-center space-x-4 mb-4">
+                  <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+                    <img 
+                      src={chefOverseasLogo} 
+                      alt="Chef Overseas Logo" 
+                      className="h-8 w-auto object-contain"
+                    />
+                  </div>
                   <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
                     <Users className="h-8 w-8 text-white" />
                   </div>

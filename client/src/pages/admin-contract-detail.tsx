@@ -74,7 +74,13 @@ export default function AdminContractDetail({ userId: propUserId }: AdminContrac
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center">
-              <img src={chefOverseasLogo} alt="Chef Overseas" className="h-10 w-10 mr-3" />
+              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 mr-3">
+                <img 
+                  src={chefOverseasLogo} 
+                  alt="Chef Overseas" 
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Contract Management</h1>
                 <p className="text-sm text-gray-600">Admin Dashboard - Contract Details</p>

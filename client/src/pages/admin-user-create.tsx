@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, UserPlus } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 const createUserSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -102,6 +103,13 @@ export default function AdminUserCreatePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
+              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 mr-4">
+                <img 
+                  src={chefOverseasLogo} 
+                  alt="Chef Overseas Logo" 
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
               <Link href="/admin/dashboard">
                 <Button variant="ghost" size="sm" className="mr-4">
                   <ArrowLeft className="h-4 w-4 mr-2" />

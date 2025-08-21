@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import type { User } from "@shared/schema";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 export default function AdminDashboardPage() {
   const { toast } = useToast();
@@ -248,6 +249,13 @@ export default function AdminDashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-4">
+              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+                <img 
+                  src={chefOverseasLogo} 
+                  alt="Chef Overseas Logo" 
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
               <div className="relative">
                 <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
                   <Shield className="h-6 w-6 text-white" />

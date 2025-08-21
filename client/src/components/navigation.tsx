@@ -21,11 +21,13 @@ export default function Navigation() {
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <img 
-                src={chefOverseasLogo} 
-                alt="Chef Overseas Logo" 
-                className="h-12 w-auto mr-4 object-contain"
-              />
+              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+                <img 
+                  src={chefOverseasLogo} 
+                  alt="Chef Overseas Logo" 
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
               <span className="text-xl font-bold text-gray-900">Docketify</span>
             </div>
           </div>

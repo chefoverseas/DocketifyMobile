@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Calendar, MapPin, Plane, Edit, Filter, Download, RefreshCw, Eye, UserCheck, Globe, Building2, TrendingUp, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 import { format } from "date-fns";
 import { WorkVisaDetailsModal } from "@/components/WorkVisaDetailsModal";
 
@@ -216,6 +217,13 @@ export default function AdminWorkVisasPage() {
         <div className="bg-white/80 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
             <div className="flex items-center space-x-4">
+              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
+                <img 
+                  src={chefOverseasLogo} 
+                  alt="Chef Overseas Logo" 
+                  className="h-8 w-auto object-contain"
+                />
+              </div>
               <div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg">
                 <Plane className="h-8 w-8 text-white" />
               </div>

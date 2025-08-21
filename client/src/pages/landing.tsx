@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { FileText, Users, Shield, CheckCircle } from "lucide-react";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 export default function Landing() {
   const handleLogin = () => {
@@ -13,7 +14,13 @@ export default function Landing() {
         {/* Header */}
         <div className="text-center mb-20">
           <div className="flex items-center justify-center mb-8">
-            <img src="/chef-overseas-logo.png" alt="Chef Overseas" className="h-24 w-auto object-contain max-w-md" />
+            <div className="bg-white rounded-xl p-4 shadow-lg border border-orange-200">
+              <img 
+                src={chefOverseasLogo} 
+                alt="Chef Overseas" 
+                className="h-20 w-auto object-contain max-w-md"
+              />
+            </div>
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">
             Welcome to Docketify
