@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Link } from "wouter";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 interface WorkVisa {
   id: number;
@@ -215,11 +216,19 @@ export default function WorkVisaPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="h-64 bg-gray-200 rounded"></div>
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100">
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-8">
+            <Card className="bg-white/80 backdrop-blur-lg border-0 shadow-2xl">
+              <div className="h-32 bg-gradient-to-r from-orange-200 to-red-200 rounded-t-xl"></div>
+              <CardContent className="p-8">
+                <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 backdrop-blur-lg border-0 shadow-2xl">
+              <div className="h-64 bg-gray-200 rounded-xl"></div>
+            </Card>
           </div>
         </div>
       </div>
@@ -228,11 +237,11 @@ export default function WorkVisaPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6">
-        <div className="max-w-4xl mx-auto">
-          <Alert className="border-red-200 bg-red-50">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100">
+        <div className="container mx-auto px-4 py-8">
+          <Alert className="border-red-200 bg-gradient-to-r from-red-50 to-orange-50 shadow-lg">
             <AlertCircle className="h-4 w-4 text-red-600" />
-            <AlertDescription className="text-red-800">
+            <AlertDescription className="text-red-800 font-medium">
               Failed to load work visa information. Please try again later.
             </AlertDescription>
           </Alert>
@@ -242,47 +251,82 @@ export default function WorkVisaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between mb-6">
-            <Button asChild variant="outline" size="sm" className="bg-white/80 hover:bg-white">
-              <Link to="/dashboard">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Return to Dashboard
-              </Link>
-            </Button>
-          </div>
-          
-          <div className="text-center space-y-4">
-            <div className="flex items-center justify-center space-x-3">
-              <Plane className="h-8 w-8 text-blue-600" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Work Visa Status
-              </h1>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100">
+      <div className="container mx-auto px-4 py-8">
+        {/* Modern Header with Glassmorphism */}
+        <Card className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-700 text-white border-none shadow-2xl mb-8">
+          <CardContent className="p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+              <div className="mb-6 lg:mb-0">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="bg-white rounded-lg p-2 shadow-sm border border-white/20">
+                    <img 
+                      src={chefOverseasLogo} 
+                      alt="Chef Overseas Logo" 
+                      className="h-8 w-auto object-contain"
+                    />
+                  </div>
+                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                    <Plane className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl lg:text-4xl font-bold">Work Visa Status</h1>
+                    <p className="text-orange-100 text-lg mt-1">
+                      Track your visa application progress and embassy updates
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-4 text-sm text-orange-100">
+                  {workVisa && (
+                    <>
+                      <div className="flex items-center space-x-2">
+                        {getStatusIcon(workVisa.status)}
+                        <span>Status: {getStatusLabel(workVisa.status)}</span>
+                      </div>
+                      {workVisa.trackingCode && (
+                        <div className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4" />
+                          <span>Tracking: {workVisa.trackingCode}</span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <Button 
+                  asChild
+                  variant="outline" 
+                  size="sm"
+                  className="bg-white/20 hover:bg-white/30 border-white/30 text-white"
+                >
+                  <Link to="/dashboard">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Return to Dashboard
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Track your work visa application progress and important updates from the embassy.
-            </p>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Main Status Card */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-xl">
-          <CardHeader className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-t-lg">
+        <Card className="bg-white/80 backdrop-blur-lg border border-white/20 shadow-2xl">
+          <CardHeader className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 text-white rounded-t-xl">
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="text-2xl flex items-center space-x-3">
                   {workVisa ? getStatusIcon(workVisa.status) : <Clock className="h-5 w-5" />}
                   <span>Work Visa Application</span>
                 </CardTitle>
-                <CardDescription className="text-blue-100 text-lg mt-2">
+                <CardDescription className="text-orange-100 text-lg mt-2">
                   Current Status: {workVisa ? getStatusLabel(workVisa.status) : "Not Started"}
                 </CardDescription>
               </div>
               {workVisa && (
-                <Badge className={`${getStatusColor(workVisa.status)} px-4 py-2 text-sm font-semibold`}>
+                <Badge className={`${getStatusColor(workVisa.status)} px-4 py-2 text-sm font-semibold border-0 shadow-lg`}>
                   {getStatusLabel(workVisa.status)}
                 </Badge>
               )}
@@ -293,9 +337,9 @@ export default function WorkVisaPage() {
             {workVisa ? (
               <>
                 {/* Status Description */}
-                <Alert className="border-blue-200 bg-blue-50">
-                  <AlertCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-800 text-base">
+                <Alert className="border-orange-200 bg-gradient-to-r from-orange-50 to-red-50 shadow-lg">
+                  <AlertCircle className="h-4 w-4 text-orange-600" />
+                  <AlertDescription className="text-orange-800 text-base font-medium">
                     {getStatusDescription(workVisa.status)}
                   </AlertDescription>
                 </Alert>
@@ -304,164 +348,196 @@ export default function WorkVisaPage() {
                 <div className="space-y-6">
                   {/* Edit Control Header */}
                   {workVisa.status === "preparation" && (
-                    <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
-                      <div>
-                        <h4 className="font-semibold text-blue-800 mb-1">
-                          Update Your Visa Details
-                        </h4>
-                        <p className="text-sm text-blue-600">
-                          You can edit your visa type and embassy location while your application is in preparation.
-                        </p>
-                      </div>
-                      {!isEditing && (
-                        <Button
-                          onClick={handleEdit}
-                          variant="outline"
-                          size="sm"
-                          className="border-blue-300 text-blue-700 hover:bg-blue-100"
-                        >
-                          <Edit2 className="h-4 w-4 mr-2" />
-                          Edit Details
-                        </Button>
-                      )}
-                    </div>
+                    <Card className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 shadow-lg">
+                      <CardContent className="p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-semibold text-orange-800 mb-1 text-lg">
+                              Update Your Visa Details
+                            </h4>
+                            <p className="text-sm text-orange-600">
+                              You can edit your visa type and embassy location while your application is in preparation.
+                            </p>
+                          </div>
+                          {!isEditing && (
+                            <Button
+                              onClick={handleEdit}
+                              variant="outline"
+                              size="sm"
+                              className="border-orange-300 text-orange-700 hover:bg-orange-100 shadow-md"
+                            >
+                              <Edit2 className="h-4 w-4 mr-2" />
+                              Edit Details
+                            </Button>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
 
                   <div className="grid md:grid-cols-2 gap-6">
                     {/* Visa Type Section */}
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-700 flex items-center space-x-2">
-                        <FileText className="h-4 w-4" />
-                        <span>Visa Type</span>
-                      </h4>
-                      {isEditing ? (
-                        <div className="space-y-2">
-                          <Label htmlFor="visaType" className="text-sm text-gray-600">
-                            Select your visa type
-                          </Label>
-                          <Select
-                            value={editData.visaType}
-                            onValueChange={(value) => setEditData({ ...editData, visaType: value })}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Choose visa type" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {visaTypes.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {type}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      ) : (
-                        <p className="text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                          {workVisa.visaType || "Not specified"}
-                        </p>
-                      )}
-                    </div>
+                    <Card className="bg-white/60 backdrop-blur-sm border border-white/40 shadow-lg">
+                      <CardContent className="p-6">
+                        <h4 className="font-semibold text-orange-800 flex items-center space-x-2 mb-4">
+                          <FileText className="h-5 w-5 text-orange-600" />
+                          <span>Visa Type</span>
+                        </h4>
+                        {isEditing ? (
+                          <div className="space-y-2">
+                            <Label htmlFor="visaType" className="text-sm text-gray-600">
+                              Select your visa type
+                            </Label>
+                            <Select
+                              value={editData.visaType}
+                              onValueChange={(value) => setEditData({ ...editData, visaType: value })}
+                            >
+                              <SelectTrigger className="w-full border-orange-200 focus:ring-orange-500">
+                                <SelectValue placeholder="Choose visa type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {visaTypes.map((type) => (
+                                  <SelectItem key={type} value={type}>
+                                    {type}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : (
+                          <div className="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 rounded-lg border border-orange-200">
+                            <p className="text-orange-800 font-medium">
+                              {workVisa.visaType || "Not specified"}
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
 
                     {/* Embassy Location Section */}
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-700 flex items-center space-x-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>Embassy Location</span>
-                      </h4>
-                      {isEditing ? (
-                        <div className="space-y-2">
-                          <Label htmlFor="embassyLocation" className="text-sm text-gray-600">
-                            Select embassy location
-                          </Label>
-                          <Select
-                            value={editData.embassyLocation}
-                            onValueChange={(value) => setEditData({ ...editData, embassyLocation: value })}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Choose embassy location" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {embassyLocations.map((location) => (
-                                <SelectItem key={location} value={location}>
-                                  {location}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      ) : (
-                        <p className="text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                          {workVisa.embassyLocation || "Not specified"}
-                        </p>
-                      )}
-                    </div>
+                    <Card className="bg-white/60 backdrop-blur-sm border border-white/40 shadow-lg">
+                      <CardContent className="p-6">
+                        <h4 className="font-semibold text-orange-800 flex items-center space-x-2 mb-4">
+                          <MapPin className="h-5 w-5 text-orange-600" />
+                          <span>Embassy Location</span>
+                        </h4>
+                        {isEditing ? (
+                          <div className="space-y-2">
+                            <Label htmlFor="embassyLocation" className="text-sm text-gray-600">
+                              Select embassy location
+                            </Label>
+                            <Select
+                              value={editData.embassyLocation}
+                              onValueChange={(value) => setEditData({ ...editData, embassyLocation: value })}
+                            >
+                              <SelectTrigger className="w-full border-orange-200 focus:ring-orange-500">
+                                <SelectValue placeholder="Choose embassy location" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {embassyLocations.map((location) => (
+                                  <SelectItem key={location} value={location}>
+                                    {location}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        ) : (
+                          <div className="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 rounded-lg border border-orange-200">
+                            <p className="text-orange-800 font-medium">
+                              {workVisa.embassyLocation || "Not specified"}
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
                   </div>
 
                   {/* Edit Action Buttons */}
                   {isEditing && (
-                    <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
-                      <Button
-                        onClick={handleSave}
-                        disabled={updateWorkVisaMutation.isPending}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        <Save className="h-4 w-4 mr-2" />
-                        {updateWorkVisaMutation.isPending ? "Saving..." : "Save Changes"}
-                      </Button>
-                      <Button
-                        onClick={handleCancel}
-                        variant="outline"
-                        disabled={updateWorkVisaMutation.isPending}
-                        className="border-gray-300"
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Cancel
-                      </Button>
-                    </div>
+                    <Card className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 shadow-lg">
+                      <CardContent className="p-6">
+                        <div className="flex items-center space-x-3">
+                          <Button
+                            onClick={handleSave}
+                            disabled={updateWorkVisaMutation.isPending}
+                            className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white border-0 shadow-lg"
+                          >
+                            <Save className="h-4 w-4 mr-2" />
+                            {updateWorkVisaMutation.isPending ? "Saving..." : "Save Changes"}
+                          </Button>
+                          <Button
+                            onClick={handleCancel}
+                            variant="outline"
+                            disabled={updateWorkVisaMutation.isPending}
+                            className="border-orange-300 text-orange-700 hover:bg-orange-100 shadow-md"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Cancel
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
                   )}
 
-                  {workVisa.trackingCode && (
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-700">Tracking Code</h4>
-                      <p className="text-gray-600 font-mono bg-gray-50 px-3 py-2 rounded-lg">
-                        {workVisa.trackingCode}
-                      </p>
-                    </div>
-                  )}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {workVisa.trackingCode && (
+                      <Card className="bg-white/60 backdrop-blur-sm border border-white/40 shadow-lg">
+                        <CardContent className="p-6">
+                          <h4 className="font-semibold text-orange-800 mb-3">Tracking Code</h4>
+                          <div className="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 rounded-lg border border-orange-200">
+                            <p className="text-orange-800 font-mono font-medium">
+                              {workVisa.trackingCode}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
 
-                  {workVisa.applicationDate && (
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-700 flex items-center space-x-2">
-                        <Calendar className="h-4 w-4" />
-                        <span>Application Date</span>
-                      </h4>
-                      <p className="text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                        {format(new Date(workVisa.applicationDate), "PPP")}
-                      </p>
-                    </div>
-                  )}
+                    {workVisa.applicationDate && (
+                      <Card className="bg-white/60 backdrop-blur-sm border border-white/40 shadow-lg">
+                        <CardContent className="p-6">
+                          <h4 className="font-semibold text-orange-800 flex items-center space-x-2 mb-3">
+                            <Calendar className="h-5 w-5 text-orange-600" />
+                            <span>Application Date</span>
+                          </h4>
+                          <div className="bg-gradient-to-r from-orange-50 to-red-50 px-4 py-3 rounded-lg border border-orange-200">
+                            <p className="text-orange-800 font-medium">
+                              {format(new Date(workVisa.applicationDate), "PPP")}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
 
-                  {workVisa.interviewDate && (
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-700 flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-purple-600" />
-                        <span>Interview Date</span>
-                      </h4>
-                      <p className="text-purple-600 font-semibold bg-purple-50 px-3 py-2 rounded-lg">
-                        {format(new Date(workVisa.interviewDate), "PPP 'at' p")}
-                      </p>
-                    </div>
-                  )}
+                    {workVisa.interviewDate && (
+                      <Card className="bg-white/60 backdrop-blur-sm border border-white/40 shadow-lg md:col-span-2">
+                        <CardContent className="p-6">
+                          <h4 className="font-semibold text-orange-800 flex items-center space-x-2 mb-3">
+                            <Calendar className="h-5 w-5 text-orange-600" />
+                            <span>Interview Date</span>
+                          </h4>
+                          <div className="bg-gradient-to-r from-purple-50 to-purple-100 px-4 py-3 rounded-lg border border-purple-200">
+                            <p className="text-purple-800 font-semibold">
+                              {format(new Date(workVisa.interviewDate), "PPP 'at' p")}
+                            </p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
                 </div>
 
                 {/* Notes */}
                 {workVisa.notes && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-gray-700">Additional Notes</h4>
-                    <div className="bg-yellow-50 border-yellow-200 border rounded-lg p-4">
-                      <p className="text-gray-700">{workVisa.notes}</p>
-                    </div>
-                  </div>
+                  <Card className="bg-white/60 backdrop-blur-sm border border-white/40 shadow-lg">
+                    <CardContent className="p-6">
+                      <h4 className="font-semibold text-orange-800 mb-4">Additional Notes</h4>
+                      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4">
+                        <p className="text-gray-700 font-medium">{workVisa.notes}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
 
                 {/* Work Visa Documents */}
