@@ -845,6 +845,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin work permits list route
+  app.get("/api/admin/workpermits", requireAdminAuth, async (req, res) => {
+    try {
+      console.log(`🔍 Admin requesting all work permits`);
+      
+      // Get all users
+      const users = await storage.getAllUsers();
+      
+      // Get work permits for all users
+      const workPermitsData = [];
+      
+      for (const user of users) {
+        const workPermit = await storage.getWorkPermitByUserId(user.id);
+        workPermitsData.push({
+          user: {
+            id: user.id,
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            phone: user.phone,
+            createdAt: user.createdAt
+          },
+          workPermit: workPermit || null
+        });
+      }
+      
+      console.log(`✅ Found ${workPermitsData.length} work permit records`);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ workPermits: workPermitsData });
+    } catch (error) {
+      console.error("Admin get all work permits error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get work permits" });
+    }
+  });
+
   // Admin work permit route
   app.get("/api/admin/workpermit/:userId", requireAdminAuth, async (req, res) => {
     try {
