@@ -932,6 +932,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin work permit update route
+  app.patch("/api/admin/workpermit/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`🔍 Admin updating work permit for user ID: ${userId}`);
+      console.log(`🔍 Update data:`, req.body);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`✅ Found user for work permit update: ${user.email}`);
+
+      // Get existing work permit or create a new one
+      let workPermit = await storage.getWorkPermitByUserId(user.id);
+      
+      if (!workPermit) {
+        // Create new work permit if it doesn't exist
+        workPermit = await storage.createWorkPermit({
+          userId: user.id,
+          status: req.body.status || "preparation",
+          notes: req.body.notes || null,
+          finalDocketUrl: req.body.finalDocketUrl || null
+        });
+        console.log(`✅ Created new work permit for user: ${user.email}`);
+      } else {
+        // Update existing work permit
+        workPermit = await storage.updateWorkPermit(workPermit.id, {
+          status: req.body.status || workPermit.status,
+          notes: req.body.notes !== undefined ? req.body.notes : workPermit.notes,
+          finalDocketUrl: req.body.finalDocketUrl !== undefined ? req.body.finalDocketUrl : workPermit.finalDocketUrl
+        });
+        console.log(`✅ Updated work permit for user: ${user.email}`);
+      }
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        success: true,
+        workPermit: workPermit
+      });
+    } catch (error) {
+      console.error("Admin update work permit error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to update work permit" });
+    }
+  });
+
+  // Admin work permit final docket upload route
+  app.post("/api/admin/workpermit/:userId/upload-docket", requireAdminAuth, upload.single('finalDocket'), async (req: any, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`🔍 Admin uploading final docket for user ID: ${userId}`);
+      
+      if (!req.file) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`✅ Found user for final docket upload: ${user.email}`);
+
+      // Get or create work permit
+      let workPermit = await storage.getWorkPermitByUserId(user.id);
+      
+      if (!workPermit) {
+        // Create new work permit if it doesn't exist
+        workPermit = await storage.createWorkPermit({
+          userId: user.id,
+          status: "preparation",
+          notes: null,
+          finalDocketUrl: `/uploads/${req.file.filename}`
+        });
+        console.log(`✅ Created new work permit with final docket for user: ${user.email}`);
+      } else {
+        // Update existing work permit with final docket URL
+        workPermit = await storage.updateWorkPermit(workPermit.id, {
+          finalDocketUrl: `/uploads/${req.file.filename}`
+        });
+        console.log(`✅ Updated work permit with final docket for user: ${user.email}`);
+      }
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        success: true,
+        finalDocketUrl: `/uploads/${req.file.filename}`,
+        workPermit: workPermit
+      });
+    } catch (error) {
+      console.error("Admin upload final docket error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to upload final docket" });
+    }
+  });
+
   // Admin contract route
   app.get("/api/admin/contract/:userId", requireAdminAuth, async (req, res) => {
     try {
