@@ -1,6 +1,6 @@
 # Overview
 
-Docketify is a document management web application designed for secure user authentication via mobile OTP, comprehensive profile management, and organized storage of required documents and professional references within a "docket" system. Key features include file upload capabilities, detailed progress tracking, robust admin functionalities for user and document status management, and a modern real-time notification system. The platform features a revamped user dashboard with prominent user profile cards and professional UI/UX design using Chef Overseas branding. The system aims to streamline the document collection process, ensuring a secure, efficient, and user-friendly experience for both individuals and administrators.
+Docketify is a document management web application designed for secure user authentication via mobile OTP, comprehensive profile management, and organized storage of required documents and professional references within a "docket" system. Key features include file upload capabilities, detailed progress tracking, robust admin functionalities for user and document status management, and a modern real-time notification system. The platform features a revamped user dashboard with prominent user profile cards and professional UI/UX design using Chef Overseas branding. All admin modules have been modernized with consistent glassmorphism design, featuring orange-to-red gradients, interactive elements, and unified Chef Overseas branding across Work Permits, Work Visa, Contract Management, and User Management modules. The system aims to streamline the document collection process, ensuring a secure, efficient, and user-friendly experience for both individuals and administrators.
 
 # User Preferences
 
@@ -11,11 +11,11 @@ Preferred communication style: Simple, everyday language.
 ## Frontend Architecture
 - **Technology Stack**: React with TypeScript, utilizing functional components and hooks for type safety.
 - **Routing**: Wouter for lightweight client-side routing, including protected admin routes.
-- **UI/UX**: Shadcn/ui components built on Radix UI primitives, styled with Tailwind CSS, incorporating Chef Overseas branding (logo, orange, red, green color scheme).
+- **UI/UX**: Shadcn/ui components built on Radix UI primitives, styled with Tailwind CSS, incorporating Chef Overseas branding (logo, orange, red, green color scheme). All admin modules feature modernized glassmorphism design with consistent orange-to-red gradients, backdrop blur effects, and interactive animations.
 - **State Management**: React Query (@tanstack/react-query) for server state management and caching.
 - **Form Handling**: React Hook Form with Zod validation for type-safe forms.
 - **File Uploads**: React Dropzone for drag-and-drop file interface.
-- **Navigation**: Comprehensive interlinking between user modules (docket, work permit, contract, profile).
+- **Navigation**: Comprehensive interlinking between user modules (docket, work permit, contract, profile) with modernized admin interface navigation.
 
 ## Backend Architecture
 - **Server**: Node.js/Express API server with TypeScript and error handling.
