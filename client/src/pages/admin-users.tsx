@@ -40,6 +40,7 @@ type User = {
   displayName: string;
   email: string;
   phone: string;
+  photoUrl?: string;
   isAdmin: boolean;
   docketCompleted: boolean;
   createdAt: string;
@@ -307,8 +308,18 @@ export default function AdminUsersPage() {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
-                      <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <User className="h-5 w-5 text-gray-500" />
+                      <div className="h-10 w-10 flex-shrink-0">
+                        {(user as any).photoUrl ? (
+                          <img
+                            src={(user as any).photoUrl}
+                            alt={user.displayName || 'User'}
+                            className="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                            <User className="h-5 w-5 text-gray-500" />
+                          </div>
+                        )}
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">

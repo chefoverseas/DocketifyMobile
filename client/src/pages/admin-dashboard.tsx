@@ -591,11 +591,19 @@ export default function AdminDashboardPage() {
                           <td className="px-6 py-4">
                             <div className="flex items-center">
                               <div className="flex-shrink-0 h-12 w-12">
-                                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
-                                  <span className="text-lg font-bold text-white">
-                                    {user.givenName ? user.givenName[0] : user.displayName?.[0] || "U"}
-                                  </span>
-                                </div>
+                                {user.photoUrl ? (
+                                  <img
+                                    src={user.photoUrl}
+                                    alt={user.displayName || 'User'}
+                                    className="h-12 w-12 rounded-full object-cover shadow-lg border-2 border-white"
+                                  />
+                                ) : (
+                                  <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
+                                    <span className="text-lg font-bold text-white">
+                                      {user.givenName ? user.givenName[0] : user.displayName?.[0] || "U"}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                               <div className="ml-4">
                                 <div className="text-sm font-semibold text-gray-900">
@@ -605,7 +613,7 @@ export default function AdminDashboardPage() {
                                   }
                                 </div>
                                 <div className="text-sm text-gray-500">
-                                  Joined recently
+                                  {user.photoUrl ? 'Photo available' : 'Joined recently'}
                                 </div>
                               </div>
                             </div>

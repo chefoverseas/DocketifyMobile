@@ -78,6 +78,15 @@ export function ObjectUploader({
       onComplete?.(result);
     });
 
+    // Handle errors better
+    uppyInstance.on("error", (error) => {
+      console.error("Uppy error:", error);
+    });
+
+    uppyInstance.on("upload-error", (file, error) => {
+      console.error("Upload error:", error, file);
+    });
+
     return uppyInstance;
   });
 
