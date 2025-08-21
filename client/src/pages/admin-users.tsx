@@ -21,7 +21,11 @@ import {
   Mail, 
   Calendar,
   User,
-  Plus
+  Plus,
+  ArrowLeft,
+  Settings,
+  UserCheck,
+  FileText
 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "wouter";
@@ -178,167 +182,195 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                User Management
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                View and manage user accounts and details
-              </p>
-            </div>
-            <div className="flex space-x-3">
-              <Button variant="outline" onClick={() => window.location.href = "/admin/dashboard"}>
-                Back to Dashboard
-              </Button>
-              <Link href="/admin/user/new">
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New User
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100">
+      <div className="container mx-auto px-4 py-8">
+        {/* Modern Header Section */}
+        <Card className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-700 text-white border-none shadow-2xl mb-8">
+          <CardContent className="p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+              <div className="mb-6 lg:mb-0">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                    <Users className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl lg:text-4xl font-bold">User Management</h1>
+                    <p className="text-orange-100 text-lg mt-1">
+                      Manage user accounts, profiles, and permissions across the platform
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-6 text-sm text-orange-100">
+                  <div className="flex items-center space-x-2">
+                    <Users className="h-4 w-4" />
+                    <span>{users.length} Total Users</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <UserCheck className="h-4 w-4" />
+                    <span>{users.filter(u => u.docketCompleted).length} Completed Dockets</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Settings className="h-4 w-4" />
+                    <span>{users.filter(u => u.isAdmin).length} Admin Users</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <Button 
+                  asChild
+                  variant="outline" 
+                  size="sm"
+                  className="bg-white/50 hover:bg-white/80 border-white/30"
+                >
+                  <Link to="/admin/dashboard">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Return to Dashboard
+                  </Link>
                 </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Total Users</p>
-                  <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-                </div>
-                <Users className="h-8 w-8 text-gray-400" />
+                <Button 
+                  asChild
+                  variant="secondary"
+                  size="sm"
+                  className="bg-white text-orange-600 hover:bg-white/90"
+                >
+                  <Link to="/admin/user/new">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create New User
+                  </Link>
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Admin Users</p>
-                  <p className="text-2xl font-bold text-blue-900">
-                    {users.filter(u => u.isAdmin).length}
-                  </p>
-                </div>
-                <User className="h-8 w-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Regular Users</p>
-                  <p className="text-2xl font-bold text-green-900">
-                    {users.filter(u => !u.isAdmin).length}
-                  </p>
-                </div>
-                <Users className="h-8 w-8 text-green-400" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Docket Status Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Completed Dockets</p>
-                  <p className="text-2xl font-bold text-green-900">
-                    {users.filter(u => u.docketCompleted).length}
-                  </p>
-                </div>
-                <div className="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                  <span className="text-green-600 font-semibold">✓</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Pending Dockets</p>
-                  <p className="text-2xl font-bold text-yellow-900">
-                    {users.filter(u => !u.docketCompleted).length}
-                  </p>
-                </div>
-                <div className="h-8 w-8 rounded-full bg-yellow-100 flex items-center justify-center">
-                  <span className="text-yellow-600 font-semibold">⏳</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Search Bar */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-              <Input
-                placeholder="Search users by name, email, phone, or ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
             </div>
           </CardContent>
         </Card>
 
+        {/* Search Section */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search by name, email, phone, or UID..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 h-12 bg-white/70 border-gray-200 focus:border-orange-400 focus:ring-orange-400"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* User Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Users className="h-8 w-8 text-blue-600" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-blue-600">Total Users</p>
+                  <p className="text-2xl font-bold text-blue-900">{users.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <Settings className="h-8 w-8 text-purple-600" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-purple-600">Admin Users</p>
+                  <p className="text-2xl font-bold text-purple-900">{users.filter(u => u.isAdmin).length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <UserCheck className="h-8 w-8 text-green-600" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-green-600">Completed Dockets</p>
+                  <p className="text-2xl font-bold text-green-900">{users.filter(u => u.docketCompleted).length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
+            <CardContent className="pt-6">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <FileText className="h-8 w-8 text-orange-600" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium text-orange-600">Pending Dockets</p>
+                  <p className="text-2xl font-bold text-orange-900">{users.filter(u => !u.docketCompleted).length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Users List */}
-        <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-6">
           {filteredUsers.map((user) => (
-            <Card key={user.id} className="hover:shadow-lg transition-shadow">
-              <CardContent className="pt-6">
+            <Card key={user.id} className="bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:transform hover:-translate-y-1">
+              <CardContent className="p-6">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <div className="h-10 w-10 flex-shrink-0">
+                    <div className="flex items-center space-x-4 mb-4">
+                      <div className="h-16 w-16 flex-shrink-0">
                         {(user as any).photoUrl ? (
                           <img
                             src={(user as any).photoUrl}
                             alt={user.displayName || 'User'}
-                            className="h-10 w-10 rounded-full object-cover border-2 border-gray-200"
+                            className="h-16 w-16 rounded-full object-cover border-3 border-orange-200 shadow-lg"
                           />
                         ) : (
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <User className="h-5 w-5 text-gray-500" />
+                          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center shadow-lg">
+                            <User className="h-8 w-8 text-orange-600" />
                           </div>
                         )}
                       </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {user.displayName || "No Name Set"}
-                        </h3>
-                        <p className="text-sm text-gray-500 font-mono">ID: {user.uid}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-xl font-bold text-gray-900">
+                            {user.displayName || "No Name Set"}
+                          </h3>
+                          {user.isAdmin && (
+                            <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                              <Settings className="h-3 w-3 mr-1" />
+                              Admin
+                            </Badge>
+                          )}
+                          <Badge 
+                            className={
+                              user.docketCompleted 
+                                ? "bg-green-100 text-green-800 border-green-200" 
+                                : "bg-orange-100 text-orange-800 border-orange-200"
+                            }
+                          >
+                            <UserCheck className="h-3 w-3 mr-1" />
+                            {user.docketCompleted ? "Docket Complete" : "Docket Pending"}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 font-mono bg-gray-100 px-2 py-1 rounded inline-block">
+                          UID: {user.uid}
+                        </p>
                       </div>
-                      {user.isAdmin && (
-                        <Badge variant="secondary">Admin</Badge>
-                      )}
-                      <Badge 
-                        className={
-                          user.docketCompleted 
-                            ? "bg-green-100 text-green-800 border-green-200" 
-                            : "bg-yellow-100 text-yellow-800 border-yellow-200"
-                        }
-                      >
-                        {user.docketCompleted ? "Docket Complete" : "Docket Pending"}
-                      </Badge>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -357,30 +389,28 @@ export default function AdminUsersPage() {
                     </div>
                   </div>
 
-                  <div className="flex space-x-2 ml-4">
-                    <Link href={`/admin/user/${user.id}`}>
-                      <Button size="sm" variant="secondary">
+                  <div className="flex flex-col space-y-2 ml-4">
+                    <Button 
+                      asChild
+                      size="sm" 
+                      variant="outline"
+                      className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                    >
+                      <Link to={`/admin/user/${user.id}`}>
+                        <Edit className="h-4 w-4 mr-2" />
                         View Details
-                      </Button>
-                    </Link>
-                    <Link href={`/admin/user/${user.id}/upload-docket`}>
-                      <Button 
-                        size="sm" 
-                        variant={user.docketCompleted ? "secondary" : "outline"} 
-                        className={user.docketCompleted ? "text-gray-600" : "text-orange-600 border-orange-200 hover:bg-orange-50"}
-                      >
+                      </Link>
+                    </Button>
+                    <Button 
+                      asChild
+                      size="sm"
+                      className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                    >
+                      <Link to={`/admin/user/${user.id}/upload-docket`}>
+                        <FileText className="h-4 w-4 mr-2" />
                         {user.docketCompleted ? "View Docket" : "Upload Docket"}
-                      </Button>
-                    </Link>
-                    <Link href={`/admin/user/${user.id}/upload-contracts`}>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                      >
-                        Contracts
-                      </Button>
-                    </Link>
+                      </Link>
+                    </Button>
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button
@@ -392,11 +422,13 @@ export default function AdminUsersPage() {
                           Edit
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Edit User Details</DialogTitle>
+                      <DialogContent className="bg-gradient-to-br from-orange-50 to-red-50 border-0 shadow-2xl">
+                        <DialogHeader className="pb-6">
+                          <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                            Edit User Details
+                          </DialogTitle>
                         </DialogHeader>
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                           <div className="space-y-2">
                             <Label htmlFor="displayName">Full Name <span className="text-red-500">*</span></Label>
                             <Input
@@ -438,19 +470,20 @@ export default function AdminUsersPage() {
                             )}
                           </div>
 
-                          <div className="flex justify-end space-x-2 pt-4">
+                          <DialogFooter className="pt-4">
                             <Button 
                               type="button" 
                               variant="outline" 
                               onClick={() => setEditingUser(null)}
                               disabled={updateUserMutation.isPending}
+                              className="border-gray-300 hover:bg-gray-50"
                             >
                               Cancel
                             </Button>
                             <Button 
                               type="submit" 
                               disabled={updateUserMutation.isPending}
-                              className="min-w-[100px]"
+                              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white min-w-[120px]"
                             >
                               {updateUserMutation.isPending ? (
                                 <div className="flex items-center">
@@ -461,7 +494,7 @@ export default function AdminUsersPage() {
                                 "Save Changes"
                               )}
                             </Button>
-                          </div>
+                          </DialogFooter>
                         </form>
                       </DialogContent>
                     </Dialog>
@@ -472,10 +505,10 @@ export default function AdminUsersPage() {
                         size="sm"
                         onClick={() => handleDeleteUser(user.id, user.displayName || user.phone)}
                         disabled={deleteUserMutation.isPending}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="border-red-200 text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-colors"
                       >
                         <Trash2 className="h-4 w-4 mr-1" />
-                        Delete
+                        {deleteUserMutation.isPending ? "Deleting..." : "Delete"}
                       </Button>
                     )}
                   </div>
@@ -485,20 +518,22 @@ export default function AdminUsersPage() {
           ))}
 
           {filteredUsers.length === 0 && (
-            <Card>
+            <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg">
               <CardContent className="pt-6">
-                <div className="text-center py-8">
-                  <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-                  <p className="text-gray-500 mb-4">
+                <div className="text-center py-12">
+                  <div className="h-20 w-20 mx-auto mb-6 bg-gradient-to-br from-orange-100 to-red-100 rounded-full flex items-center justify-center">
+                    <Users className="h-10 w-10 text-orange-600" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">No users found</h3>
+                  <p className="text-gray-600 mb-6">
                     {searchTerm ? "No users match your search criteria." : "No users have been created yet."}
                   </p>
-                  <Link href="/admin/user/new">
-                    <Button>
+                  <Button asChild className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white">
+                    <Link to="/admin/user/new">
                       <Plus className="h-4 w-4 mr-2" />
                       Create First User
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
