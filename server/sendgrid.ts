@@ -272,6 +272,136 @@ Chef Overseas - Document Management System
   }
 }
 
+// New User Welcome Email with Overall Status
+export async function sendNewUserWelcomeEmail(email: string, displayName: string, uid: string): Promise<boolean> {
+  // In development mode, log email content to console for testing
+  if (process.env.NODE_ENV === "development") {
+    console.log(`\n📧 WELCOME EMAIL FOR ${email} (${displayName})`);
+    console.log(`🆔 User ID: ${uid}`);
+    console.log(`📧 Check server console for email content (development mode)\n`);
+    return true;
+  }
+
+  const fromEmail = 'info@chefoverseas.com';
+  
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #ff6b35; margin: 20px 0;">Chef Overseas</h1>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 30px; border-radius: 8px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Welcome to Chef Overseas!</h2>
+        <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
+          Dear ${displayName},
+        </p>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 20px 0;">
+          <h3 style="color: #28a745; margin: 0 0 10px 0;">🎉 Account Created Successfully</h3>
+          <p style="color: #666; margin: 0; font-size: 16px;">Your account has been created and you can now access our document management system.</p>
+        </div>
+        
+        <div style="margin: 30px 0;">
+          <h3 style="color: #333; margin-bottom: 15px;">Your Current Status Overview:</h3>
+          
+          <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-weight: bold; color: #333;">Account ID:</span>
+              <span style="color: #ff6b35; font-weight: bold;">${uid}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-weight: bold; color: #333;">Docket Status:</span>
+              <span style="color: #ffc107; background: #fff3cd; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Pending Completion</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <span style="font-weight: bold; color: #333;">Work Permit Status:</span>
+              <span style="color: #6c757d; background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 12px;">Not Started</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: bold; color: #333;">Account Type:</span>
+              <span style="color: #17a2b8; background: #d1ecf1; padding: 4px 8px; border-radius: 4px; font-size: 12px;">User</span>
+            </div>
+          </div>
+          
+          <h3 style="color: #333; margin: 25px 0 15px 0;">What's Next?</h3>
+          <ul style="color: #666; padding-left: 20px; line-height: 1.6;">
+            <li><strong>Complete Your Docket:</strong> Upload all required documents through your dashboard</li>
+            <li><strong>Document Review:</strong> Our team will review your submitted documents</li>
+            <li><strong>Work Permit Processing:</strong> We'll begin processing your work permit application</li>
+            <li><strong>Status Updates:</strong> You'll receive email notifications for all status changes</li>
+          </ul>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/dashboard" 
+               style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Access Your Dashboard
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8; margin: 20px 0;">
+          <p style="color: #0c5460; margin: 0; font-size: 14px;">
+            <strong>Need Help?</strong> Our support team is here to assist you throughout the process. Contact us at any time.
+          </p>
+        </div>
+        
+        <p style="color: #999; font-size: 14px; margin-top: 30px; text-align: center;">
+          Contact us: info@chefoverseas.com | WhatsApp: +919363234028
+        </p>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+        <p>Chef Overseas - Document Management System</p>
+      </div>
+    </div>
+  `;
+
+  const textContent = `
+Chef Overseas - Welcome to Your Account
+
+Dear ${displayName},
+
+Account Created Successfully
+Your account has been created and you can now access our document management system.
+
+Your Current Status Overview:
+- Account ID: ${uid}
+- Docket Status: Pending Completion
+- Work Permit Status: Not Started
+- Account Type: User
+
+What's Next?
+1. Complete Your Docket: Upload all required documents through your dashboard
+2. Document Review: Our team will review your submitted documents
+3. Work Permit Processing: We'll begin processing your work permit application
+4. Status Updates: You'll receive email notifications for all status changes
+
+Access your dashboard: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/dashboard
+
+Need Help? Our support team is here to assist you throughout the process. Contact us at any time.
+
+Contact us: info@chefoverseas.com | WhatsApp: +919363234028
+
+Chef Overseas - Document Management System
+  `;
+
+  try {
+    const result = await sendEmail({
+      to: email,
+      from: fromEmail,
+      subject: 'Welcome to Chef Overseas - Account Created Successfully',
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    console.log(`📧 Welcome email sent to new user ${email} (${displayName}, ID: ${uid})`);
+    return result;
+  } catch (error) {
+    console.error('New user welcome email error:', error);
+    return false;
+  }
+}
+
 // Helper function to get status-specific email content
 function getStatusEmailContent(status: string) {
   switch (status) {

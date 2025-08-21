@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { sendOtpEmail, sendWorkPermitStatusEmail, sendFinalDocketUploadEmail } from "./sendgrid";
+import { sendOtpEmail, sendWorkPermitStatusEmail, sendFinalDocketUploadEmail, sendNewUserWelcomeEmail } from "./sendgrid";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import multer from "multer";
@@ -650,6 +650,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       console.log(`✅ Successfully created user: ${newUser.id} (${newUser.email})`);
+
+      // Send welcome email to new user with status overview
+      try {
+        await sendNewUserWelcomeEmail(newUser.email, newUser.displayName, newUser.uid);
+        console.log(`📧 Welcome email sent to ${newUser.email}`);
+      } catch (emailError) {
+        console.error(`⚠️ Failed to send welcome email to ${newUser.email}:`, emailError);
+        // Don't fail user creation if email fails
+      }
+
       res.setHeader('Content-Type', 'application/json');
       return res.status(201).json({ 
         message: "User created successfully",
