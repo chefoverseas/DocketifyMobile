@@ -217,6 +217,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        profileImageUrl: user.profileImageUrl,
         isAdmin: user.isAdmin,
         docketCompleted: user.docketCompleted
       });
@@ -243,6 +244,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        profileImageUrl: user.profileImageUrl,
         isAdmin: user.isAdmin,
         docketCompleted: user.docketCompleted
       });
@@ -330,6 +332,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.body.phone !== undefined) updateData.phone = req.body.phone;
       if (req.body.firstName !== undefined) updateData.firstName = req.body.firstName;
       if (req.body.lastName !== undefined) updateData.lastName = req.body.lastName;
+      if (req.body.profileImageUrl !== undefined) updateData.profileImageUrl = req.body.profileImageUrl;
       if (req.body.docketCompleted !== undefined) updateData.docketCompleted = req.body.docketCompleted;
 
       // Check if we have any fields to update
