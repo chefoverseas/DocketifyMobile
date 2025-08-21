@@ -35,6 +35,7 @@ Preferred communication style: Simple, everyday language.
 - **Access Control**: Role-based access with separate permissions for admin users.
 - **User Provisioning**: Only admin-created users can access the system.
 - **Admin Access**: Hardcoded admin credentials for secure access.
+- **Contact Information**: Primary email contact info@chefoverseas.com, WhatsApp support +919363234028
 - **Localization**: Supports 13 country codes for OTP verification.
 
 ## File Storage Strategy

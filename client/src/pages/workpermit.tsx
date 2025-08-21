@@ -372,12 +372,12 @@ export default function WorkPermitPage() {
                   </a>
                 </Button>
               </div>
-              <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                <h4 className="font-semibold text-orange-900 mb-2">Phone Support</h4>
-                <p className="text-sm text-orange-700 mb-3">Speak directly with our support team</p>
-                <Button variant="outline" className="border-orange-300 text-orange-700 hover:bg-orange-100" asChild>
-                  <a href="tel:+1234567890">
-                    Call Now
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h4 className="font-semibold text-green-900 mb-2">WhatsApp Support</h4>
+                <p className="text-sm text-green-700 mb-3">Chat with us instantly on WhatsApp</p>
+                <Button variant="outline" className="border-green-300 text-green-700 hover:bg-green-100" asChild>
+                  <a href="https://wa.me/919363234028" target="_blank" rel="noopener noreferrer">
+                    Chat with us on WhatsApp
                   </a>
                 </Button>
               </div>
