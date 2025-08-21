@@ -1,6 +1,6 @@
 # Overview
 
-Docketify is a document management web application designed for secure user authentication via mobile OTP, comprehensive profile management, and organized storage of required documents and professional references within a "docket" system. Key features include file upload capabilities, detailed progress tracking, and robust admin functionalities for user and document status management. The platform aims to streamline the document collection process, ensuring a secure, efficient, and user-friendly experience for both individuals and administrators.
+Docketify is a document management web application designed for secure user authentication via mobile OTP, comprehensive profile management, and organized storage of required documents and professional references within a "docket" system. Key features include file upload capabilities, detailed progress tracking, robust admin functionalities for user and document status management, and a modern real-time notification system. The platform features a revamped user dashboard with prominent user profile cards and professional UI/UX design using Chef Overseas branding. The system aims to streamline the document collection process, ensuring a secure, efficient, and user-friendly experience for both individuals and administrators.
 
 # User Preferences
 
