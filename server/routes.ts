@@ -1047,7 +1047,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`✅ Created new work permit with final docket for user: ${user.email}`);
       } else {
         // Update existing work permit with final docket URL
-        workPermit = await storage.updateWorkPermit(workPermit.id, {
+        workPermit = await storage.updateWorkPermit(user.id, {
           finalDocketUrl: `/uploads/${uploadedFile.filename}`
         });
         console.log(`✅ Updated work permit with final docket for user: ${user.email}`);
@@ -1158,7 +1158,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
     } catch (error) {
       console.error("Company contract upload error:", error);
-      res.status(500).json({ message: "Failed to upload company contract", error: error.message });
+      res.status(500).json({ message: "Failed to upload company contract", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
   
@@ -1193,7 +1193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
     } catch (error) {
       console.error("Job offer upload error:", error);
-      res.status(500).json({ message: "Failed to upload job offer", error: error.message });
+      res.status(500).json({ message: "Failed to upload job offer", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
   
@@ -1249,7 +1249,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Admin contract upload error:", error);
       res.setHeader('Content-Type', 'application/json');
-      res.status(500).json({ message: "Failed to upload contract files", error: error.message });
+      res.status(500).json({ message: "Failed to upload contract files", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
   
