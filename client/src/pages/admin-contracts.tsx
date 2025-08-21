@@ -21,7 +21,7 @@ import {
   Download
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import type { User } from "@shared/schema";
 
 export default function AdminContractsPage() {
