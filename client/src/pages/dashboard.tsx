@@ -143,19 +143,27 @@ export default function Dashboard() {
     const docketProgress = calculateDocketProgress();
     const contractStatus = getContractStatus();
     const workPermitStatus = getWorkPermitStatus();
+    const workVisaStatus = getWorkVisaStatus();
     
-    let score = docketProgress * 0.4; // 40% weight for docket
+    let score = docketProgress * 0.3; // 30% weight for docket
     
-    // 30% weight for contracts
-    if (contractStatus.status === 'All Signed') score += 30;
-    else if (contractStatus.count > 0) score += 15;
+    // 25% weight for contracts
+    if (contractStatus.status === 'All Signed') score += 25;
+    else if (contractStatus.count > 0) score += 12;
     
-    // 30% weight for work permit
+    // 25% weight for work permit
     const wpStatus = workPermitStatus.status;
-    if (wpStatus === 'Approved') score += 30;
-    else if (wpStatus === 'Awaiting Decision') score += 20;
-    else if (wpStatus === 'Application Submitted') score += 15;
+    if (wpStatus === 'Approved') score += 25;
+    else if (wpStatus === 'Awaiting Decision') score += 18;
+    else if (wpStatus === 'Application Submitted') score += 12;
     else if (wpStatus === 'In Preparation') score += 5;
+    
+    // 20% weight for work visa
+    const wvStatus = workVisaStatus.status;
+    if (wvStatus === 'Approved') score += 20;
+    else if (wvStatus === 'Awaiting Decision') score += 15;
+    else if (wvStatus === 'Application Submitted') score += 10;
+    else if (wvStatus === 'In Preparation') score += 5;
     
     return Math.min(Math.round(score), 100);
   };
@@ -279,6 +287,12 @@ export default function Dashboard() {
                         Contract Active
                       </Badge>
                     )}
+                    {(workVisaData as any)?.workVisa && (
+                      <Badge className="bg-purple-500/20 text-white border-purple-300/30 px-3 py-2 text-sm">
+                        <Plane className="h-4 w-4 mr-2" />
+                        Work Visa {workVisaStatus.status}
+                      </Badge>
+                    )}
                   </div>
                 </div>
 
@@ -305,7 +319,7 @@ export default function Dashboard() {
             
             {/* Quick Stats Row */}
             <div className="bg-white px-10 py-6">
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-6 text-center">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
                 <div className="py-2">
                   <div className="text-3xl font-bold text-orange-600 mb-1">{overallProgress}%</div>
                   <div className="text-sm text-gray-600 font-medium">Overall Progress</div>
@@ -320,11 +334,25 @@ export default function Dashboard() {
                   </div>
                   <div className="text-sm text-gray-600 font-medium">Contract Status</div>
                 </div>
-                <div className="hidden md:block py-2">
+                <div className="py-2">
                   <div className="text-3xl font-bold text-purple-600 mb-1">
                     {workPermitStatus.status === 'Approved' ? '100' : workPermitStatus.status === 'Awaiting Decision' ? '50' : '0'}%
                   </div>
                   <div className="text-sm text-gray-600 font-medium">Work Permit</div>
+                </div>
+                <div className="py-2">
+                  <div className={`text-3xl font-bold mb-1 ${
+                    workVisaStatus.color === 'green' ? 'text-green-600' :
+                    workVisaStatus.color === 'orange' ? 'text-orange-600' :
+                    workVisaStatus.color === 'yellow' ? 'text-yellow-600' :
+                    workVisaStatus.color === 'blue' ? 'text-blue-600' : 'text-gray-600'
+                  }`}>
+                    {workVisaStatus.status === 'Approved' ? '100' : 
+                     workVisaStatus.status === 'Awaiting Decision' ? '75' :
+                     workVisaStatus.status === 'Application Submitted' ? '50' :
+                     workVisaStatus.status === 'In Preparation' ? '25' : '0'}%
+                  </div>
+                  <div className="text-sm text-gray-600 font-medium">Work Visa</div>
                 </div>
               </div>
             </div>
