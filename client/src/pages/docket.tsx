@@ -198,27 +198,35 @@ export default function DocketPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <div className="flex items-center">
-              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200 mr-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
+      {/* Modern Header with Glassmorphism */}
+      <div className="relative bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg">
+        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-yellow-500/10"></div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-8">
+            <div className="flex items-center space-x-6">
+              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-white/30">
                 <img 
                   src={chefOverseasLogo} 
                   alt="Chef Overseas" 
-                  className="h-8 w-auto object-contain"
+                  className="h-10 w-auto object-contain"
                 />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Document Docket</h1>
-                <p className="text-gray-600 mt-1">Secure document collection and work permit processing</p>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-yellow-600 bg-clip-text text-transparent">
+                  Document Docket
+                </h1>
+                <p className="text-gray-700 mt-2 text-lg font-medium">
+                  Secure document collection and work permit processing
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="outline" className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2 bg-white/70 backdrop-blur-sm border-white/30 hover:bg-white/90 hover:shadow-md transition-all duration-300"
+                >
                   <ArrowLeft className="h-4 w-4" />
                   Back to Dashboard
                 </Button>
@@ -230,210 +238,266 @@ export default function DocketPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Information Banner */}
-        <Card className="mb-8 border-l-4 border-l-blue-500 bg-blue-50">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-4">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <Shield className="h-5 w-5 text-blue-600" />
+        {/* Modern Information Banner */}
+        <div className="mb-8 bg-white/60 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative p-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10"></div>
+            <div className="relative flex items-start gap-6">
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg">
+                <Shield className="h-7 w-7 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Secure Document Collection</h3>
-                <p className="text-blue-800 mb-4">
-                  Upload your required documents for work permit processing. All files are encrypted and securely stored.
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Secure Document Collection</h3>
+                <p className="text-gray-700 mb-6 text-lg leading-relaxed">
+                  Upload your required documents for work permit processing. All files are encrypted and securely stored using advanced security protocols.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-700">Encrypted storage</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-700">Auto-save progress</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Target className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-700">Real-time validation</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Progress Overview */}
-        <Card className="mb-8 border-l-4 border-l-green-500">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Document Collection Progress</h3>
-                <p className="text-sm text-gray-600">Track your document upload completion</p>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-gray-900">{progressPercentage.toFixed(0)}%</div>
-                <div className="text-xs text-gray-500">{completedSections} of {sections.length} complete</div>
-              </div>
-            </div>
-            <div className="relative">
-              <Progress value={progressPercentage} className="h-3" />
-              <div 
-                className={`absolute inset-0 h-3 rounded-full transition-all duration-500 ${
-                  progressPercentage === 100 ? 'bg-green-500' : 
-                  progressPercentage >= 70 ? 'bg-blue-500' : 'bg-amber-500'
-                }`}
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-      {/* Work Permit Status Card */}
-      <Card className="mb-8 border-l-4 border-l-primary">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Briefcase className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="flex items-center space-x-2">
-                  <span>Work Permit Application</span>
-                  {workPermit?.status && getWorkPermitStatusIcon(workPermit.status)}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {workPermit?.status 
-                    ? getWorkPermitStatusDescription(workPermit.status)
-                    : "Work permit application will appear here once your docket is complete."
-                  }
-                </p>
-              </div>
-            </div>
-            {workPermit?.status && (
-              <WorkPermitStatusBadge status={workPermit.status} />
-            )}
-          </div>
-        </CardHeader>
-        {workPermit && (
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Application Date</p>
-                <p className="text-sm text-gray-600">
-                  {format(new Date(workPermit.createdAt), 'MMM dd, yyyy')}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Last Updated</p>
-                <p className="text-sm text-gray-600">
-                  {format(new Date(workPermit.lastUpdated), 'MMM dd, yyyy')}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Status</p>
-                <WorkPermitStatusBadge status={workPermit.status} />
-              </div>
-            </div>
-            
-            {workPermit.finalDocketUrl && (workPermit.status === 'applied' || workPermit.status === 'awaiting_decision' || workPermit.status === 'approved') && (
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <FileText className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <h4 className="font-medium text-blue-900">Final Docket Available</h4>
-                      <p className="text-sm text-blue-700">Your completed work permit application documents are ready for download.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <Shield className="h-5 w-5 text-blue-600" />
                     </div>
+                    <span className="text-gray-700 font-medium">Encrypted Storage</span>
                   </div>
-                  <Button 
-                    onClick={() => window.open(workPermit.finalDocketUrl!, '_blank')}
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-700"
-                  >
-                    <Download className="h-4 w-4 mr-2" />
-                    Download Final Docket
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-green-100 flex items-center justify-center">
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Auto-Save Progress</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                      <Target className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <span className="text-gray-700 font-medium">Real-Time Validation</span>
+                  </div>
                 </div>
               </div>
-            )}
+            </div>
+          </div>
+        </div>
 
-            {workPermit.notes && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <h4 className="font-medium text-blue-900 mb-2">Admin Notes</h4>
-                <p className="text-sm text-blue-800">{workPermit.notes}</p>
-              </div>
-            )}
-          </CardContent>
-        )}
-      </Card>
-
-        {/* Document Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Step 1: Passport Section */}
-          <Card className="h-fit">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <File className="h-6 w-6 text-blue-600" />
+        {/* Modern Progress Overview */}
+        <div className="mb-8 bg-white/60 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative p-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                    <Target className="h-7 w-7 text-white" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded-full">STEP 1</span>
-                      <CardTitle className="text-lg">Passport Documents</CardTitle>
+                    <h3 className="text-2xl font-bold text-gray-900">Document Collection Progress</h3>
+                    <p className="text-gray-600 mt-1">Track your document upload completion</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    {progressPercentage.toFixed(0)}%
+                  </div>
+                  <div className="text-sm text-gray-600 font-medium">{completedSections} of {sections.length} complete</div>
+                </div>
+              </div>
+              
+              {/* Modern Progress Bar */}
+              <div className="relative">
+                <div className="h-4 bg-gray-200/50 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-700 ease-out ${
+                      progressPercentage === 100 ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 
+                      progressPercentage >= 75 ? 'bg-gradient-to-r from-blue-500 to-indigo-500' : 
+                      progressPercentage >= 50 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' : 'bg-gradient-to-r from-orange-500 to-red-500'
+                    }`} 
+                    style={{ width: `${progressPercentage}%` }}
+                  />
+                </div>
+                <div className="absolute inset-0 h-4 rounded-full bg-gradient-to-r from-white/20 to-transparent"></div>
+              </div>
+              
+              <div className="mt-6 text-center">
+                {progressPercentage === 100 ? (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100/50 backdrop-blur-sm rounded-full border border-green-200/50">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <span className="text-green-700 font-semibold">All documents collected! Ready for processing.</span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-100/50 backdrop-blur-sm rounded-full border border-orange-200/50">
+                    <Clock className="h-5 w-5 text-orange-600" />
+                    <span className="text-orange-700 font-medium">Upload remaining documents to complete your docket</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Modern Work Permit Status Card */}
+        <div className="mb-8 bg-white/60 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg overflow-hidden">
+          <div className="relative p-8">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-indigo-500/10 to-blue-500/10"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                    <Briefcase className="h-7 w-7 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                      Work Permit Application
+                      {workPermit?.status && getWorkPermitStatusIcon(workPermit.status)}
+                    </h3>
+                    <p className="text-gray-600 mt-1 text-lg">
+                      {workPermit?.status 
+                        ? getWorkPermitStatusDescription(workPermit.status)
+                        : "Work permit application will appear here once your docket is complete."
+                      }
+                    </p>
+                  </div>
+                </div>
+                {workPermit?.status && (
+                  <div className="bg-white/70 backdrop-blur-sm rounded-xl p-3 border border-white/30">
+                    <WorkPermitStatusBadge status={workPermit.status} />
+                  </div>
+                )}
+              </div>
+              
+              {workPermit && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Application Date</p>
+                    <p className="text-gray-900 font-semibold">
+                      {format(new Date(workPermit.createdAt), 'MMM dd, yyyy')}
+                    </p>
+                  </div>
+                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Last Updated</p>
+                    <p className="text-gray-900 font-semibold">
+                      {format(new Date(workPermit.lastUpdated), 'MMM dd, yyyy')}
+                    </p>
+                  </div>
+                  <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Status</p>
+                    <WorkPermitStatusBadge status={workPermit.status} />
+                  </div>
+                </div>
+              )}
+              
+              {workPermit?.finalDocketUrl && (workPermit.status === 'applied' || workPermit.status === 'awaiting_decision' || workPermit.status === 'approved') && (
+                <div className="mt-6 bg-blue-100/50 backdrop-blur-sm rounded-xl p-6 border border-blue-200/50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 rounded-xl bg-blue-500 flex items-center justify-center">
+                        <FileText className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-blue-900">Final Docket Available</h4>
+                        <p className="text-sm text-blue-700">Your completed work permit application documents are ready for download.</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600">Upload your passport information and photo</p>
+                    <Button 
+                      onClick={() => window.open(workPermit.finalDocketUrl!, '_blank')}
+                      className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Final Docket
+                    </Button>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <Badge 
-                    className={`${getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl).badgeColor} text-xs`}
-                  >
-                    {getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl).badge}
-                  </Badge>
-                  <div className={`h-8 w-8 rounded-full flex items-center justify-center ${getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl).bg}`}>
-                    {(() => {
-                      const status = getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl);
-                      const Icon = status.icon;
-                      return <Icon className={`h-4 w-4 ${status.color}`} />;
-                    })()}
+              )}
+
+              {workPermit?.notes && (
+                <div className="mt-6 bg-amber-100/50 backdrop-blur-sm rounded-xl p-6 border border-amber-200/50">
+                  <div className="flex items-start gap-3">
+                    <div className="h-10 w-10 rounded-xl bg-amber-500 flex items-center justify-center flex-shrink-0">
+                      <Info className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-amber-900 mb-2">Admin Notes</h4>
+                      <p className="text-amber-800">{workPermit.notes}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Modern Document Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Step 1: Passport Section */}
+          <div className="bg-white/60 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg overflow-hidden">
+            <div className="relative p-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10"></div>
+              <div className="relative">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                      <File className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <span className="text-xs font-bold bg-blue-100/70 backdrop-blur-sm text-blue-700 px-3 py-1 rounded-full border border-blue-200/50">STEP 1</span>
+                        <h4 className="text-xl font-bold text-gray-900">Passport Documents</h4>
+                      </div>
+                      <p className="text-gray-600">Upload your passport information and photo</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <Badge 
+                      className={`${getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl).badgeColor} text-xs backdrop-blur-sm`}
+                    >
+                      {getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl).badge}
+                    </Badge>
+                    <div className={`h-10 w-10 rounded-xl flex items-center justify-center ${getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl).bg} shadow-sm`}>
+                      {(() => {
+                        const status = getSectionStatus(!!docket?.passportFrontUrl && !!docket?.passportPhotoUrl);
+                        const Icon = status.icon;
+                        return <Icon className={`h-5 w-5 ${status.color}`} />;
+                      })()}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                      <span className="h-2 w-2 bg-red-500 rounded-full"></span>
+                      Passport Front Page *
+                    </label>
+                    <FileUploader
+                      currentFile={docket?.passportFrontUrl || undefined}
+                      onUpload={(fileData) => handleFileUpload('passportFrontUrl', (fileData as any).url)}
+                      accept="image/*,application/pdf"
+                      description="Upload the first page of your passport (PDF or image)"
+                    />
+                  </div>
+                  <div className="h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent"></div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 mb-3">Passport Last Page</label>
+                    <FileUploader
+                      currentFile={docket?.passportLastUrl || undefined}
+                      onUpload={(fileData) => handleFileUpload('passportLastUrl', (fileData as any).url)}
+                      accept="image/*,application/pdf"
+                      description="Upload the last page of your passport"
+                    />
+                  </div>
+                  <div className="h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent"></div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                      <span className="h-2 w-2 bg-red-500 rounded-full"></span>
+                      Passport Photo *
+                    </label>
+                    <FileUploader
+                      currentFile={docket?.passportPhotoUrl || undefined}
+                      onUpload={(fileData) => handleFileUpload('passportPhotoUrl', (fileData as any).url)}
+                      accept="image/*"
+                      description="Upload a clear passport-style photo"
+                    />
                   </div>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Passport Front Page *</label>
-                  <FileUploader
-                    currentFile={docket?.passportFrontUrl || undefined}
-                    onUpload={(fileData) => handleFileUpload('passportFrontUrl', (fileData as any).url)}
-                    accept="image/*,application/pdf"
-                    description="Upload the first page of your passport (PDF or image)"
-                  />
-                </div>
-                <Separator />
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Passport Last Page</label>
-                  <FileUploader
-                    currentFile={docket?.passportLastUrl || undefined}
-                    onUpload={(fileData) => handleFileUpload('passportLastUrl', (fileData as any).url)}
-                    accept="image/*,application/pdf"
-                    description="Upload the last page of your passport"
-                  />
-                </div>
-                <Separator />
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-3">Passport Photo *</label>
-                  <FileUploader
-                    currentFile={docket?.passportPhotoUrl || undefined}
-                    onUpload={(fileData) => handleFileUpload('passportPhotoUrl', (fileData as any).url)}
-                    accept="image/*"
-                    description="Upload a clear passport-style photo"
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Step 2: Resume Section */}
           <Card className="h-fit">
