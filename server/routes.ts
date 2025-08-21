@@ -1205,12 +1205,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin: Upload final visa document
-  app.post("/api/admin/workvisa/:userId/upload-visa", requireAdminAuth, upload.any(), async (req: any, res) => {
+  // Admin: Upload work visa documents (9 types)
+  app.post("/api/admin/workvisa/:userId/upload-documents", requireAdminAuth, upload.any(), async (req: any, res) => {
     try {
       const userId = req.params.userId;
+      const { documentType } = req.body;
       
-      console.log(`📄 Admin uploading visa document for user ID: ${userId}`);
+      console.log(`📄 Admin uploading ${documentType} document for user ID: ${userId}`);
       console.log(`📁 Files received:`, req.files?.map((f: any) => ({ name: f.originalname, size: f.size })));
 
       let user = await storage.getUser(userId);
@@ -1227,35 +1228,118 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      console.log(`✅ Found user for visa upload: ${user.email}`);
+      console.log(`✅ Found user for document upload: ${user.email}`);
 
       if (!req.files || req.files.length === 0) {
         console.log(`❌ No files uploaded for user: ${user.email}`);
         return res.status(400).json({ message: "No files uploaded" });
       }
 
-      // For work visa, we typically expect one main visa document
+      if (!documentType) {
+        console.log(`❌ No document type specified for user: ${user.email}`);
+        return res.status(400).json({ message: "Document type is required" });
+      }
+
+      const uploadedFile = req.files[0];
+      const filePath = `/uploads/${uploadedFile.filename}`;
+
+      console.log(`📋 Uploading ${documentType} file: ${uploadedFile.filename}`);
+
+      // Map document type to database field
+      const updates: any = {};
+      switch (documentType) {
+        case 'irlApplicationForm':
+          updates.irlApplicationFormUrl = filePath;
+          break;
+        case 'visaAppointment':
+          updates.visaAppointmentUrl = filePath;
+          break;
+        case 'vfsVisaPayment':
+          updates.vfsVisaPaymentUrl = filePath;
+          break;
+        case 'visaCoverLetter':
+          updates.visaCoverLetterUrl = filePath;
+          break;
+        case 'visaInviteLetter':
+          updates.visaInviteLetterUrl = filePath;
+          break;
+        case 'supplementaryEmploymentApplication':
+          updates.supplementaryEmploymentApplicationUrl = filePath;
+          break;
+        case 'irelandVacChecklist':
+          updates.irelandVacChecklistUrl = filePath;
+          break;
+        case 'travelMedicalInsurance':
+          updates.travelMedicalInsuranceUrl = filePath;
+          break;
+        case 'fullDocketVisaSubmission':
+          updates.fullDocketVisaSubmissionUrl = filePath;
+          // If uploading full docket, set status to applied
+          updates.status = 'applied';
+          break;
+        default:
+          console.log(`❌ Invalid document type: ${documentType}`);
+          return res.status(400).json({ message: "Invalid document type" });
+      }
+
+      const updatedWorkVisa = await storage.updateWorkVisa(user.id, updates);
+
+      console.log(`✅ ${documentType} document uploaded successfully for user: ${user.email}`);
+
+      res.json({ 
+        message: `${documentType} document uploaded successfully`,
+        workVisa: updatedWorkVisa,
+        documentType,
+        filePath
+      });
+    } catch (error) {
+      console.error("Admin document upload error:", error);
+      res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // Admin: Upload final visa document (for approved visas)
+  app.post("/api/admin/workvisa/:userId/upload-visa", requireAdminAuth, upload.any(), async (req: any, res) => {
+    try {
+      const userId = req.params.userId;
+      
+      console.log(`📄 Admin uploading final visa document for user ID: ${userId}`);
+      console.log(`📁 Files received:`, req.files?.map((f: any) => ({ name: f.originalname, size: f.size })));
+
+      let user = await storage.getUser(userId);
+      
+      if (!user) {
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ message: "No files uploaded" });
+      }
+
       const visaFile = req.files[0];
       const visaPath = `/uploads/${visaFile.filename}`;
 
-      console.log(`📋 Uploading visa file: ${visaFile.filename}`);
-
-      // Update work visa with the file URL and set status to approved
+      // Update work visa with final visa and set status to approved
       const updatedWorkVisa = await storage.updateWorkVisa(user.id, {
         finalVisaUrl: visaPath,
         status: 'approved'
       });
 
-      console.log(`✅ Visa document uploaded successfully for user: ${user.email}`);
+      console.log(`✅ Final visa document uploaded successfully for user: ${user.email}`);
 
       res.json({ 
-        message: "Visa document uploaded successfully",
+        message: "Final visa document uploaded successfully",
         workVisa: updatedWorkVisa,
         finalVisaUrl: visaPath
       });
     } catch (error) {
-      console.error("Admin visa upload error:", error);
-      res.status(500).json({ message: "Failed to upload visa document" });
+      console.error("Admin final visa upload error:", error);
+      res.status(500).json({ message: "Failed to upload final visa document" });
     }
   });
 

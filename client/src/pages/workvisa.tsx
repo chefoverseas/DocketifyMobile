@@ -250,6 +250,76 @@ export default function WorkVisaPage() {
                   </div>
                 )}
 
+                {/* Work Visa Documents */}
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-gray-700 text-lg flex items-center space-x-2">
+                    <FileText className="h-5 w-5" />
+                    <span>Work Visa Documents</span>
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                      { key: 'irlApplicationFormUrl', label: 'IRL Application Form' },
+                      { key: 'visaAppointmentUrl', label: 'Visa Appointment' },
+                      { key: 'vfsVisaPaymentUrl', label: 'VFS Visa Payment' },
+                      { key: 'visaCoverLetterUrl', label: 'Visa Cover Letter' },
+                      { key: 'visaInviteLetterUrl', label: 'Visa Invite Letter' },
+                      { key: 'supplementaryEmploymentApplicationUrl', label: 'Supplementary Employment Application Form' },
+                      { key: 'irelandVacChecklistUrl', label: 'Ireland VAC Checklist' },
+                      { key: 'travelMedicalInsuranceUrl', label: 'Travel & Medical Insurance' },
+                      { key: 'fullDocketVisaSubmissionUrl', label: 'Full Docket for Visa Submission' }
+                    ].map((doc) => {
+                      const url = (workVisa as any)?.[doc.key];
+                      const isAvailable = !!url;
+                      
+                      return (
+                        <div
+                          key={doc.key}
+                          className={`p-4 rounded-lg border ${
+                            isAvailable 
+                              ? 'bg-green-50 border-green-200' 
+                              : 'bg-gray-50 border-gray-200'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-2">
+                                {isAvailable ? (
+                                  <CheckCircle className="h-4 w-4 text-green-600" />
+                                ) : (
+                                  <Clock className="h-4 w-4 text-gray-400" />
+                                )}
+                                <span className={`font-medium text-sm ${
+                                  isAvailable ? 'text-green-800' : 'text-gray-600'
+                                }`}>
+                                  {doc.label}
+                                </span>
+                              </div>
+                              <p className={`text-xs mt-1 ${
+                                isAvailable ? 'text-green-600' : 'text-gray-500'
+                              }`}>
+                                {isAvailable ? 'Available for download' : 'Pending upload by admin'}
+                              </p>
+                            </div>
+                            {isAvailable && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                asChild
+                                className="text-xs border-green-300 text-green-700 hover:bg-green-100"
+                              >
+                                <a href={url} target="_blank" rel="noopener noreferrer">
+                                  <Download className="h-3 w-3 mr-1" />
+                                  Download
+                                </a>
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* Download Visa Document */}
                 {workVisa.finalVisaUrl && workVisa.status === 'approved' && (
                   <div className="bg-green-50 border-green-200 border rounded-lg p-6">

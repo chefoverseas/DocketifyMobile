@@ -109,6 +109,18 @@ export const workVisas = pgTable("work_visas", {
   visaType: text("visa_type"), // e.g., "H1B", "L1", "O1", etc.
   embassyLocation: text("embassy_location"),
   finalVisaUrl: text("final_visa_url"),
+  
+  // Admin uploaded documents
+  irlApplicationFormUrl: text("irl_application_form_url"),
+  visaAppointmentUrl: text("visa_appointment_url"),
+  vfsVisaPaymentUrl: text("vfs_visa_payment_url"),
+  visaCoverLetterUrl: text("visa_cover_letter_url"),
+  visaInviteLetterUrl: text("visa_invite_letter_url"),
+  supplementaryEmploymentApplicationUrl: text("supplementary_employment_application_url"),
+  irelandVacChecklistUrl: text("ireland_vac_checklist_url"),
+  travelMedicalInsuranceUrl: text("travel_medical_insurance_url"),
+  fullDocketVisaSubmissionUrl: text("full_docket_visa_submission_url"),
+  
   notes: text("notes"),
   lastUpdated: timestamp("last_updated").default(sql`now()`),
   createdAt: timestamp("created_at").default(sql`now()`),

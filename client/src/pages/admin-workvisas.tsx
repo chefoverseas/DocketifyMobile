@@ -5,8 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Calendar, MapPin, Plane } from "lucide-react";
+import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Calendar, MapPin, Plane, Edit } from "lucide-react";
 import { format } from "date-fns";
+import { WorkVisaDetailsModal } from "@/components/WorkVisaDetailsModal";
 
 type User = {
   id: string;
@@ -33,6 +34,7 @@ type WorkVisa = {
 
 export default function AdminWorkVisasPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/admin/workvisas'],
@@ -373,11 +375,20 @@ export default function AdminWorkVisasPage() {
                               <Button
                                 size="sm"
                                 variant="outline"
+                                onClick={() => setSelectedUserId(visa.userId)}
+                                className="text-xs text-blue-600 border-blue-300 hover:bg-blue-50"
+                              >
+                                <Edit className="h-3 w-3 mr-1" />
+                                Manage Documents
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
                                 asChild
                                 className="text-xs"
                               >
                                 <a href={`/admin/user/${visa.userId}`}>
-                                  View Details
+                                  View Profile
                                 </a>
                               </Button>
                               {visa.finalVisaUrl && (
@@ -388,7 +399,7 @@ export default function AdminWorkVisasPage() {
                                   className="text-xs text-green-600 border-green-300"
                                 >
                                   <a href={visa.finalVisaUrl} download>
-                                    Download
+                                    Download Visa
                                   </a>
                                 </Button>
                               )}
@@ -404,6 +415,14 @@ export default function AdminWorkVisasPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Work Visa Details Modal */}
+      {selectedUserId && (
+        <WorkVisaDetailsModal
+          userId={selectedUserId}
+          onClose={() => setSelectedUserId(null)}
+        />
+      )}
     </div>
   );
 }
