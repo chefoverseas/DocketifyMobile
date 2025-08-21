@@ -970,15 +970,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId: user.id,
           status: req.body.status || "preparation",
           notes: req.body.notes || null,
-          finalDocketUrl: req.body.finalDocketUrl || null
+          finalDocketUrl: req.body.finalDocketUrl || null,
+          trackingCode: req.body.trackingCode || null
         });
         console.log(`✅ Created new work permit for user: ${user.email}`);
       } else {
-        // Update existing work permit
-        workPermit = await storage.updateWorkPermit(workPermit.id, {
+        // Update existing work permit using the userId (which updateWorkPermit expects)
+        workPermit = await storage.updateWorkPermit(user.id, {
           status: req.body.status || workPermit.status,
           notes: req.body.notes !== undefined ? req.body.notes : workPermit.notes,
-          finalDocketUrl: req.body.finalDocketUrl !== undefined ? req.body.finalDocketUrl : workPermit.finalDocketUrl
+          finalDocketUrl: req.body.finalDocketUrl !== undefined ? req.body.finalDocketUrl : workPermit.finalDocketUrl,
+          trackingCode: req.body.trackingCode !== undefined ? req.body.trackingCode : workPermit.trackingCode
         });
         console.log(`✅ Updated work permit for user: ${user.email}`);
       }
