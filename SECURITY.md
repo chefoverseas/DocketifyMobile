@@ -113,7 +113,7 @@ You can verify security headers using online tools:
 ## 🚨 Security Issues
 
 If you discover a security vulnerability, please report it to:
-- Email: security@docketify.com
+- Email: info@chefoverseas.com
 - Create a private issue in the repository
 
 Do not publicly disclose security vulnerabilities until they have been addressed.

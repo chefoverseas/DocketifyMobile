@@ -367,7 +367,7 @@ export default function WorkPermitPage() {
                 <h4 className="font-semibold text-blue-900 mb-2">Email Support</h4>
                 <p className="text-sm text-blue-700 mb-3">Get help via email with detailed responses</p>
                 <Button variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-100" asChild>
-                  <a href="mailto:support@chefoverseas.com">
+                  <a href="mailto:info@chefoverseas.com">
                     Email Us
                   </a>
                 </Button>

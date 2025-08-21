@@ -1,190 +1,74 @@
 # Overview
 
-Docketify is a document management web application that allows users to authenticate via mobile OTP, manage their profiles, and organize required documents and professional references in a structured "docket". The application features file upload capabilities, progress tracking, and admin functionality for managing users and their document completion status.
+Docketify is a document management web application designed for secure user authentication via mobile OTP, comprehensive profile management, and organized storage of required documents and professional references within a "docket" system. Key features include file upload capabilities, detailed progress tracking, and robust admin functionalities for user and document status management. The platform aims to streamline the document collection process, ensuring a secure, efficient, and user-friendly experience for both individuals and administrators.
 
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
 
-# Recent Enhancements (Latest Session)
-
-## Complete Contract Management System Implementation (August 15, 2025)
-- **Complete Contract Management Workflow**: Built comprehensive system for admin contract uploads and user digital signature workflow
-- **Admin Contract Upload**: Admins can upload company contracts and job offer letters for specific users through dedicated interface
-- **User Document Download**: Users can download original contract documents and job offers from their contract management page
-- **Digital Signature Workflow**: Users can upload signed versions of documents back to the system for admin review
-- **API Routes Fixed**: Resolved complex routing issue - frontend sends requests to specific endpoints (/company-contract, /job-offer) instead of generic /upload
-- **Upload System Working**: Company contract uploads fully operational, job offer uploads being finalized
-- **Database Integration**: Full contract tracking with status management (pending, signed) and file URL storage
-- **Navigation Integration**: Added contract management to both user and admin navigation with dedicated pages
-- **File Upload Support**: Support for PDF, DOC, DOCX formats with 10MB file size limits and proper validation
-- **Status Tracking**: Real-time status updates for contract signing progress with visual indicators
-- **Admin Workflow Tools**: Complete admin interface for managing user contracts with upload guidelines and status monitoring
-
-## Complete File Upload System & Docket Functionality Fix (August 15, 2025)
-- **Upload Functionality Complete**: Resolved complete upload system failure caused by missing API routes and JSON parsing errors
-- **API Route Implementation**: Added missing `/api/upload` route with multer configuration for secure file uploads (10MB limit, PDF/image/Word support)
-- **Route Compatibility**: Added `/api/auth/me` alias and `/api/workpermit` compatibility routes for frontend integration
-- **JSON Parsing Error Fix**: Enhanced error handling to return JSON responses instead of HTML, preventing "Cannot read properties of undefined" errors
-- **FileUploader Component Fix**: Resolved JavaScript runtime error in file icon handling with proper null checks and filename extraction
-- **Data Structure Fix**: Fixed critical file upload data structure mismatch - API returns `{ file: { url } }` but frontend was accessing `.url` instead of `.file.url`
-- **Passport Files Working**: Passport front page, last page, and passport photo uploads now save correctly to database and update status
-- **Action Buttons Functional**: Added complete functionality to "Save as Draft" and "Submit Complete Docket" buttons with proper user feedback
-- **Multi-file Upload Fix**: Fixed education, experience, and certification file uploads by properly extracting file metadata from API responses
-- **Progress Tracking**: All document sections now correctly track completion status and update progress indicators
-
-## Application Bug Fixes & Deployment Resolution (August 12, 2025)
-- **Admin Users Page Error**: Resolved "users.filter is not a function" error by fixing data structure access in admin-users.tsx
-- **User Data Loading**: Enhanced UserNavigationHub component with proper data handling for admin vs user modes
-- **TypeScript Fixes**: Corrected API response type casting for admin endpoints 
-- **Loading States**: Added comprehensive loading and error states for better user experience
-- **Debug Logging**: Implemented and removed debug logging to identify data flow issues
-
-## Deployment Platform Issue Resolution (August 12, 2025)
-- **Platform Migration Error**: Resolved Replit's "Database migration system failure due to underlying platform issue"
-- **Complete Solution Applied**: Implemented all suggested fixes for deployment platform issues
-- **Database Bypass Strategy**: Implemented deployment workaround using pre-synchronized database schema  
-- **Production Secrets Verification**: Confirmed all required environment variables (DATABASE_URL, SESSION_SECRET, SENDGRID_API_KEY) are configured
-- **Build Optimization Complete**: Production build successful (740KB bundle, 44.9KB server, 0 TypeScript errors)
-- **Deployment Configuration**: Created comprehensive bypass configuration with automated verification
-- **Support Documentation**: Prepared complete Replit Support contact template for migration system bypass request
-- **Verification System**: Implemented automated deployment readiness verification script
-
-## Production Deployment Readiness (August 12, 2025)
-- **Complete Production Review**: Conducted comprehensive application analysis for deployment readiness
-- **Environment Validation**: Added robust environment variable validation with detailed error reporting
-- **SendGrid Production Mode**: Enabled production email sending with development fallback for testing
-- **Security Hardening**: Verified all security measures including Helmet.js, HTTPS redirects, and session security
-- **Performance Optimization**: Confirmed optimized build (740KB bundle), zero security vulnerabilities
-- **Comprehensive Documentation**: Created detailed production checklist, deployment guide, and environment template
-- **Database Schema Verification**: Confirmed all migrations synchronized and tables properly configured
-- **Production Monitoring**: Added detailed logging and environment configuration display
-
-## Deployment Preparation (August 12, 2025)
-- **TypeScript Error Resolution**: Fixed all compilation errors including:
-  - AdminUserDetail and AdminContractDetail component props interfaces
-  - API response structure issues in admin pages (data?.users → data)
-  - File uploader null/undefined type issues (resumeUrl)
-  - Storage layer array type conversion for database operations
-  - SendGrid email optional parameter handling
-- **Code Cleanup**: Removed legacy routes-old.ts file that contained unused code
-- **Build Optimization**: Confirmed successful production build (740KB bundle, 39.3KB server)
-- **Database Migration**: Verified schema synchronization with `npm run db:push` showing "No changes detected"
-
-## Authentication System Overhaul (August 2025)
-- **Complete Email OTP Authentication**: Replaced Replit Auth with custom email-based OTP system using SendGrid
-- **Session-based Authentication**: Implemented secure server-side session management for both users and admins
-- **Development Mode Testing**: Added console logging for OTP codes during development (bypasses email sending)
-- **Database Schema Updates**: Modified user table to support email-only authentication with nullable phone fields
-- **Admin Login System**: Hardcoded admin credentials (info@chefoverseas.com / Revaan56789!) for secure admin access
-- **Production Deployment Ready**: Fixed all TypeScript errors, React render issues, and SSL configuration for production
-- **AuthProvider Context**: Implemented proper React context for user authentication state management
-
-## Performance and Bug Fixes (August 12, 2025)
-- **Fixed Excessive API Polling**: Resolved performance issues with UserNavigationHub causing continuous API calls by adding proper enabled conditions
-- **Database Schema Sync**: Successfully removed legacy profile_photo_url column and synced database
-- **User Logout Functionality**: Fixed user sign out functionality with proper session destruction and redirect to homepage
-- **SelectItem Runtime Error**: Fixed React SelectItem components with empty value props in advanced search filters
-- **Query Optimization**: Added proper staleTime (10 minutes) and refetchInterval configurations to all useQuery hooks
-- **TypeScript Error Resolution**: Fixed all LSP errors including navigation component profileImageUrl reference
-
-## Previous Advanced Features
-- **Enhanced Dashboard**: Added quick stats cards, activity timeline, and visual progress tracking
-- **Notification System**: Real-time notifications with priority sorting and interactive actions
-- **Advanced Search**: Multi-criteria search with filtering by document type, status, and date range
-- **Document Preview**: Full document preview with zoom, rotate, and embedded PDF viewer
-- **Bulk Actions**: Multi-select operations for users, documents, and contracts with contextual actions
-- **Backup System**: Automated backup with full/incremental options and recovery capabilities
-- **System Monitoring**: Real-time system metrics, performance tracking, and alert management
-
-## Production Readiness Improvements
-- Complete TypeScript error resolution
-- Enhanced security with dependency auditing
-- Optimized build process (720KB bundle)
-- Comprehensive error handling and user feedback
-- Professional UI/UX with Chef Overseas branding throughout
-
 # System Architecture
 
 ## Frontend Architecture
-- **React with TypeScript**: Modern React application using functional components and hooks with complete type safety
-- **Routing**: Wouter for lightweight client-side routing with protected admin routes
-- **UI Framework**: Shadcn/ui components built on top of Radix UI primitives with Tailwind CSS styling
-- **State Management**: React Query (@tanstack/react-query) for server state management and caching
-- **Form Handling**: React Hook Form with Zod validation for type-safe form validation
-- **File Uploads**: React Dropzone for drag-and-drop file upload interface
-- **Module Interlinking**: Comprehensive navigation between user modules (docket ↔ work permit ↔ contract ↔ profile)
+- **Technology Stack**: React with TypeScript, utilizing functional components and hooks for type safety.
+- **Routing**: Wouter for lightweight client-side routing, including protected admin routes.
+- **UI/UX**: Shadcn/ui components built on Radix UI primitives, styled with Tailwind CSS, incorporating Chef Overseas branding (logo, orange, red, green color scheme).
+- **State Management**: React Query (@tanstack/react-query) for server state management and caching.
+- **Form Handling**: React Hook Form with Zod validation for type-safe forms.
+- **File Uploads**: React Dropzone for drag-and-drop file interface.
+- **Navigation**: Comprehensive interlinking between user modules (docket, work permit, contract, profile).
 
 ## Backend Architecture
-- **Express.js Server**: Node.js/Express API server with TypeScript and comprehensive error handling
-- **Session Management**: Express sessions for authentication state with security headers
-- **File Upload Handling**: Multer middleware for multipart form data processing with validation
-- **Database Layer**: Drizzle ORM with PostgreSQL for type-safe database operations
-- **API Structure**: RESTful endpoints organized by feature (auth, users, docket, admin, contracts, work permits)
-- **Admin Management**: Complete CRUD operations with user detail drill-down capabilities
+- **Server**: Node.js/Express API server with TypeScript and error handling.
+- **Session Management**: Express sessions for secure authentication state.
+- **File Handling**: Multer middleware for multipart form data processing with validation.
+- **Database ORM**: Drizzle ORM with PostgreSQL for type-safe database operations.
+- **API Structure**: RESTful endpoints organized by feature (auth, users, docket, admin, contracts, work permits).
+- **Admin Management**: CRUD operations for users and their details.
 
 ## Database Design
-- **Users Table**: Stores user authentication and profile information (phone, name, email, admin status)
-- **Dockets Table**: Document collection with JSON fields for file metadata and references
-- **OTP Sessions Table**: Temporary storage for phone verification codes with expiration
-- **Relationships**: One-to-one relationship between users and their dockets
+- **Core Tables**: Users (auth, profile), Dockets (document collection, JSON fields for metadata), OTP Sessions (temporary codes).
+- **Relationships**: One-to-one between users and their dockets.
 
 ## Authentication System
-- **Phone-based OTP**: Users authenticate using their mobile phone number and SMS verification codes with country code selection
-- **Session-based Auth**: Server-side sessions for maintaining authentication state
-- **Role-based Access**: Admin users have additional permissions for user management
-- **Admin Pre-registration**: Only admin-created users can access the system with proper error messaging
-- **Country Code Support**: 13 country codes supported including US, UK, India, UAE, Singapore, etc.
+- **Method**: Custom email-based OTP system using SendGrid (replaced Replit Auth).
+- **Session Management**: Secure server-side sessions for users and admins.
+- **Access Control**: Role-based access with separate permissions for admin users.
+- **User Provisioning**: Only admin-created users can access the system.
+- **Admin Access**: Hardcoded admin credentials for secure access.
+- **Localization**: Supports 13 country codes for OTP verification.
 
 ## File Storage Strategy
-- **Local File System**: Files stored in uploads directory with UUID-based naming
-- **File Validation**: Type and size restrictions (images and PDFs, 10MB limit)
-- **Metadata Storage**: File information stored in database JSON fields
+- **Location**: Local file system (`uploads` directory) with UUID-based naming.
+- **Validation**: Type and size restrictions (images, PDFs, DOC/DOCX; 10MB limit).
+- **Metadata**: File information stored in database JSON fields.
 
-## Development Environment
-- **Vite**: Fast build tool and dev server with HMR support
-- **TypeScript**: Full type safety across frontend, backend, and shared schemas
-- **Path Aliases**: Organized imports with @ aliases for clean code structure
+## Security Features
+- **SSL/TLS**: HTTPS implementation for production (Replit Deployments) and self-signed for development. Includes comprehensive security headers (Helmet.js) and HTTPS redirection.
+- **Authentication Security**: OTP verification, secure server-side sessions with expiration, separate admin authentication.
+- **Input Validation**: Zod schema validation for all user inputs.
 
 # External Dependencies
 
 ## Database
-- **Neon PostgreSQL**: Serverless PostgreSQL database with connection pooling
-- **Drizzle Kit**: Database migrations and schema management
+- **Neon PostgreSQL**: Serverless PostgreSQL with connection pooling.
+- **Drizzle Kit**: Database migrations and schema management.
 
 ## UI Components
-- **Radix UI**: Headless UI primitives for accessibility and behavior
-- **Tailwind CSS**: Utility-first CSS framework with Chef Overseas brand colors (orange, red, green)
-- **Lucide React**: Icon library for consistent iconography
-- **Brand Integration**: Chef Overseas logo displayed across all pages with matching color scheme
+- **Radix UI**: Headless UI primitives.
+- **Tailwind CSS**: Utility-first CSS framework.
+- **Lucide React**: Icon library.
 
 ## Security Dependencies
-- **Helmet.js**: Security middleware for Express.js with CSP, HSTS, and other security headers
-- **HTTPS Module**: Native Node.js HTTPS server support for SSL/TLS encryption
-- **OpenSSL**: Certificate generation for development HTTPS
+- **Helmet.js**: Security middleware for Express.js.
+- **OpenSSL**: Certificate generation for development HTTPS.
 
 ## Development Tools
-- **ESBuild**: Fast bundling for production builds
-- **PostCSS**: CSS processing with Tailwind and Autoprefixer
+- **Vite**: Fast build tool and dev server.
+- **TypeScript**: Full type safety.
+- **ESBuild**: Fast bundling.
+- **PostCSS**: CSS processing.
 
 ## Runtime Dependencies
-- **Date-fns**: Date manipulation and formatting
-- **Class Variance Authority**: Dynamic class name generation
-- **Nanoid**: Unique ID generation for files and sessions
-
-# Security Features
-
-## SSL/TLS Implementation
-- **Development HTTPS**: Self-signed certificates for local development
-- **Production SSL**: Automatic SSL termination via Replit Deployments
-- **Security Headers**: Comprehensive security header implementation with Helmet.js
-- **HTTPS Redirect**: Automatic HTTP to HTTPS redirection in production
-- **Secure Sessions**: HTTPOnly and secure cookie configuration
-
-## Authentication Security
-- **OTP Verification**: Phone-based authentication with SMS verification
-- **Session Security**: Server-side session management with expiration
-- **Admin Protection**: Separate admin authentication system
-- **Input Validation**: Zod schema validation for all user inputs
-
-The application is designed as a production-ready starter with enterprise-grade security, type safety, user experience, and maintainable code structure. The architecture supports easy scaling and can be adapted to use external services while maintaining security best practices.
+- **Date-fns**: Date manipulation.
+- **Class Variance Authority**: Dynamic class name generation.
+- **Nanoid**: Unique ID generation.
