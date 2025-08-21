@@ -51,11 +51,11 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-orange-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-4">
             <img 
               src={chefOverseasLogo} 
               alt="Chef Overseas Logo" 
-              className="h-16 w-auto"
+              className="h-20 w-auto object-contain max-w-xs"
             />
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">

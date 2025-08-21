@@ -154,11 +154,11 @@ export default function Profile() {
       <div className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-6">
               <img 
                 src={chefOverseasLogo} 
                 alt="Chef Overseas" 
-                className="h-12 w-12 rounded-xl shadow-lg" 
+                className="h-16 w-auto object-contain rounded-xl shadow-lg" 
               />
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">

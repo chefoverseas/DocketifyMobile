@@ -11,9 +11,9 @@ export default function Landing() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-16">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center mb-6">
-            <img src="/chef-overseas-logo.png" alt="Chef Overseas" className="h-16 w-auto" />
+        <div className="text-center mb-20">
+          <div className="flex items-center justify-center mb-8">
+            <img src="/chef-overseas-logo.png" alt="Chef Overseas" className="h-24 w-auto object-contain max-w-md" />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">
             Welcome to Docketify

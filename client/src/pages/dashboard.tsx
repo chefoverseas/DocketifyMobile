@@ -166,28 +166,28 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
       {/* Modern Navigation Header */}
       <div className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-3">
-            <div className="flex items-center space-x-3">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center space-x-6">
               <img 
                 src={chefOverseasLogo} 
                 alt="Chef Overseas" 
-                className="h-10 w-10 rounded-lg shadow-md" 
+                className="h-16 w-auto object-contain rounded-lg shadow-md" 
               />
-              <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
                 Docketify Dashboard
               </h1>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-4">
               <AdvancedSearch />
               <NotificationSystem />
               <Button 
                 variant="ghost" 
-                size="sm" 
                 onClick={() => logout()} 
-                className="hover:bg-red-100 text-red-600 transition-colors"
+                className="hover:bg-red-100 text-red-600 transition-colors px-4 py-2"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-5 w-5 mr-2" />
+                Logout
               </Button>
             </div>
           </div>
@@ -195,16 +195,16 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10 py-10">
         
         {/* User Profile Header Card */}
-        <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-white via-orange-50 to-red-50 overflow-hidden">
+        <Card className="mb-12 border-0 shadow-xl bg-gradient-to-r from-white via-orange-50 to-red-50 overflow-hidden">
           <CardContent className="p-0">
-            <div className="bg-gradient-to-r from-orange-500 to-red-500 px-8 py-6">
-              <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+            <div className="bg-gradient-to-r from-orange-500 to-red-500 px-10 py-8">
+              <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
                 {/* Profile Photo */}
                 <div className="relative group">
-                  <div className="w-24 h-24 md:w-28 md:h-28 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-br from-white to-orange-100">
+                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-br from-white to-orange-100">
                     {user?.profileImageUrl ? (
                       <img 
                         src={user.profileImageUrl} 
@@ -213,25 +213,25 @@ export default function Dashboard() {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-100 to-white">
-                        <User className="h-12 w-12 md:h-14 md:w-14 text-orange-600" />
+                        <User className="h-16 w-16 md:h-20 md:w-20 text-orange-600" />
                       </div>
                     )}
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
-                    <CheckCircle className="h-4 w-4 text-white" />
+                  <div className="absolute -bottom-3 -right-3 w-10 h-10 bg-green-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
+                    <CheckCircle className="h-5 w-5 text-white" />
                   </div>
                 </div>
 
                 {/* Profile Info */}
                 <div className="flex-1 text-center md:text-left text-white">
-                  <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                  <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight">
                     Welcome back, {user?.displayName || user?.name || 'User'}!
                   </h1>
-                  <p className="text-orange-100 mb-2 text-lg">
+                  <p className="text-orange-100 mb-3 text-xl leading-relaxed">
                     ID: {user?.uid || 'Not assigned'} • Member since {new Date().getFullYear()}
                   </p>
-                  <p className="text-white/90 mb-4 flex items-center justify-center md:justify-start">
-                    <Calendar className="h-4 w-4 mr-2" />
+                  <p className="text-white/90 mb-6 flex items-center justify-center md:justify-start text-lg">
+                    <Calendar className="h-5 w-5 mr-3" />
                     {new Date().toLocaleDateString('en-US', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -239,20 +239,20 @@ export default function Dashboard() {
                       day: 'numeric' 
                     })}
                   </p>
-                  <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                    <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30">
-                      <User className="h-3 w-3 mr-1" />
+                  <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                    <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30 px-3 py-2 text-sm">
+                      <User className="h-4 w-4 mr-2" />
                       Active User
                     </Badge>
                     {docketData?.docket && (
-                      <Badge className="bg-green-500/20 text-white border-green-300/30">
-                        <CheckCircle className="h-3 w-3 mr-1" />
+                      <Badge className="bg-green-500/20 text-white border-green-300/30 px-3 py-2 text-sm">
+                        <CheckCircle className="h-4 w-4 mr-2" />
                         Docket Created
                       </Badge>
                     )}
                     {contractData?.contract && (
-                      <Badge className="bg-blue-500/20 text-white border-blue-300/30">
-                        <Briefcase className="h-3 w-3 mr-1" />
+                      <Badge className="bg-blue-500/20 text-white border-blue-300/30 px-3 py-2 text-sm">
+                        <Briefcase className="h-4 w-4 mr-2" />
                         Contract Active
                       </Badge>
                     )}
@@ -260,49 +260,48 @@ export default function Dashboard() {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="flex flex-col space-y-3">
+                <div className="flex flex-col space-y-4">
                   <Link href="/profile">
                     <Button 
                       variant="secondary" 
-                      className="bg-white/20 text-white border-white/30 hover:bg-white/30 transition-all backdrop-blur-sm"
+                      className="bg-white/20 text-white border-white/30 hover:bg-white/30 transition-all backdrop-blur-sm px-6 py-3 text-base"
                     >
-                      <Settings className="h-4 w-4 mr-2" />
+                      <Settings className="h-5 w-5 mr-3" />
                       Edit Profile
                     </Button>
                   </Link>
                   <Button 
                     variant="ghost" 
-                    size="sm"
-                    className="text-white/70 hover:text-white hover:bg-white/10"
+                    className="text-white/70 hover:text-white hover:bg-white/10 px-4 py-2"
                   >
-                    <MoreHorizontal className="h-4 w-4" />
+                    <MoreHorizontal className="h-5 w-5" />
                   </Button>
                 </div>
               </div>
             </div>
             
             {/* Quick Stats Row */}
-            <div className="bg-white px-8 py-4">
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-orange-600">{overallProgress}%</div>
-                  <div className="text-xs text-gray-500">Overall Progress</div>
+            <div className="bg-white px-10 py-6">
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-6 text-center">
+                <div className="py-2">
+                  <div className="text-3xl font-bold text-orange-600 mb-1">{overallProgress}%</div>
+                  <div className="text-sm text-gray-600 font-medium">Overall Progress</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{docketProgress}%</div>
-                  <div className="text-xs text-gray-500">Docket Complete</div>
+                <div className="py-2">
+                  <div className="text-3xl font-bold text-blue-600 mb-1">{docketProgress}%</div>
+                  <div className="text-sm text-gray-600 font-medium">Docket Complete</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-600">
+                <div className="py-2">
+                  <div className="text-3xl font-bold text-green-600 mb-1">
                     {contractStatus === 'Complete' ? '100' : contractStatus === 'Pending' ? '50' : '0'}%
                   </div>
-                  <div className="text-xs text-gray-500">Contract Status</div>
+                  <div className="text-sm text-gray-600 font-medium">Contract Status</div>
                 </div>
-                <div className="hidden md:block">
-                  <div className="text-2xl font-bold text-purple-600">
+                <div className="hidden md:block py-2">
+                  <div className="text-3xl font-bold text-purple-600 mb-1">
                     {workPermitStatus === 'Complete' ? '100' : workPermitStatus === 'Pending' ? '50' : '0'}%
                   </div>
-                  <div className="text-xs text-gray-500">Work Permit</div>
+                  <div className="text-sm text-gray-600 font-medium">Work Permit</div>
                 </div>
               </div>
             </div>

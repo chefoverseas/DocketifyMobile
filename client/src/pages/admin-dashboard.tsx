@@ -227,51 +227,49 @@ export default function AdminDashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Admin Profile & Quick Actions Header */}
-        <Card className="mb-8 border-0 shadow-xl bg-gradient-to-r from-white via-blue-50 to-indigo-50 overflow-hidden">
+        <Card className="mb-10 border-0 shadow-xl bg-gradient-to-r from-white via-blue-50 to-indigo-50 overflow-hidden">
           <CardContent className="p-0">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-6">
-              <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-10 py-8">
+              <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full border-4 border-white shadow-2xl flex items-center justify-center">
-                    <Shield className="h-10 w-10 text-white" />
+                  <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full border-4 border-white shadow-2xl flex items-center justify-center">
+                    <Shield className="h-12 w-12 text-white" />
                   </div>
-                  <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 border-3 border-white rounded-full flex items-center justify-center">
-                    <Zap className="h-3 w-3 text-white" />
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-3 border-white rounded-full flex items-center justify-center">
+                    <Zap className="h-4 w-4 text-white" />
                   </div>
                 </div>
                 
                 <div className="flex-1 text-center md:text-left text-white">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-2">Administrator Console</h2>
-                  <p className="text-blue-100 mb-4">Real-time system overview and management tools</p>
-                  <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                    <Badge className="bg-white/20 text-white border-white/30">
-                      <Activity className="h-3 w-3 mr-1" />
+                  <h2 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">Administrator Console</h2>
+                  <p className="text-blue-100 mb-6 text-lg leading-relaxed">Real-time system overview and management tools</p>
+                  <div className="flex flex-wrap gap-3 justify-center md:justify-start">
+                    <Badge className="bg-white/20 text-white border-white/30 px-3 py-2 text-sm">
+                      <Activity className="h-4 w-4 mr-2" />
                       System Active
                     </Badge>
-                    <Badge className="bg-green-500/20 text-white border-green-300/30">
-                      <Bell className="h-3 w-3 mr-1" />
+                    <Badge className="bg-green-500/20 text-white border-green-300/30 px-3 py-2 text-sm">
+                      <Bell className="h-4 w-4 mr-2" />
                       Real-time Updates
                     </Badge>
                   </div>
                 </div>
                 
-                <div className="flex flex-row md:flex-col space-x-2 md:space-x-0 md:space-y-2">
+                <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-3">
                   <Button 
                     variant="secondary" 
-                    size="sm" 
-                    className="bg-white/20 text-white border-white/30 hover:bg-white/30"
+                    className="bg-white/20 text-white border-white/30 hover:bg-white/30 px-6 py-3 text-base"
                     onClick={() => setLocation("/admin/dockets")}
                   >
-                    <FileText className="h-4 w-4 mr-2" />
+                    <FileText className="h-5 w-5 mr-3" />
                     Dockets
                   </Button>
                   <Button 
                     variant="secondary" 
-                    size="sm" 
-                    className="bg-white/20 text-white border-white/30 hover:bg-white/30"
+                    className="bg-white/20 text-white border-white/30 hover:bg-white/30 px-6 py-3 text-base"
                     onClick={() => setLocation("/admin/contracts")}
                   >
-                    <Briefcase className="h-4 w-4 mr-2" />
+                    <Briefcase className="h-5 w-5 mr-3" />
                     Contracts
                   </Button>
                 </div>
@@ -279,51 +277,51 @@ export default function AdminDashboardPage() {
             </div>
             
             {/* Quick Stats Row */}
-            <div className="bg-white px-8 py-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-2xl font-bold text-blue-600">{stats.totalUsers}</div>
-                  <div className="text-xs text-gray-500">Total Users</div>
+            <div className="bg-white px-10 py-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div className="py-2">
+                  <div className="text-3xl font-bold text-blue-600 mb-1">{stats.totalUsers}</div>
+                  <div className="text-sm text-gray-600 font-medium">Total Users</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-green-600">{stats.completedDockets}</div>
-                  <div className="text-xs text-gray-500">Completed</div>
+                <div className="py-2">
+                  <div className="text-3xl font-bold text-green-600 mb-1">{stats.completedDockets}</div>
+                  <div className="text-sm text-gray-600 font-medium">Completed</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-yellow-600">{stats.pendingDockets}</div>
-                  <div className="text-xs text-gray-500">Pending</div>
+                <div className="py-2">
+                  <div className="text-3xl font-bold text-yellow-600 mb-1">{stats.pendingDockets}</div>
+                  <div className="text-sm text-gray-600 font-medium">Pending</div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-purple-600">{stats.contractsPending}</div>
-                  <div className="text-xs text-gray-500">Contracts</div>
+                <div className="py-2">
+                  <div className="text-3xl font-bold text-purple-600 mb-1">{stats.contractsPending}</div>
+                  <div className="text-sm text-gray-600 font-medium">Contracts</div>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
         {/* Interactive Management Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <Card 
             className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-100"
             onClick={() => setLocation("/admin/workpermits")}
           >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-4 bg-blue-500 rounded-xl group-hover:bg-blue-600 transition-colors shadow-lg">
-                  <Briefcase className="h-8 w-8 text-white" />
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="p-5 bg-blue-500 rounded-xl group-hover:bg-blue-600 transition-colors shadow-lg">
+                  <Briefcase className="h-10 w-10 text-white" />
                 </div>
-                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                <ChevronRight className="h-6 w-6 text-gray-400 group-hover:text-blue-500 transition-colors" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
                 Work Permits
               </h3>
-              <p className="text-gray-600 mb-4">Manage work permit applications and approvals</p>
+              <p className="text-gray-600 mb-6 text-base leading-relaxed">Manage work permit applications and approvals</p>
               <div className="flex items-center justify-between">
-                <Badge className="bg-blue-100 text-blue-700">
-                  <Activity className="h-3 w-3 mr-1" />
+                <Badge className="bg-blue-100 text-blue-700 px-3 py-2 text-sm">
+                  <Activity className="h-4 w-4 mr-2" />
                   Active Management
                 </Badge>
-                <span className="text-2xl font-bold text-blue-600">{stats.contractsPending}</span>
+                <span className="text-3xl font-bold text-blue-600">{stats.contractsPending}</span>
               </div>
             </CardContent>
           </Card>
