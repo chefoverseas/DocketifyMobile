@@ -56,17 +56,19 @@ export default function Dashboard() {
     if (!docketData?.docket) return 0;
     const docket = docketData.docket;
     let completed = 0;
-    let total = 8; // 8 sections in docket
+    let total = 10; // 10 main sections in docket
 
-    // Check each section for completion
+    // Check each section for completion based on actual schema fields
     if (docket.passportFrontUrl) completed++;
-    if (docket.passportLastPageUrl) completed++;
+    if (docket.passportLastUrl) completed++; // Correct field name
     if (docket.passportPhotoUrl) completed++;
-    if (docket.educationDocuments?.length > 0) completed++;
-    if (docket.experienceDocuments?.length > 0) completed++;
-    if (docket.certificationDocuments?.length > 0) completed++;
-    if (docket.professionalReferences?.length > 0) completed++;
     if (docket.resumeUrl) completed++;
+    if (docket.educationFiles?.length > 0) completed++; // Correct field name
+    if (docket.experienceFiles?.length > 0) completed++; // Correct field name
+    if (docket.otherCertifications?.length > 0) completed++; // Correct field name
+    if (docket.references?.length > 0) completed++; // Correct field name
+    if (docket.permanentAddressUrl) completed++;
+    if (docket.currentAddressUrl) completed++;
 
     return Math.round((completed / total) * 100);
   };
@@ -76,15 +78,26 @@ export default function Dashboard() {
     const contract = contractData.contract;
     let pending = 0;
     let signed = 0;
+    let available = 0;
 
-    if (contract.companyContractStatus === 'pending') pending++;
-    if (contract.companyContractStatus === 'signed') signed++;
-    if (contract.jobOfferStatus === 'pending') pending++;
-    if (contract.jobOfferStatus === 'signed') signed++;
+    // Check company contract
+    if (contract.companyContractOriginalUrl) {
+      available++;
+      if (contract.companyContractStatus === 'pending') pending++;
+      if (contract.companyContractStatus === 'signed') signed++;
+    }
 
-    if (signed === 2) return { status: 'All Signed', color: 'green', count: 2 };
+    // Check job offer
+    if (contract.jobOfferOriginalUrl) {
+      available++;
+      if (contract.jobOfferStatus === 'pending') pending++;
+      if (contract.jobOfferStatus === 'signed') signed++;
+    }
+
+    if (available === 0) return { status: 'Awaiting Documents', color: 'gray', count: 0 };
+    if (signed === available && signed > 0) return { status: 'All Signed', color: 'green', count: signed };
     if (pending > 0) return { status: `${pending} Pending`, color: 'orange', count: pending };
-    return { status: 'Not Started', color: 'gray', count: 0 };
+    return { status: 'Ready to Sign', color: 'blue', count: available };
   };
 
   const getWorkPermitStatus = () => {
@@ -245,7 +258,7 @@ export default function Dashboard() {
                   </Link>
                 </div>
                 <Progress value={animatedProgress} className="h-2" />
-                <p className="text-sm text-gray-600">8 sections to complete</p>
+                <p className="text-sm text-gray-600">10 sections to complete</p>
               </div>
             </CardContent>
           </Card>
@@ -256,18 +269,22 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-3 rounded-xl group-hover:opacity-80 transition-colors ${
                   contractStatus.color === 'green' ? 'bg-green-100' :
-                  contractStatus.color === 'orange' ? 'bg-orange-100' : 'bg-gray-100'
+                  contractStatus.color === 'orange' ? 'bg-orange-100' : 
+                  contractStatus.color === 'blue' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <Briefcase className={`h-6 w-6 ${
                     contractStatus.color === 'green' ? 'text-green-600' :
-                    contractStatus.color === 'orange' ? 'text-orange-600' : 'text-gray-600'
+                    contractStatus.color === 'orange' ? 'text-orange-600' : 
+                    contractStatus.color === 'blue' ? 'text-blue-600' : 'text-gray-600'
                   }`} />
                 </div>
                 <Badge variant="secondary" className={
                   contractStatus.color === 'green' ? 'bg-green-50 text-green-700' :
-                  contractStatus.color === 'orange' ? 'bg-orange-50 text-orange-700' : 'bg-gray-50 text-gray-700'
+                  contractStatus.color === 'orange' ? 'bg-orange-50 text-orange-700' : 
+                  contractStatus.color === 'blue' ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-700'
                 }>
-                  {contractStatus.color === 'green' ? 'Complete' : 'Action Needed'}
+                  {contractStatus.color === 'green' ? 'Complete' : 
+                   contractStatus.color === 'blue' ? 'Ready' : 'Action Needed'}
                 </Badge>
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">Contracts</h3>
