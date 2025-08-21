@@ -19,10 +19,8 @@ import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_17549863179
 
 const updateProfileSchema = insertUserSchema.pick({
   displayName: true,
-  email: true,
 }).extend({
   displayName: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address").optional(),
 });
 
 type UpdateProfileData = z.infer<typeof updateProfileSchema>;
@@ -38,7 +36,6 @@ export default function Profile() {
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       displayName: user?.displayName || "",
-      email: user?.email || "",
     },
   });
 
@@ -272,19 +269,17 @@ export default function Profile() {
                   </p>
                 </div>
                 
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input type="email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <FormLabel>Email Address</FormLabel>
+                  <Input 
+                    value={user.email || ""} 
+                    disabled 
+                    className="bg-muted text-muted-foreground"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Email address cannot be changed
+                  </p>
+                </div>
 
                 <div>
                   <FormLabel>Member Since</FormLabel>
