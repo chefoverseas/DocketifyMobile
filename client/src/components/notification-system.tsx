@@ -51,7 +51,7 @@ export function NotificationSystem() {
   // Mark notification as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: (notificationId: string) => 
-      apiRequest(`/api/notifications/${notificationId}/read`, { method: 'PATCH' }),
+      apiRequest('PATCH', `/api/notifications/${notificationId}/read`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
       setLastSyncTime(new Date());
@@ -68,7 +68,7 @@ export function NotificationSystem() {
   // Mark all as read mutation
   const markAllAsReadMutation = useMutation({
     mutationFn: () => 
-      apiRequest('/api/notifications/mark-all-read', { method: 'PATCH' }),
+      apiRequest('PATCH', '/api/notifications/mark-all-read'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
       setLastSyncTime(new Date());
@@ -89,7 +89,7 @@ export function NotificationSystem() {
   // Dismiss notification mutation
   const dismissNotificationMutation = useMutation({
     mutationFn: (notificationId: string) => 
-      apiRequest(`/api/notifications/${notificationId}`, { method: 'DELETE' }),
+      apiRequest('DELETE', `/api/notifications/${notificationId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/notifications'] });
       setLastSyncTime(new Date());
