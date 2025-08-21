@@ -12,8 +12,9 @@ import { WorkPermitStatusBadge } from "@/components/work-permit-status-badge";
 import { StatusDropdown } from "@/components/status-dropdown";
 
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, User, Phone, Mail, FileText, Calendar, Save, Upload } from "lucide-react";
+import { ArrowLeft, User, Phone, Mail, FileText, Calendar, Save, Upload, Clock, CheckCircle, AlertTriangle, Eye } from "lucide-react";
 import { format } from "date-fns";
+import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 import { Link } from "wouter";
 
@@ -150,11 +151,13 @@ export default function AdminWorkPermitPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-          <div className="h-96 bg-gray-200 rounded"></div>
+      <div className="min-h-screen bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 flex items-center justify-center">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/30">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gradient-to-r from-orange-200 to-red-200 rounded-lg w-48"></div>
+            <div className="h-4 bg-gradient-to-r from-orange-100 to-red-100 rounded w-32"></div>
+            <div className="h-32 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg"></div>
+          </div>
         </div>
       </div>
     );
@@ -162,245 +165,354 @@ export default function AdminWorkPermitPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Alert>
-          <AlertDescription>
-            Failed to load work permit data. Please try again later.
-          </AlertDescription>
-        </Alert>
+      <div className="min-h-screen bg-gradient-to-br from-orange-400 via-red-500 to-pink-600 flex items-center justify-center">
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/30 max-w-md">
+          <div className="text-center">
+            <div className="h-12 w-12 rounded-xl bg-red-500 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Data</h3>
+            <p className="text-gray-600">Failed to load work permit data. Please try again later.</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+            >
+              Reload Page
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
-        <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin/dashboard">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Admin Dashboard
-          </Link>
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Work Permit</h1>
-          <p className="text-gray-600 mt-2">
-            Update work permit status and manage documents for {user?.displayName}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* User Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <User className="h-5 w-5" />
-              User Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {user && (
-              <>
-                <div className="flex items-center gap-3">
-                  <User className="h-4 w-4 text-gray-500" />
-                  <span className="font-medium">{user.displayName}</span>
+    <div className="min-h-screen bg-gradient-to-br from-orange-400 via-red-500 to-pink-600">
+      {/* Modern Glassmorphism Header */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="relative backdrop-blur-md bg-white/10 border-b border-white/20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between py-6">
+              <div className="flex items-center gap-6">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-3 shadow-xl border border-white/30">
+                  <img 
+                    src={chefOverseasLogo} 
+                    alt="Chef Overseas" 
+                    className="h-10 w-auto object-contain"
+                  />
                 </div>
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-gray-500" />
-                  <span>{user.email}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Phone className="h-4 w-4 text-gray-500" />
-                  <span>{user.phone}</span>
-                </div>
-                <Separator />
-                <div className="text-sm text-gray-600">
-                  <strong>First Name:</strong> {user.givenName || 'Not provided'}
-                  <br />
-                  <strong>Last Name:</strong> {user.surname || 'Not provided'}
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Current Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Status</CardTitle>
-            <CardDescription>
-              {workPermit?.lastUpdated && (
-                <>Last updated: {format(new Date(workPermit.lastUpdated), 'PPP p')}</>
-              )}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Status:</span>
-              <WorkPermitStatusBadge status={workPermit?.status || "preparation"} />
-            </div>
-            {workPermit?.trackingCode && (
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Tracking Code:</span>
-                <span className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
-                  {workPermit.trackingCode}
-                </span>
-              </div>
-            )}
-            {workPermit?.applicationDate && (
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Application Date:</span>
-                <span className="text-sm text-gray-600">
-                  {format(new Date(workPermit.applicationDate), 'PPP')}
-                </span>
-              </div>
-            )}
-            {workPermit?.notes && (
-              <div>
-                <Label className="font-medium">Current Notes:</Label>
-                <div className="bg-gray-50 p-3 rounded-md mt-1 text-sm">
-                  {workPermit.notes}
+                <div>
+                  <h1 className="text-3xl font-bold text-white drop-shadow-lg">
+                    Work Permit Management
+                  </h1>
+                  <p className="text-orange-100 mt-1 text-lg">
+                    Admin Dashboard - {user?.displayName || 'User'} Work Permit
+                  </p>
                 </div>
               </div>
-            )}
-            {workPermit?.finalDocketUrl && (
-              <div>
-                <Label className="font-medium">Final Docket:</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <FileText className="h-4 w-4 text-green-600" />
-                  <Button variant="link" size="sm" asChild className="p-0 h-auto">
-                    <a href={workPermit.finalDocketUrl} target="_blank" rel="noopener noreferrer">
-                      View Final Docket PDF
-                    </a>
-                  </Button>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Status Management */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Update Work Permit Status</CardTitle>
-            <CardDescription>
-              Change the status and add notes for this user's work permit application
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <StatusDropdown 
-                  value={status} 
-                  onValueChange={setStatus}
-                  disabled={updateWorkPermitMutation.isPending}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Actions</Label>
+              
+              <div className="flex items-center space-x-4">
                 <Button 
-                  onClick={handleSave}
-                  disabled={updateWorkPermitMutation.isPending}
-                  className="w-full"
+                  asChild
+                  variant="outline" 
+                  size="sm"
+                  className="bg-white/50 hover:bg-white/80 border-white/30 backdrop-blur-sm"
                 >
-                  <Save className="h-4 w-4 mr-2" />
-                  {updateWorkPermitMutation.isPending ? "Saving..." : "Save Changes"}
+                  <Link href="/admin/dashboard">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Dashboard
+                  </Link>
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            {/* Tracking Code Field - Show when status is applied */}
-            {(status === "applied" || workPermit?.status === "applied") && (
-              <div className="space-y-2">
-                <Label htmlFor="trackingCode">
-                  Tracking Code <span className="text-sm text-gray-500">(Required when status is Applied)</span>
-                </Label>
-                <Input
-                  id="trackingCode"
-                  value={trackingCode}
-                  onChange={(e) => setTrackingCode(e.target.value)}
-                  placeholder="Enter application tracking code (e.g., WP-2025-001234)"
-                  disabled={updateWorkPermitMutation.isPending}
-                />
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* User Information Card */}
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl overflow-hidden">
+            <div className="relative p-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10"></div>
+              <div className="relative">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                    <User className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">User Information</h3>
+                    <p className="text-gray-600">Personal details and contact information</p>
+                  </div>
+                </div>
+                
+                {user && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 p-3 bg-white/50 rounded-xl">
+                      <User className="h-5 w-5 text-gray-600" />
+                      <span className="font-semibold text-gray-900">{user.displayName}</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-white/50 rounded-xl">
+                      <Mail className="h-5 w-5 text-gray-600" />
+                      <span className="text-gray-800">{user.email}</span>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-white/50 rounded-xl">
+                      <Phone className="h-5 w-5 text-gray-600" />
+                      <span className="text-gray-800">{user.phone}</span>
+                    </div>
+                    <div className="h-px bg-gradient-to-r from-transparent via-gray-300/50 to-transparent my-4"></div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="text-sm">
+                        <span className="font-semibold text-gray-700">First Name:</span>
+                        <p className="text-gray-600 mt-1">{user.givenName || 'Not provided'}</p>
+                      </div>
+                      <div className="text-sm">
+                        <span className="font-semibold text-gray-700">Last Name:</span>
+                        <p className="text-gray-600 mt-1">{user.surname || 'Not provided'}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes (Optional)</Label>
-              <Textarea
-                id="notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add any additional notes or instructions for the user..."
-                rows={4}
-                disabled={updateWorkPermitMutation.isPending}
-              />
             </div>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Final Docket Upload */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <Upload className="h-5 w-5" />
-              Final Docket Upload
-            </CardTitle>
-            <CardDescription>
-              Upload the final work permit document (PDF only). Available for Applied status and above.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {(status === "applied" || status === "awaiting_decision" || status === "approved") || 
-               (workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") ? (
-                <Alert>
-                  <FileText className="h-4 w-4" />
-                  <AlertDescription>
-                    Final docket upload is available. You can upload or replace the document.
-                  </AlertDescription>
-                </Alert>
-              ) : (
-                <Alert>
-                  <AlertDescription>
-                    Upload will be enabled when status is set to "Applied" or higher.
-                  </AlertDescription>
-                </Alert>
-              )}
-              
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                <input
-                  type="file"
-                  id="file-upload"
-                  className="hidden"
-                  accept=".pdf"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      handleFileUpload([e.target.files[0]]);
-                    }
-                  }}
-                  disabled={isUploading || !(status === "applied" || status === "awaiting_decision" || status === "approved" || workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved")}
-                />
-                <label htmlFor="file-upload" className={`cursor-pointer ${isUploading || !(status === "applied" || status === "awaiting_decision" || status === "approved" || workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") ? 'opacity-50' : ''}`}>
-                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-gray-700">
-                    {isUploading ? "Uploading..." : "Click to upload PDF"}
-                  </p>
-                  <p className="text-xs text-gray-500">PDF files up to 10MB</p>
-                </label>
+          {/* Current Status Card */}
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl overflow-hidden">
+            <div className="relative p-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10"></div>
+              <div className="relative">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                    <CheckCircle className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Current Status</h3>
+                    {workPermit?.lastUpdated && (
+                      <p className="text-gray-600">
+                        Last updated: {format(new Date(workPermit.lastUpdated), 'PPP p')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 bg-white/60 rounded-xl">
+                    <span className="font-semibold text-gray-800">Status:</span>
+                    <WorkPermitStatusBadge status={workPermit?.status || "preparation"} />
+                  </div>
+                  
+                  {workPermit?.trackingCode && (
+                    <div className="flex items-center justify-between p-4 bg-white/60 rounded-xl">
+                      <span className="font-semibold text-gray-800">Tracking Code:</span>
+                      <span className="bg-gradient-to-r from-gray-100 to-gray-200 px-3 py-2 rounded-lg text-sm font-mono font-semibold text-gray-700 shadow-sm">
+                        {workPermit.trackingCode}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {workPermit?.applicationDate && (
+                    <div className="flex items-center justify-between p-4 bg-white/60 rounded-xl">
+                      <span className="font-semibold text-gray-800">Application Date:</span>
+                      <span className="text-gray-700 font-medium">
+                        {format(new Date(workPermit.applicationDate), 'PPP')}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {workPermit?.notes && (
+                    <div className="p-4 bg-white/60 rounded-xl">
+                      <Label className="font-semibold text-gray-800 mb-2 block">Current Notes:</Label>
+                      <div className="bg-amber-50/80 backdrop-blur-sm p-4 rounded-lg border border-amber-200/50">
+                        <p className="text-gray-700 leading-relaxed">{workPermit.notes}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {workPermit?.finalDocketUrl && (
+                    <div className="p-4 bg-white/60 rounded-xl">
+                      <Label className="font-semibold text-gray-800 mb-3 block">Final Docket:</Label>
+                      <div className="flex items-center gap-3 p-3 bg-green-50/80 rounded-lg border border-green-200/50">
+                        <div className="h-10 w-10 rounded-xl bg-green-500 flex items-center justify-center">
+                          <FileText className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-green-900">Final Docket Available</p>
+                          <p className="text-sm text-green-700">Document ready for download</p>
+                        </div>
+                        <Button variant="outline" size="sm" asChild className="bg-white/70 hover:bg-white">
+                          <a href={workPermit.finalDocketUrl} target="_blank" rel="noopener noreferrer">
+                            <Eye className="h-4 w-4 mr-2" />
+                            View PDF
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+        {/* Status Management Card */}
+        <div className="lg:col-span-2 bg-white/80 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl overflow-hidden">
+          <div className="relative p-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-yellow-500/10"></div>
+            <div className="relative">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg">
+                  <Save className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Update Work Permit Status</h3>
+                  <p className="text-gray-600">Change the status and add notes for this user's work permit application</p>
+                </div>
               </div>
               
-              {isUploading && (
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
-                  Uploading final docket...
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-3">
+                  <Label htmlFor="status" className="text-sm font-semibold text-gray-800">Status</Label>
+                  <div className="p-4 bg-white/60 rounded-xl">
+                    <StatusDropdown 
+                      value={status} 
+                      onValueChange={setStatus}
+                      disabled={updateWorkPermitMutation.isPending}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <Label className="text-sm font-semibold text-gray-800">Actions</Label>
+                  <div className="p-4 bg-white/60 rounded-xl">
+                    <Button 
+                      onClick={handleSave}
+                      disabled={updateWorkPermitMutation.isPending}
+                      className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                    >
+                      <Save className="h-5 w-5 mr-2" />
+                      {updateWorkPermitMutation.isPending ? "Saving..." : "Save Changes"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tracking Code Field - Show when status is applied */}
+              {(status === "applied" || workPermit?.status === "applied") && (
+                <div className="space-y-3 mt-6">
+                  <Label htmlFor="trackingCode" className="text-sm font-semibold text-gray-800">
+                    Tracking Code <span className="text-sm text-amber-600">(Required when status is Applied)</span>
+                  </Label>
+                  <div className="p-4 bg-white/60 rounded-xl">
+                    <Input
+                      id="trackingCode"
+                      value={trackingCode}
+                      onChange={(e) => setTrackingCode(e.target.value)}
+                      placeholder="Enter application tracking code (e.g., WP-2025-001234)"
+                      disabled={updateWorkPermitMutation.isPending}
+                      className="border-gray-200 focus:border-orange-400 focus:ring-orange-400"
+                    />
+                  </div>
                 </div>
               )}
+
+              <div className="space-y-3 mt-6">
+                <Label htmlFor="notes" className="text-sm font-semibold text-gray-800">Notes (Optional)</Label>
+                <div className="p-4 bg-white/60 rounded-xl">
+                  <Textarea
+                    id="notes"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add any additional notes or instructions for the user..."
+                    rows={4}
+                    disabled={updateWorkPermitMutation.isPending}
+                    className="border-gray-200 focus:border-orange-400 focus:ring-orange-400 resize-none"
+                  />
+                </div>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+
+        {/* Final Docket Upload Card */}
+        <div className="lg:col-span-2 bg-white/80 backdrop-blur-md rounded-2xl border border-white/30 shadow-xl overflow-hidden">
+          <div className="relative p-6">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-red-500/10"></div>
+            <div className="relative">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg">
+                  <Upload className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Final Docket Upload</h3>
+                  <p className="text-gray-600">Upload the final work permit document (PDF only). Available for Applied status and above.</p>
+                </div>
+              </div>
+              
+              <div className="space-y-6">
+                {(status === "applied" || status === "awaiting_decision" || status === "approved") || 
+                 (workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") ? (
+                  <div className="p-4 bg-green-50/80 rounded-xl border border-green-200/50">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                      <p className="text-green-800 font-medium">
+                        Final docket upload is available. You can upload or replace the document.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-amber-50/80 rounded-xl border border-amber-200/50">
+                    <div className="flex items-center gap-3">
+                      <AlertTriangle className="h-5 w-5 text-amber-600" />
+                      <p className="text-amber-800 font-medium">
+                        Upload will be enabled when status is set to "Applied" or higher.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
+                <div className="relative">
+                  <div className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all duration-300 ${
+                    isUploading || !(status === "applied" || status === "awaiting_decision" || status === "approved" || workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") 
+                      ? 'border-gray-200 bg-gray-50/50' 
+                      : 'border-orange-300 bg-orange-50/50 hover:border-orange-400 hover:bg-orange-50/80'
+                  }`}>
+                    <input
+                      type="file"
+                      id="file-upload"
+                      className="hidden"
+                      accept=".pdf"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleFileUpload([e.target.files[0]]);
+                        }
+                      }}
+                      disabled={isUploading || !(status === "applied" || status === "awaiting_decision" || status === "approved" || workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved")}
+                    />
+                    <label htmlFor="file-upload" className={`cursor-pointer block ${isUploading || !(status === "applied" || status === "awaiting_decision" || status === "approved" || workPermit?.status === "applied" || workPermit?.status === "awaiting_decision" || workPermit?.status === "approved") ? 'opacity-50' : 'hover:opacity-80 transition-opacity'}`}>
+                      <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <Upload className="h-8 w-8 text-white" />
+                      </div>
+                      <p className="text-lg font-semibold text-gray-900 mb-2">
+                        {isUploading ? "Uploading..." : "Click to upload PDF"}
+                      </p>
+                      <p className="text-sm text-gray-600">PDF files up to 10MB</p>
+                    </label>
+                  </div>
+                  
+                  {isUploading && (
+                    <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                      <div className="flex items-center gap-3 text-orange-600">
+                        <div className="animate-spin h-6 w-6 border-2 border-orange-600 border-t-transparent rounded-full"></div>
+                        <span className="font-medium">Uploading final docket...</span>
+                      </div>
+                    </div>
+                  )}
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        </div>
       </div>
     </div>
   );
