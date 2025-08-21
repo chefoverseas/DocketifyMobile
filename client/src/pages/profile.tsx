@@ -17,10 +17,8 @@ import { z } from "zod";
 import { useState, useRef } from "react";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
-const updateProfileSchema = insertUserSchema.pick({
-  displayName: true,
-}).extend({
-  displayName: z.string().min(1, "Name is required"),
+const updateProfileSchema = z.object({
+  // Schema for profile updates - currently no editable fields except photo
 });
 
 type UpdateProfileData = z.infer<typeof updateProfileSchema>;
@@ -34,9 +32,7 @@ export default function Profile() {
 
   const form = useForm<UpdateProfileData>({
     resolver: zodResolver(updateProfileSchema),
-    defaultValues: {
-      displayName: user?.displayName || "",
-    },
+    defaultValues: {},
   });
 
   const updateMutation = useMutation({
@@ -186,7 +182,7 @@ export default function Profile() {
           <CardHeader className="bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-t-lg">
             <CardTitle className="text-xl font-bold text-gray-900">Profile Information</CardTitle>
             <p className="text-sm text-gray-600">
-              Update your personal information and contact details.
+              View your personal information and contact details. Only profile photo can be updated.
             </p>
           </CardHeader>
           <CardContent>
@@ -243,19 +239,17 @@ export default function Profile() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="displayName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Full Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div>
+                  <FormLabel>Full Name</FormLabel>
+                  <Input 
+                    value={user.displayName || ""} 
+                    disabled 
+                    className="bg-muted text-muted-foreground"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Full name cannot be changed
+                  </p>
+                </div>
                 
                 <div>
                   <FormLabel>Phone Number</FormLabel>
@@ -292,12 +286,11 @@ export default function Profile() {
               </div>
 
               <div className="flex justify-end space-x-3">
-                <Button type="button" variant="outline">
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={updateMutation.isPending}>
-                  {updateMutation.isPending ? "Saving..." : "Save Changes"}
-                </Button>
+                <Link href="/dashboard">
+                  <Button type="button" variant="outline">
+                    Back to Dashboard
+                  </Button>
+                </Link>
               </div>
             </form>
           </Form>
