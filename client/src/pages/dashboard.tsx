@@ -54,6 +54,12 @@ export default function Dashboard() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: workVisaData } = useQuery({
+    queryKey: ['/api/work-visa'],
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Calculate real progress percentages
   const calculateDocketProgress = () => {
     if (!(docketData as any)?.docket) return 0;
@@ -118,6 +124,21 @@ export default function Dashboard() {
     return (statusMap as any)[status] || { status: 'Unknown', color: 'gray' };
   };
 
+  const getWorkVisaStatus = () => {
+    if (!(workVisaData as any)?.workVisa) return { status: 'Not Started', color: 'gray' };
+    const status = (workVisaData as any).workVisa.status;
+    
+    const statusMap = {
+      'preparation': { status: 'In Preparation', color: 'blue' },
+      'applied': { status: 'Application Submitted', color: 'orange' },
+      'awaiting_decision': { status: 'Awaiting Decision', color: 'yellow' },
+      'approved': { status: 'Approved', color: 'green' },
+      'rejected': { status: 'Rejected', color: 'red' }
+    };
+    
+    return (statusMap as any)[status] || { status: 'Unknown', color: 'gray' };
+  };
+
   const calculateOverallProgress = () => {
     const docketProgress = calculateDocketProgress();
     const contractStatus = getContractStatus();
@@ -161,6 +182,7 @@ export default function Dashboard() {
   const docketProgress = calculateDocketProgress();
   const contractStatus = getContractStatus();
   const workPermitStatus = getWorkPermitStatus();
+  const workVisaStatus = getWorkVisaStatus();
   const overallProgress = calculateOverallProgress();
 
   return (
@@ -294,13 +316,13 @@ export default function Dashboard() {
                 </div>
                 <div className="py-2">
                   <div className="text-3xl font-bold text-green-600 mb-1">
-                    {contractStatus === 'Complete' ? '100' : contractStatus === 'Pending' ? '50' : '0'}%
+                    {contractStatus.status === 'All Signed' ? '100' : contractStatus.count > 0 ? '50' : '0'}%
                   </div>
                   <div className="text-sm text-gray-600 font-medium">Contract Status</div>
                 </div>
                 <div className="hidden md:block py-2">
                   <div className="text-3xl font-bold text-purple-600 mb-1">
-                    {workPermitStatus === 'Complete' ? '100' : workPermitStatus === 'Pending' ? '50' : '0'}%
+                    {workPermitStatus.status === 'Approved' ? '100' : workPermitStatus.status === 'Awaiting Decision' ? '50' : '0'}%
                   </div>
                   <div className="text-sm text-gray-600 font-medium">Work Permit</div>
                 </div>
@@ -418,6 +440,52 @@ export default function Dashboard() {
                   {(workPermitData as any)?.workPermit?.trackingCode ? 
                     `Tracking: ${(workPermitData as any).workPermit.trackingCode}` : 
                     'Track your application status'
+                  }
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Work Visa Progress Card */}
+          <Card className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className={`p-3 rounded-xl group-hover:opacity-80 transition-colors ${
+                  workVisaStatus.color === 'green' ? 'bg-green-100' :
+                  workVisaStatus.color === 'orange' ? 'bg-orange-100' :
+                  workVisaStatus.color === 'yellow' ? 'bg-yellow-100' :
+                  workVisaStatus.color === 'blue' ? 'bg-blue-100' : 'bg-gray-100'
+                }`}>
+                  <Plane className={`h-6 w-6 ${
+                    workVisaStatus.color === 'green' ? 'text-green-600' :
+                    workVisaStatus.color === 'orange' ? 'text-orange-600' :
+                    workVisaStatus.color === 'yellow' ? 'text-yellow-600' :
+                    workVisaStatus.color === 'blue' ? 'text-blue-600' : 'text-gray-600'
+                  }`} />
+                </div>
+                <Badge variant="secondary" className={
+                  workVisaStatus.color === 'green' ? 'bg-green-50 text-green-700' :
+                  workVisaStatus.color === 'orange' ? 'bg-orange-50 text-orange-700' :
+                  workVisaStatus.color === 'yellow' ? 'bg-yellow-50 text-yellow-700' :
+                  workVisaStatus.color === 'blue' ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-700'
+                }>
+                  {workVisaStatus.color === 'green' ? 'Approved' : 'In Process'}
+                </Badge>
+              </div>
+              <h3 className="font-semibold text-gray-900 mb-2">Work Visa</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold text-gray-900">{workVisaStatus.status}</span>
+                  <Link href="/workvisa">
+                    <Button size="sm" variant="ghost" className="text-orange-600 hover:bg-orange-50">
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </div>
+                <p className="text-sm text-gray-600">
+                  {(workVisaData as any)?.workVisa?.trackingCode ? 
+                    `Tracking: ${(workVisaData as any).workVisa.trackingCode}` : 
+                    'Track your visa application status'
                   }
                 </p>
               </div>

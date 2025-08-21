@@ -1071,7 +1071,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get user's work visa status
   app.get("/api/work-visa", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
       const workVisa = await storage.getWorkVisaByUserId(userId);
       res.json({ workVisa: workVisa || null });
     } catch (error) {
