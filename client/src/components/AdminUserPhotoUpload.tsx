@@ -29,6 +29,9 @@ export function AdminUserPhotoUpload({
       return {
         method: "PUT" as const,
         url: data.uploadURL,
+        headers: {
+          'Content-Type': '', // Let the browser set this automatically
+        }
       };
     } catch (error) {
       console.error("Error getting upload parameters:", error);

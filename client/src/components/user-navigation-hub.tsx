@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { AdminUserPhotoUpload } from "./AdminUserPhotoUpload";
+import { SimplePhotoUpload } from "./SimplePhotoUpload";
 import { Link } from "wouter";
 import { 
   User, 
@@ -263,7 +263,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
                       <p className="text-sm text-gray-600 mb-4">
                         Upload or update the user's profile photo. This will be visible in their profile and documents.
                       </p>
-                      <AdminUserPhotoUpload
+                      <SimplePhotoUpload
                         userId={user.id}
                         userUid={user.uid}
                         currentPhotoUrl={user.photoUrl}

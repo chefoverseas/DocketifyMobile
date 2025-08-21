@@ -71,7 +71,15 @@ export function ObjectUploader({
 
     uppyInstance.use(AwsS3, {
       shouldUseMultipart: false,
-      getUploadParameters: onGetUploadParameters,
+      getUploadParameters: async (file) => {
+        const params = await onGetUploadParameters();
+        return {
+          method: params.method,
+          url: params.url,
+          fields: {},
+          headers: {}
+        };
+      },
     });
 
     uppyInstance.on("complete", (result) => {
