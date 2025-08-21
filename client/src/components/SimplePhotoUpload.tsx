@@ -48,26 +48,25 @@ export function SimplePhotoUpload({
     setIsUploading(true);
 
     try {
-      // Step 1: Get upload URL
-      const uploadResponse = await apiRequest("POST", "/api/admin/user-photo/upload", {});
-      const { uploadURL } = await uploadResponse.json();
+      // Create form data for file upload
+      const formData = new FormData();
+      formData.append('photo', file);
 
-      // Step 2: Upload file directly to Google Cloud Storage
-      const uploadResult = await fetch(uploadURL, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type,
-        },
+      // Step 1: Upload file to server
+      const uploadResponse = await fetch('/api/admin/user-photo/upload', {
+        method: 'POST',
+        body: formData,
       });
 
-      if (!uploadResult.ok) {
-        throw new Error(`Upload failed: ${uploadResult.status} ${uploadResult.statusText}`);
+      if (!uploadResponse.ok) {
+        throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`);
       }
 
-      // Step 3: Update user photo URL in database
+      const { photoPath } = await uploadResponse.json();
+
+      // Step 2: Update user photo URL in database
       const updateResponse = await apiRequest("PUT", `/api/admin/user/${userUid}/photo`, {
-        photoURL: uploadURL.split('?')[0], // Remove query parameters
+        photoPath,
       });
 
       if (!updateResponse.ok) {

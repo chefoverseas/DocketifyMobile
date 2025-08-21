@@ -1422,43 +1422,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Object Storage Routes for Admin Photo Upload
   
-  // Get upload URL for user photos (admin only)
-  app.post("/api/admin/user-photo/upload", requireAdminAuth, async (req, res) => {
+  // Upload user photo directly through server (admin only)
+  app.post("/api/admin/user-photo/upload", requireAdminAuth, upload.single('photo'), async (req, res) => {
     try {
-      const { ObjectStorageService } = await import("./objectStorage");
-      const objectStorageService = new ObjectStorageService();
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
+      if (!req.file) {
+        return res.status(400).json({ error: "No photo file provided" });
+      }
+
+      // Validate file type
+      if (!req.file.mimetype.startsWith('image/')) {
+        return res.status(400).json({ error: "Only image files are allowed" });
+      }
+
+      // For now, save to local uploads folder
+      const photoPath = `/uploads/${req.file.filename}`;
+      
+      res.json({ 
+        photoPath,
+        message: "Photo uploaded successfully" 
+      });
     } catch (error) {
-      console.error("Error generating upload URL:", error);
-      res.status(500).json({ error: "Failed to generate upload URL" });
+      console.error("Error uploading photo:", error);
+      res.status(500).json({ error: "Failed to upload photo" });
     }
   });
 
   // Update user photo URL after upload (admin only)
   app.put("/api/admin/user/:uid/photo", requireAdminAuth, async (req, res) => {
     const { uid } = req.params;
-    const { photoURL } = req.body;
+    const { photoPath } = req.body;
 
-    if (!photoURL) {
-      return res.status(400).json({ error: "Photo URL is required" });
+    if (!photoPath) {
+      return res.status(400).json({ error: "Photo path is required" });
     }
 
     try {
-      const { ObjectStorageService } = await import("./objectStorage");
-      const objectStorageService = new ObjectStorageService();
-      
-      // Set ACL policy for public photo access
-      const normalizedPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        photoURL,
-        {
-          owner: "admin",
-          visibility: "public", // User photos should be publicly accessible
-        }
-      );
-
       // Update user in database
-      const user = await storage.updateUserPhoto(uid, normalizedPath);
+      const user = await storage.updateUserPhoto(uid, photoPath);
       
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -1466,13 +1466,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ 
         message: "Photo updated successfully",
-        photoUrl: normalizedPath,
+        photoUrl: photoPath,
         user 
       });
     } catch (error) {
       console.error("Error updating user photo:", error);
       res.status(500).json({ error: "Failed to update photo" });
     }
+  });
+
+  // Serve uploaded files
+  app.get("/uploads/:filename", (req, res) => {
+    const { filename } = req.params;
+    const filePath = path.join(process.cwd(), 'uploads', filename);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "File not found" });
+    }
+    
+    // Set appropriate headers
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(filePath);
   });
 
   // Serve object storage files
