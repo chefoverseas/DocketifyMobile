@@ -102,3 +102,232 @@ Chef Overseas - Document Management System
     return false;
   }
 }
+
+// Work Permit Status Change Email Notification
+export async function sendWorkPermitStatusEmail(email: string, displayName: string, status: string): Promise<boolean> {
+  const fromEmail = 'info@chefoverseas.com';
+  
+  // Status-specific content
+  const statusInfo = getStatusEmailContent(status);
+  
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #ff6b35; margin: 20px 0;">Chef Overseas</h1>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 30px; border-radius: 8px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Work Permit Status Update</h2>
+        <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
+          Dear ${displayName},
+        </p>
+        
+        <div style="background: ${statusInfo.bgColor}; padding: 20px; border-radius: 8px; border-left: 4px solid ${statusInfo.borderColor}; margin: 20px 0;">
+          <h3 style="color: ${statusInfo.textColor}; margin: 0 0 10px 0;">${statusInfo.title}</h3>
+          <p style="color: #666; margin: 0; font-size: 16px;">${statusInfo.message}</p>
+        </div>
+        
+        <div style="margin: 30px 0;">
+          <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
+            ${statusInfo.description}
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit" 
+               style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              View Work Permit Status
+            </a>
+          </div>
+        </div>
+        
+        <p style="color: #999; font-size: 14px; margin-top: 30px; text-align: center;">
+          If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
+        </p>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+        <p>Chef Overseas - Document Management System</p>
+      </div>
+    </div>
+  `;
+
+  const textContent = `
+Chef Overseas - Work Permit Status Update
+
+Dear ${displayName},
+
+${statusInfo.title}
+${statusInfo.message}
+
+${statusInfo.description}
+
+View your work permit status: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit
+
+If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
+
+Chef Overseas - Document Management System
+  `;
+
+  try {
+    const result = await sendEmail({
+      to: email,
+      from: fromEmail,
+      subject: `Work Permit Status Updated - ${statusInfo.title}`,
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    console.log(`📧 Work permit status email sent to ${email}: ${status}`);
+    return result;
+  } catch (error) {
+    console.error('Work permit status email error:', error);
+    return false;
+  }
+}
+
+// Final Docket Upload Email Notification
+export async function sendFinalDocketUploadEmail(email: string, displayName: string): Promise<boolean> {
+  const fromEmail = 'info@chefoverseas.com';
+  
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #ff6b35; margin: 20px 0;">Chef Overseas</h1>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 30px; border-radius: 8px;">
+        <h2 style="color: #333; margin-bottom: 20px;">Final Docket Documents Available</h2>
+        <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
+          Dear ${displayName},
+        </p>
+        
+        <div style="background: #e8f5e8; padding: 20px; border-radius: 8px; border-left: 4px solid #28a745; margin: 20px 0;">
+          <h3 style="color: #28a745; margin: 0 0 10px 0;">📄 Final Docket Available</h3>
+          <p style="color: #666; margin: 0; font-size: 16px;">Your final docket documents have been uploaded and are ready for download.</p>
+        </div>
+        
+        <div style="margin: 30px 0;">
+          <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
+            Your final docket containing all necessary documents for your work permit application has been prepared and uploaded by our team. You can now download these documents from your dashboard.
+          </p>
+          
+          <div style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107; margin: 20px 0;">
+            <p style="color: #856404; margin: 0; font-size: 14px;">
+              <strong>Important:</strong> Please review all documents carefully and keep them safe for your application process.
+            </p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit" 
+               style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Download Final Docket
+            </a>
+          </div>
+        </div>
+        
+        <p style="color: #999; font-size: 14px; margin-top: 30px; text-align: center;">
+          If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
+        </p>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+        <p>Chef Overseas - Document Management System</p>
+      </div>
+    </div>
+  `;
+
+  const textContent = `
+Chef Overseas - Final Docket Documents Available
+
+Dear ${displayName},
+
+Final Docket Available
+Your final docket documents have been uploaded and are ready for download.
+
+Your final docket containing all necessary documents for your work permit application has been prepared and uploaded by our team. You can now download these documents from your dashboard.
+
+Important: Please review all documents carefully and keep them safe for your application process.
+
+Download your final docket: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit
+
+If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
+
+Chef Overseas - Document Management System
+  `;
+
+  try {
+    const result = await sendEmail({
+      to: email,
+      from: fromEmail,
+      subject: 'Final Docket Documents Available - Chef Overseas',
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    console.log(`📧 Final docket upload email sent to ${email}`);
+    return result;
+  } catch (error) {
+    console.error('Final docket upload email error:', error);
+    return false;
+  }
+}
+
+// Helper function to get status-specific email content
+function getStatusEmailContent(status: string) {
+  switch (status) {
+    case 'approved':
+      return {
+        title: '✅ Work Permit Approved',
+        message: 'Congratulations! Your work permit application has been approved.',
+        description: 'Your work permit has been successfully approved. You can now proceed with the next steps in your application process. Please check your dashboard for any additional documents or instructions.',
+        bgColor: '#e8f5e8',
+        borderColor: '#28a745',
+        textColor: '#28a745'
+      };
+    case 'rejected':
+      return {
+        title: '❌ Work Permit Rejected',
+        message: 'Unfortunately, your work permit application has been rejected.',
+        description: 'Your work permit application has been rejected. Please review the feedback and contact our support team for guidance on next steps. You may be able to resubmit with corrections.',
+        bgColor: '#f8d7da',
+        borderColor: '#dc3545',
+        textColor: '#dc3545'
+      };
+    case 'under_review':
+      return {
+        title: '📋 Under Review',
+        message: 'Your work permit application is currently under review.',
+        description: 'Your application is being carefully reviewed by our team. We will notify you as soon as there are any updates. This process may take several business days.',
+        bgColor: '#d1ecf1',
+        borderColor: '#17a2b8',
+        textColor: '#17a2b8'
+      };
+    case 'preparation':
+      return {
+        title: '📝 In Preparation',
+        message: 'Your work permit application is being prepared.',
+        description: 'Our team is currently preparing your work permit application. We are gathering and organizing all necessary documents for submission.',
+        bgColor: '#fff3cd',
+        borderColor: '#ffc107',
+        textColor: '#856404'
+      };
+    case 'submitted':
+      return {
+        title: '📤 Application Submitted',
+        message: 'Your work permit application has been submitted.',
+        description: 'Your application has been successfully submitted to the relevant authorities. We will monitor the progress and keep you updated on any developments.',
+        bgColor: '#d4edda',
+        borderColor: '#28a745',
+        textColor: '#155724'
+      };
+    default:
+      return {
+        title: '📄 Status Updated',
+        message: 'Your work permit status has been updated.',
+        description: 'There has been an update to your work permit application status. Please check your dashboard for the latest information.',
+        bgColor: '#e2e3e5',
+        borderColor: '#6c757d',
+        textColor: '#495057'
+      };
+  }
+}

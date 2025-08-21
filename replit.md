@@ -38,6 +38,14 @@ Preferred communication style: Simple, everyday language.
 - **Contact Information**: Primary email contact info@chefoverseas.com, WhatsApp support +919363234028
 - **Localization**: Supports 13 country codes for OTP verification.
 
+## Email Notification System
+- **Provider**: SendGrid email service with Chef Overseas branding.
+- **Work Permit Notifications**: Automatic emails when work permit status changes (approved, rejected, under_review, preparation, submitted).
+- **Final Docket Notifications**: Automatic emails when final docket documents are uploaded by admin.
+- **Email Templates**: Professional HTML and text templates with Chef Overseas branding and direct links to user dashboard.
+- **Development Mode**: Console logging for testing without sending actual emails.
+- **Error Handling**: Graceful email failure handling with detailed logging.
+
 ## File Storage Strategy
 - **Location**: Local file system (`uploads` directory) with UUID-based naming.
 - **Validation**: Type and size restrictions (images, PDFs, DOC/DOCX; 10MB limit).

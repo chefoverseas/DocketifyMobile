@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { sendOtpEmail } from "./sendgrid";
+import { sendOtpEmail, sendWorkPermitStatusEmail, sendFinalDocketUploadEmail } from "./sendgrid";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import multer from "multer";
@@ -963,6 +963,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get existing work permit or create a new one
       let workPermit = await storage.getWorkPermitByUserId(user.id);
+      const oldStatus = workPermit?.status; // Store old status for comparison
+      const oldFinalDocketUrl = workPermit?.finalDocketUrl; // Store old final docket URL for comparison
       
       if (!workPermit) {
         // Create new work permit if it doesn't exist
@@ -974,6 +976,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           trackingCode: req.body.trackingCode || null
         });
         console.log(`✅ Created new work permit for user: ${user.email}`);
+        
+        // Send email notification for new work permit creation with initial status
+        try {
+          await sendWorkPermitStatusEmail(user.email, user.displayName, workPermit.status);
+          console.log(`📧 New work permit status email sent to ${user.email}`);
+        } catch (emailError) {
+          console.error(`📧 Failed to send new work permit email to ${user.email}:`, emailError);
+        }
       } else {
         // Update existing work permit using the userId (which updateWorkPermit expects)
         workPermit = await storage.updateWorkPermit(user.id, {
@@ -983,6 +993,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           trackingCode: req.body.trackingCode !== undefined ? req.body.trackingCode : workPermit.trackingCode
         });
         console.log(`✅ Updated work permit for user: ${user.email}`);
+        
+        // Check if status changed and send email notification
+        if (req.body.status && req.body.status !== oldStatus) {
+          try {
+            await sendWorkPermitStatusEmail(user.email, user.displayName, req.body.status);
+            console.log(`📧 Work permit status change email sent to ${user.email}: ${oldStatus} → ${req.body.status}`);
+          } catch (emailError) {
+            console.error(`📧 Failed to send status change email to ${user.email}:`, emailError);
+          }
+        }
+        
+        // Check if final docket was uploaded and send email notification
+        if (req.body.finalDocketUrl && req.body.finalDocketUrl !== oldFinalDocketUrl) {
+          try {
+            await sendFinalDocketUploadEmail(user.email, user.displayName);
+            console.log(`📧 Final docket upload email sent to ${user.email}`);
+          } catch (emailError) {
+            console.error(`📧 Failed to send final docket upload email to ${user.email}:`, emailError);
+          }
+        }
       }
       
       res.setHeader('Content-Type', 'application/json');
@@ -1035,6 +1065,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get or create work permit
       let workPermit = await storage.getWorkPermitByUserId(user.id);
+      const hadPreviousFinalDocket = workPermit?.finalDocketUrl; // Check if final docket existed before
       
       if (!workPermit) {
         // Create new work permit if it doesn't exist
@@ -1045,12 +1076,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
           finalDocketUrl: `/uploads/${uploadedFile.filename}`
         });
         console.log(`✅ Created new work permit with final docket for user: ${user.email}`);
+        
+        // Send email notification for final docket upload
+        try {
+          await sendFinalDocketUploadEmail(user.email, user.displayName);
+          console.log(`📧 Final docket upload email sent to ${user.email} (new work permit)`);
+        } catch (emailError) {
+          console.error(`📧 Failed to send final docket upload email to ${user.email}:`, emailError);
+        }
       } else {
         // Update existing work permit with final docket URL
         workPermit = await storage.updateWorkPermit(user.id, {
           finalDocketUrl: `/uploads/${uploadedFile.filename}`
         });
         console.log(`✅ Updated work permit with final docket for user: ${user.email}`);
+        
+        // Send email notification for final docket upload (only if this is a new/updated final docket)
+        try {
+          await sendFinalDocketUploadEmail(user.email, user.displayName);
+          console.log(`📧 Final docket upload email sent to ${user.email} (${hadPreviousFinalDocket ? 'updated' : 'new'} final docket)`);
+        } catch (emailError) {
+          console.error(`📧 Failed to send final docket upload email to ${user.email}:`, emailError);
+        }
       }
       
       res.setHeader('Content-Type', 'application/json');
