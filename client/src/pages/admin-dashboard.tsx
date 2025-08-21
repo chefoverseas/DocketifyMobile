@@ -596,6 +596,10 @@ export default function AdminDashboardPage() {
                                     src={user.photoUrl}
                                     alt={user.displayName || 'User'}
                                     className="h-12 w-12 rounded-full object-cover shadow-lg border-2 border-white"
+                                    onError={(e) => {
+                                      console.log("Image failed to load:", user.photoUrl);
+                                      e.currentTarget.style.display = 'none';
+                                    }}
                                   />
                                 ) : (
                                   <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">

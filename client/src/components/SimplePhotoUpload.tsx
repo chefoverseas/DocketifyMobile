@@ -75,6 +75,8 @@ export function SimplePhotoUpload({
 
       const { photoUrl } = await updateResponse.json();
       
+      console.log("Photo upload successful, new photoUrl:", photoUrl);
+      
       onPhotoUpdated(photoUrl);
       
       // Force cache invalidation for all related queries
@@ -82,6 +84,8 @@ export function SimplePhotoUpload({
       await queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
       await queryClient.invalidateQueries({ queryKey: [`/api/admin/user/${userUid}`] });
       await queryClient.invalidateQueries({ queryKey: [`/api/admin/user/${userId}`] });
+      
+      console.log("Cache invalidated, queries should refresh");
       
       toast({
         title: "Success",
