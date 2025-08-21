@@ -31,7 +31,8 @@ import {
   ChevronRight,
   Shield,
   Bell,
-  Zap
+  Zap,
+  CheckCircle
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import type { User } from "@shared/schema";
