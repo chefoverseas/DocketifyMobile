@@ -5,7 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Calendar, MapPin, Plane, Edit } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Calendar, MapPin, Plane, Edit, Filter, Download, RefreshCw, Eye, UserCheck, Globe, Building2, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { WorkVisaDetailsModal } from "@/components/WorkVisaDetailsModal";
 
@@ -34,7 +37,11 @@ type WorkVisa = {
 
 export default function AdminWorkVisasPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [visaTypeFilter, setVisaTypeFilter] = useState<string>("all");
+  const [embassyFilter, setEmbassyFilter] = useState<string>("all");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Fetch all users instead of just work visas
   const { data: usersData, isLoading: usersLoading, error: usersError } = useQuery({
@@ -77,15 +84,27 @@ export default function AdminWorkVisasPage() {
     };
   }) as (WorkVisa & { hasWorkVisa: boolean })[];
 
-  // Filter work visas based on search term
-  const filteredWorkVisas = workVisas.filter((visa) =>
-    visa.user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    visa.user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    visa.user.phone?.includes(searchTerm) ||
-    visa.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    visa.visaType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    visa.embassyLocation?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Enhanced filtering with multiple criteria
+  const filteredWorkVisas = workVisas.filter((visa) => {
+    const matchesSearch = !searchTerm || 
+      visa.user.displayName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      visa.user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      visa.user.phone?.includes(searchTerm) ||
+      visa.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      visa.visaType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      visa.embassyLocation?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      visa.trackingCode?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = statusFilter === "all" || visa.status === statusFilter;
+    const matchesVisaType = visaTypeFilter === "all" || visa.visaType === visaTypeFilter;
+    const matchesEmbassy = embassyFilter === "all" || visa.embassyLocation === embassyFilter;
+
+    return matchesSearch && matchesStatus && matchesVisaType && matchesEmbassy;
+  });
+
+  // Get unique values for filter dropdowns
+  const uniqueVisaTypes = [...new Set(workVisas.map(v => v.visaType).filter(Boolean))];
+  const uniqueEmbassies = [...new Set(workVisas.map(v => v.embassyLocation).filter(Boolean))];
 
   // Calculate statistics
   const stats = {
@@ -157,15 +176,16 @@ export default function AdminWorkVisasPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 p-6">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="h-12 bg-gray-200 rounded w-1/3"></div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-24 bg-gray-200 rounded"></div>
+                <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
               ))}
             </div>
+            <div className="h-64 bg-gray-200 rounded-xl"></div>
             <div className="h-96 bg-gray-200 rounded"></div>
           </div>
         </div>
@@ -189,246 +209,354 @@ export default function AdminWorkVisasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center space-x-3">
-              <Plane className="h-8 w-8 text-blue-600" />
-              <span>Work Visa Management</span>
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Monitor and manage all user work visa applications from the embassy.
-            </p>
+        {/* Modern Header with Glassmorphism */}
+        <div className="bg-white/80 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg">
+                <Plane className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                  Work Visa Management
+                </h1>
+                <p className="text-gray-600 mt-1 text-lg">
+                  Comprehensive visa application tracking and embassy coordination
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => window.location.reload()}
+                className="bg-white/50 hover:bg-white/80 border-white/30"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="bg-white/50 hover:bg-white/80 border-white/30"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Users className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-              <div className="text-sm text-gray-600">Total</div>
+        {/* Enhanced Statistics Dashboard */}
+        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-6">
+          <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-blue-500 rounded-xl w-fit mx-auto mb-3">
+                <Users className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-blue-900">{stats.total}</div>
+              <div className="text-sm text-blue-700 font-medium">Total Applications</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Clock className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">{stats.preparation}</div>
-              <div className="text-sm text-gray-600">Preparation</div>
+          <Card className="bg-gradient-to-br from-gray-50 to-slate-100 border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-gray-500 rounded-xl w-fit mx-auto mb-3">
+                <Clock className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900">{stats.preparation}</div>
+              <div className="text-sm text-gray-700 font-medium">In Preparation</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <FileText className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-blue-900">{stats.applied}</div>
-              <div className="text-sm text-blue-600">Applied</div>
+          <Card className="bg-gradient-to-br from-blue-50 to-cyan-100 border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-blue-500 rounded-xl w-fit mx-auto mb-3">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-blue-900">{stats.applied}</div>
+              <div className="text-sm text-blue-700 font-medium">Applied</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <AlertCircle className="h-6 w-6 text-yellow-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-yellow-900">{stats.awaiting_decision}</div>
-              <div className="text-sm text-yellow-600">Awaiting</div>
+          <Card className="bg-gradient-to-br from-yellow-50 to-amber-100 border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-yellow-500 rounded-xl w-fit mx-auto mb-3">
+                <AlertCircle className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-yellow-900">{stats.awaiting_decision}</div>
+              <div className="text-sm text-yellow-700 font-medium">Awaiting Decision</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Calendar className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-purple-900">{stats.interview_scheduled}</div>
-              <div className="text-sm text-purple-600">Interview</div>
+          <Card className="bg-gradient-to-br from-purple-50 to-violet-100 border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-purple-500 rounded-xl w-fit mx-auto mb-3">
+                <Calendar className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-purple-900">{stats.interview_scheduled}</div>
+              <div className="text-sm text-purple-700 font-medium">Interview Scheduled</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <CheckCircle className="h-6 w-6 text-green-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-green-900">{stats.approved}</div>
-              <div className="text-sm text-green-600">Approved</div>
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-100 border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-green-500 rounded-xl w-fit mx-auto mb-3">
+                <CheckCircle className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-green-900">{stats.approved}</div>
+              <div className="text-sm text-green-700 font-medium">Approved</div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <XCircle className="h-6 w-6 text-red-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-red-900">{stats.rejected}</div>
-              <div className="text-sm text-red-600">Rejected</div>
+          <Card className="bg-gradient-to-br from-red-50 to-rose-100 border-0 shadow-lg hover:shadow-xl transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="p-3 bg-red-500 rounded-xl w-fit mx-auto mb-3">
+                <XCircle className="h-6 w-6 text-white" />
+              </div>
+              <div className="text-3xl font-bold text-red-900">{stats.rejected}</div>
+              <div className="text-sm text-red-700 font-medium">Rejected</div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Search and Filters */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Search by name, email, status, visa type, or embassy location..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-white"
-                />
+        {/* Advanced Search and Filters */}
+        <Card className="bg-white/80 backdrop-blur-lg border border-white/20 shadow-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Filter className="h-5 w-5 text-orange-600" />
+              <span>Search & Filters</span>
+            </CardTitle>
+            <CardDescription>
+              Use advanced filters to find specific visa applications quickly
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <Input
+                placeholder="Search by name, email, tracking code, visa type, or embassy..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 bg-white/50 border-white/30 placeholder:text-gray-500 text-lg"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Status</label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="bg-white/50 border-white/30">
+                    <SelectValue placeholder="All Statuses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="preparation">In Preparation</SelectItem>
+                    <SelectItem value="applied">Applied</SelectItem>
+                    <SelectItem value="awaiting_decision">Awaiting Decision</SelectItem>
+                    <SelectItem value="interview_scheduled">Interview Scheduled</SelectItem>
+                    <SelectItem value="approved">Approved</SelectItem>
+                    <SelectItem value="rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Visa Type</label>
+                <Select value={visaTypeFilter} onValueChange={setVisaTypeFilter}>
+                  <SelectTrigger className="bg-white/50 border-white/30">
+                    <SelectValue placeholder="All Types" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    {uniqueVisaTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Embassy</label>
+                <Select value={embassyFilter} onValueChange={setEmbassyFilter}>
+                  <SelectTrigger className="bg-white/50 border-white/30">
+                    <SelectValue placeholder="All Embassies" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Embassies</SelectItem>
+                    {uniqueEmbassies.map((embassy) => (
+                      <SelectItem key={embassy} value={embassy}>
+                        {embassy}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex items-end">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setStatusFilter("all");
+                    setVisaTypeFilter("all");
+                    setEmbassyFilter("all");
+                  }}
+                  className="w-full bg-white/50 hover:bg-white/80 border-white/30"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Clear Filters
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Work Visas Table */}
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        {/* Modern Work Visas Dashboard */}
+        <Card className="bg-white/80 backdrop-blur-lg border border-white/20 shadow-xl">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Plane className="h-5 w-5" />
-              <span>Work Visa Applications ({filteredWorkVisas.length})</span>
-            </CardTitle>
-            <CardDescription>
-              Click on any visa to view detailed information and manage the application.
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center space-x-3">
+                  <div className="p-2 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
+                    <Plane className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <span className="text-2xl font-bold">Work Visa Applications</span>
+                    <div className="text-sm text-gray-600 font-normal">
+                      {filteredWorkVisas.length} of {workVisas.length} applications
+                    </div>
+                  </div>
+                </CardTitle>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <CardDescription className="text-base">
+              Comprehensive visa tracking with embassy coordination and document management
             </CardDescription>
           </CardHeader>
           <CardContent>
             {filteredWorkVisas.length === 0 ? (
-              <div className="text-center py-12">
-                <Plane className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+              <div className="text-center py-16">
+                <div className="p-4 bg-gradient-to-br from-orange-100 to-red-100 rounded-2xl w-fit mx-auto mb-6">
+                  <Plane className="h-16 w-16 text-orange-600 mx-auto" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
                   No Work Visas Found
                 </h3>
-                <p className="text-gray-500">
-                  {searchTerm ? "No work visas match your search criteria." : "No work visa applications have been created yet."}
+                <p className="text-gray-500 text-lg">
+                  {searchTerm || statusFilter !== "all" || visaTypeFilter !== "all" || embassyFilter !== "all"
+                    ? "No work visas match your current filter criteria. Try adjusting your filters."
+                    : "No work visa applications have been created yet."}
                 </p>
               </div>
             ) : (
-              <div className="overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="min-w-full">
-                    <thead className="bg-gradient-to-r from-gray-50 to-slate-100">
-                      <tr>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          User Profile
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Visa Details
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Status
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Timeline
-                        </th>
-                        <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                          Quick Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-100">
-                      {filteredWorkVisas.map((visa, index) => (
-                        <tr key={visa.id} className="hover:bg-blue-50 transition-colors duration-200">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center">
-                              <div className="flex-shrink-0 h-12 w-12">
-                                <div className="h-12 w-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
-                                  <span className="text-lg font-bold text-white">
-                                    {visa.user.displayName ? visa.user.displayName[0] : "U"}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="ml-4">
-                                <div className="text-sm font-semibold text-gray-900">
-                                  {visa.user.displayName || "Unnamed User"}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {visa.user.email || "No email"}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="space-y-1">
-                              <div className="flex items-center text-sm text-gray-900">
-                                <FileText className="h-4 w-4 mr-2 text-gray-400" />
-                                <span>{visa.visaType || "Type not specified"}</span>
-                              </div>
-                              {visa.embassyLocation && (
-                                <div className="flex items-center text-sm text-gray-500">
-                                  <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                                  <span>{visa.embassyLocation}</span>
-                                </div>
-                              )}
-                              {visa.trackingCode && (
-                                <div className="text-xs font-mono text-gray-500 bg-gray-50 px-2 py-1 rounded">
-                                  {visa.trackingCode}
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <Badge className={`${getStatusColor(visa.status)} flex items-center space-x-1 w-fit`}>
-                              {getStatusIcon(visa.status)}
-                              <span>{getStatusLabel(visa.status)}</span>
-                            </Badge>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="space-y-1 text-sm">
-                              {visa.applicationDate && (
-                                <div className="text-gray-600">
-                                  <span className="font-medium">Applied:</span> {format(new Date(visa.applicationDate), "MMM dd, yyyy")}
-                                </div>
-                              )}
-                              {visa.interviewDate && (
-                                <div className="text-purple-600 font-medium">
-                                  <span>Interview:</span> {format(new Date(visa.interviewDate), "MMM dd, yyyy")}
-                                </div>
-                              )}
-                              <div className="text-gray-500 text-xs">
-                                Updated: {format(new Date(visa.lastUpdated), "MMM dd, yyyy")}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setSelectedUserId(visa.userId)}
-                                className="text-xs text-blue-600 border-blue-300 hover:bg-blue-50"
-                              >
-                                <Edit className="h-3 w-3 mr-1" />
-                                Manage Documents
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                asChild
-                                className="text-xs"
-                              >
-                                <a href={`/admin/user/${visa.userId}`}>
-                                  View Profile
-                                </a>
-                              </Button>
-                              {visa.finalVisaUrl && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  asChild
-                                  className="text-xs text-green-600 border-green-300"
-                                >
-                                  <a href={visa.finalVisaUrl} download>
-                                    Download Visa
-                                  </a>
-                                </Button>
-                              )}
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredWorkVisas.map((visa) => (
+                  <Card 
+                    key={visa.id} 
+                    className="bg-gradient-to-br from-white to-gray-50 border-l-4 border-l-orange-500 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                    onClick={() => setSelectedUserId(visa.userId)}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-lg">
+                            <span className="text-lg font-bold text-white">
+                              {visa.user.displayName ? visa.user.displayName[0] : "U"}
+                            </span>
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-gray-900 group-hover:text-orange-700 transition-colors">
+                              {visa.user.displayName || "Unnamed User"}
+                            </h3>
+                            <p className="text-sm text-gray-600">{visa.user.email}</p>
+                          </div>
+                        </div>
+                        <Badge className={getStatusColor(visa.status)}>
+                          <div className="flex items-center space-x-1">
+                            {getStatusIcon(visa.status)}
+                            <span className="text-xs font-medium">{getStatusLabel(visa.status)}</span>
+                          </div>
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {visa.visaType && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <FileText className="h-4 w-4 mr-2 text-orange-500" />
+                            <span className="font-medium">{visa.visaType}</span>
+                          </div>
+                        )}
+                        
+                        {visa.embassyLocation && (
+                          <div className="flex items-center text-sm text-gray-700">
+                            <Building2 className="h-4 w-4 mr-2 text-orange-500" />
+                            <span>{visa.embassyLocation}</span>
+                          </div>
+                        )}
+                        
+                        {visa.trackingCode && (
+                          <div className="bg-gray-100 rounded-lg p-2">
+                            <div className="text-xs text-gray-600 mb-1">Tracking Code</div>
+                            <div className="font-mono text-sm text-gray-900">{visa.trackingCode}</div>
+                          </div>
+                        )}
+                        
+                        {visa.applicationDate && (
+                          <div className="flex items-center text-sm text-gray-600">
+                            <Calendar className="h-4 w-4 mr-2 text-orange-500" />
+                            <span>Applied: {format(new Date(visa.applicationDate), "MMM dd, yyyy")}</span>
+                          </div>
+                        )}
+                        
+                        {visa.interviewDate && (
+                          <div className="flex items-center text-sm text-purple-700 bg-purple-50 rounded p-2">
+                            <Calendar className="h-4 w-4 mr-2 text-purple-500" />
+                            <span className="font-medium">Interview: {format(new Date(visa.interviewDate), "MMM dd, yyyy")}</span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedUserId(visa.userId);
+                          }}
+                          className="w-full group-hover:bg-orange-50 group-hover:border-orange-300 transition-colors"
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Manage Documents
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             )}
           </CardContent>

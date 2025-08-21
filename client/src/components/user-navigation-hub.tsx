@@ -97,16 +97,7 @@ export function UserNavigationHub({ userId, showUserInfo = false }: UserNavigati
   const workPermit = userId ? (workPermitData as any)?.workPermit : (workPermitData as any)?.workPermit;
   const workVisa = userId ? (workVisaData as any)?.workVisa : (workVisaData as any)?.workVisa;
 
-  // Debug logging
-  console.log('UserNavigationHub Debug:', {
-    userId,
-    showUserInfo,
-    userData: userData,
-    user: user,
-    hasUser: !!user,
-    hasPhotoUrl: user?.photoUrl,
-    hasUserUid: user?.uid
-  });
+
 
   // Show loading state
   if (userLoading) {
