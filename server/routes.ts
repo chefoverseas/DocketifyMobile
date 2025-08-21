@@ -1084,6 +1084,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User: Update work visa details (only visa type and embassy location, only when status is 'preparation')
+  app.put("/api/work-visa", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.session?.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const { visaType, embassyLocation } = req.body;
+
+      console.log(`🔄 User ${userId} updating work visa details:`, { visaType, embassyLocation });
+
+      // Validate required fields
+      if (!visaType || !embassyLocation) {
+        return res.status(400).json({ message: "Both visa type and embassy location are required" });
+      }
+
+      // Check if work visa exists
+      const existingWorkVisa = await storage.getWorkVisaByUserId(userId);
+      if (!existingWorkVisa) {
+        return res.status(404).json({ message: "Work visa application not found" });
+      }
+
+      // Only allow updates when status is 'preparation'
+      if (existingWorkVisa.status !== 'preparation') {
+        return res.status(403).json({ 
+          message: "Visa details can only be updated when application is in preparation status" 
+        });
+      }
+
+      // Update only the allowed fields
+      const updates = {
+        visaType: visaType.trim(),
+        embassyLocation: embassyLocation.trim()
+      };
+
+      const updatedWorkVisa = await storage.updateWorkVisa(userId, updates);
+
+      console.log(`✅ Work visa details updated for user: ${userId}`);
+
+      res.json({ 
+        message: "Work visa details updated successfully",
+        workVisa: updatedWorkVisa
+      });
+    } catch (error) {
+      console.error("Error updating work visa:", error);
+      res.status(500).json({ message: "Failed to update work visa details" });
+    }
+  });
+
   // Admin: Get all work visas
   app.get("/api/admin/workvisas", requireAdminAuth, async (req, res) => {
     try {

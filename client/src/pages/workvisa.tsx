@@ -1,10 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Calendar, MapPin, Download, Plane } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Calendar, MapPin, Download, Plane, Edit2, Save, X } from "lucide-react";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface WorkVisa {
   id: number;
@@ -22,11 +28,113 @@ interface WorkVisa {
 }
 
 export default function WorkVisaPage() {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({ visaType: "", embassyLocation: "" });
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/work-visa'],
   });
 
   const workVisa = (data as { workVisa: WorkVisa | null })?.workVisa || null;
+
+  // Update mutation
+  const updateWorkVisaMutation = useMutation({
+    mutationFn: async (updateData: { visaType: string; embassyLocation: string }) => {
+      const response = await fetch('/api/work-visa', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updateData),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to update work visa');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/work-visa'] });
+      setIsEditing(false);
+      toast({
+        title: "Updated Successfully",
+        description: "Your work visa details have been updated.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Update Failed",
+        description: error?.message || "Failed to update work visa details. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Initialize edit data when work visa is loaded
+  useEffect(() => {
+    if (workVisa && !isEditing) {
+      setEditData({
+        visaType: workVisa.visaType || "",
+        embassyLocation: workVisa.embassyLocation || "",
+      });
+    }
+  }, [workVisa, isEditing]);
+
+  const handleEdit = () => {
+    setEditData({
+      visaType: workVisa?.visaType || "",
+      embassyLocation: workVisa?.embassyLocation || "",
+    });
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    if (!editData.visaType.trim() || !editData.embassyLocation.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in both visa type and embassy location.",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateWorkVisaMutation.mutate(editData);
+  };
+
+  const handleCancel = () => {
+    setEditData({
+      visaType: workVisa?.visaType || "",
+      embassyLocation: workVisa?.embassyLocation || "",
+    });
+    setIsEditing(false);
+  };
+
+  // Predefined visa types and embassy locations for dropdowns
+  const visaTypes = [
+    "Critical Skills Employment Permit",
+    "General Employment Permit", 
+    "Intra-Company Transfer Employment Permit",
+    "Seasonal/Short-term Work Permit",
+    "Researcher/Academic Permit",
+    "Sport and Cultural Employment Permit",
+    "Exchange Agreement Employment Permit"
+  ];
+
+  const embassyLocations = [
+    "Embassy of Ireland, New Delhi, India",
+    "Consulate General of Ireland, Mumbai, India", 
+    "Embassy of Ireland, Beijing, China",
+    "Embassy of Ireland, London, UK",
+    "Embassy of Ireland, Washington DC, USA",
+    "Embassy of Ireland, Berlin, Germany",
+    "Embassy of Ireland, Paris, France",
+    "Embassy of Ireland, Rome, Italy",
+    "Embassy of Ireland, Madrid, Spain",
+    "Embassy of Ireland, The Hague, Netherlands"
+  ];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -180,29 +288,123 @@ export default function WorkVisaPage() {
                   </AlertDescription>
                 </Alert>
 
-                {/* Application Details */}
-                <div className="grid md:grid-cols-2 gap-6">
-                  {workVisa.visaType && (
+                {/* Application Details with Edit Functionality */}
+                <div className="space-y-6">
+                  {/* Edit Control Header */}
+                  {workVisa.status === "preparation" && (
+                    <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <div>
+                        <h4 className="font-semibold text-blue-800 mb-1">
+                          Update Your Visa Details
+                        </h4>
+                        <p className="text-sm text-blue-600">
+                          You can edit your visa type and embassy location while your application is in preparation.
+                        </p>
+                      </div>
+                      {!isEditing && (
+                        <Button
+                          onClick={handleEdit}
+                          variant="outline"
+                          size="sm"
+                          className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                        >
+                          <Edit2 className="h-4 w-4 mr-2" />
+                          Edit Details
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {/* Visa Type Section */}
                     <div className="space-y-2">
                       <h4 className="font-semibold text-gray-700 flex items-center space-x-2">
                         <FileText className="h-4 w-4" />
                         <span>Visa Type</span>
                       </h4>
-                      <p className="text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                        {workVisa.visaType}
-                      </p>
+                      {isEditing ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="visaType" className="text-sm text-gray-600">
+                            Select your visa type
+                          </Label>
+                          <Select
+                            value={editData.visaType}
+                            onValueChange={(value) => setEditData({ ...editData, visaType: value })}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Choose visa type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {visaTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                          {workVisa.visaType || "Not specified"}
+                        </p>
+                      )}
                     </div>
-                  )}
 
-                  {workVisa.embassyLocation && (
+                    {/* Embassy Location Section */}
                     <div className="space-y-2">
                       <h4 className="font-semibold text-gray-700 flex items-center space-x-2">
                         <MapPin className="h-4 w-4" />
                         <span>Embassy Location</span>
                       </h4>
-                      <p className="text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
-                        {workVisa.embassyLocation}
-                      </p>
+                      {isEditing ? (
+                        <div className="space-y-2">
+                          <Label htmlFor="embassyLocation" className="text-sm text-gray-600">
+                            Select embassy location
+                          </Label>
+                          <Select
+                            value={editData.embassyLocation}
+                            onValueChange={(value) => setEditData({ ...editData, embassyLocation: value })}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Choose embassy location" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {embassyLocations.map((location) => (
+                                <SelectItem key={location} value={location}>
+                                  {location}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+                          {workVisa.embassyLocation || "Not specified"}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Edit Action Buttons */}
+                  {isEditing && (
+                    <div className="flex items-center space-x-3 p-4 bg-gray-50 rounded-lg">
+                      <Button
+                        onClick={handleSave}
+                        disabled={updateWorkVisaMutation.isPending}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        {updateWorkVisaMutation.isPending ? "Saving..." : "Save Changes"}
+                      </Button>
+                      <Button
+                        onClick={handleCancel}
+                        variant="outline"
+                        disabled={updateWorkVisaMutation.isPending}
+                        className="border-gray-300"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Cancel
+                      </Button>
                     </div>
                   )}
 
