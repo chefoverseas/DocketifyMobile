@@ -996,7 +996,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin work permit final docket upload route
-  app.post("/api/admin/workpermit/:userId/upload-docket", requireAdminAuth, upload.single('finalDocket'), async (req: any, res) => {
+  app.post("/api/admin/workpermit/:userId/upload-docket", requireAdminAuth, upload.any(), async (req: any, res) => {
     try {
       const userId = req.params.userId;
       if (!userId) {
@@ -1005,11 +1005,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log(`🔍 Admin uploading final docket for user ID: ${userId}`);
+      console.log(`🔍 Files received:`, req.files);
       
-      if (!req.file) {
+      if (!req.files || req.files.length === 0) {
         res.setHeader('Content-Type', 'application/json');
         return res.status(400).json({ message: "No file uploaded" });
       }
+
+      const uploadedFile = req.files[0]; // Get the first uploaded file
 
       let user = await storage.getUser(userId);
       
@@ -1037,13 +1040,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId: user.id,
           status: "preparation",
           notes: null,
-          finalDocketUrl: `/uploads/${req.file.filename}`
+          finalDocketUrl: `/uploads/${uploadedFile.filename}`
         });
         console.log(`✅ Created new work permit with final docket for user: ${user.email}`);
       } else {
         // Update existing work permit with final docket URL
         workPermit = await storage.updateWorkPermit(workPermit.id, {
-          finalDocketUrl: `/uploads/${req.file.filename}`
+          finalDocketUrl: `/uploads/${uploadedFile.filename}`
         });
         console.log(`✅ Updated work permit with final docket for user: ${user.email}`);
       }
@@ -1051,7 +1054,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Type', 'application/json');
       res.json({ 
         success: true,
-        finalDocketUrl: `/uploads/${req.file.filename}`,
+        finalDocketUrl: `/uploads/${uploadedFile.filename}`,
         workPermit: workPermit
       });
     } catch (error) {
