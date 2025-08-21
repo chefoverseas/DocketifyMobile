@@ -35,7 +35,18 @@ export default function AdminWorkPermitsPage() {
     queryKey: ['/api/admin/workpermits'],
   });
 
-  const workPermits = ((data as any)?.workPermits || []) as WorkPermit[];
+  // Transform the API response to match expected structure
+  const workPermitsData = ((data as any)?.workPermits || []);
+  const workPermits = workPermitsData.map((item: any) => ({
+    id: item.workPermit?.id || item.user.id, // Use work permit ID if available, otherwise user ID
+    userId: item.user.id,
+    status: item.workPermit?.status || "preparation",
+    finalDocketUrl: item.workPermit?.finalDocketUrl || null,
+    notes: item.workPermit?.notes || null,
+    lastUpdated: item.workPermit?.lastUpdated || item.user.createdAt,
+    createdAt: item.workPermit?.createdAt || item.user.createdAt,
+    user: item.user
+  })) as WorkPermit[];
 
   // Filter work permits based on search term
   const filteredWorkPermits = workPermits.filter((permit) =>
@@ -219,9 +230,9 @@ export default function AdminWorkPermitsPage() {
             </div>
           ) : (
             <div className="space-y-3">
-              {filteredWorkPermits.map((permit) => (
+              {filteredWorkPermits.map((permit, index) => (
                 <div
-                  key={permit.id}
+                  key={`permit-${permit.userId}-${index}`}
                   className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center justify-between">
@@ -243,7 +254,7 @@ export default function AdminWorkPermitsPage() {
                       <div className="text-right">
                         <WorkPermitStatusBadge status={permit.status} />
                         <p className="text-xs text-gray-500 mt-1">
-                          Updated: {format(new Date(permit.lastUpdated), 'MMM d, yyyy')}
+                          Updated: {permit.lastUpdated ? format(new Date(permit.lastUpdated), 'MMM d, yyyy') : 'Not updated'}
                         </p>
                       </div>
                       
