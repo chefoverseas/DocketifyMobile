@@ -8,7 +8,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Calendar, MapPin, Plane, Edit, Filter, Download, RefreshCw, Eye, UserCheck, Globe, Building2, TrendingUp } from "lucide-react";
+import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Calendar, MapPin, Plane, Edit, Filter, Download, RefreshCw, Eye, UserCheck, Globe, Building2, TrendingUp, ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 import { format } from "date-fns";
 import { WorkVisaDetailsModal } from "@/components/WorkVisaDetailsModal";
 
@@ -103,8 +104,8 @@ export default function AdminWorkVisasPage() {
   });
 
   // Get unique values for filter dropdowns
-  const uniqueVisaTypes = [...new Set(workVisas.map(v => v.visaType).filter(Boolean))];
-  const uniqueEmbassies = [...new Set(workVisas.map(v => v.embassyLocation).filter(Boolean))];
+  const uniqueVisaTypes = Array.from(new Set(workVisas.map(v => v.visaType).filter(Boolean))) as string[];
+  const uniqueEmbassies = Array.from(new Set(workVisas.map(v => v.embassyLocation).filter(Boolean))) as string[];
 
   // Calculate statistics
   const stats = {
@@ -229,6 +230,17 @@ export default function AdminWorkVisasPage() {
             </div>
             
             <div className="flex items-center space-x-4">
+              <Button 
+                asChild
+                variant="outline" 
+                size="sm"
+                className="bg-white/50 hover:bg-white/80 border-white/30"
+              >
+                <Link href="/admin">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Return to Dashboard
+                </Link>
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm"
