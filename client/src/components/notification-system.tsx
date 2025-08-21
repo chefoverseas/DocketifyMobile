@@ -36,7 +36,7 @@ export function NotificationSystem() {
     staleTime: 0, // Always consider data stale for real-time updates
   });
 
-  const notifications = notificationsData?.notifications || [];
+  const notifications = (notificationsData as { notifications?: Notification[] })?.notifications || [];
   const unreadCount = notifications.filter((n: Notification) => !n.read).length;
 
   const getIcon = (type: string) => {
@@ -285,12 +285,12 @@ export function NotificationSystem() {
             ) : (
               <div className="divide-y divide-gray-100">
                 {notifications
-                  .sort((a, b) => {
+                  .sort((a: Notification, b: Notification) => {
                     if (a.priority === "high" && b.priority !== "high") return -1;
                     if (b.priority === "high" && a.priority !== "high") return 1;
                     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
                   })
-                  .map((notification) => (
+                  .map((notification: Notification) => (
                     <div
                       key={notification.id}
                       className={`p-4 hover:bg-gray-50 cursor-pointer transition-colors ${

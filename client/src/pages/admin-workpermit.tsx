@@ -507,11 +507,11 @@ export default function AdminWorkPermitPage() {
                       </div>
                     </div>
                   )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        
+          </div>
         </div>
       </div>
     </div>
