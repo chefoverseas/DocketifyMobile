@@ -117,9 +117,9 @@ export default function AdminContractsPage() {
 
   if (adminLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading admin panel...</p>
         </div>
       </div>
@@ -175,30 +175,76 @@ export default function AdminContractsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Contract Management
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Upload and manage user contracts
-              </p>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-orange-100">
+      <div className="container mx-auto px-4 py-8">
+        {/* Modern Header Section */}
+        <Card className="bg-gradient-to-r from-orange-600 via-red-600 to-orange-700 text-white border-none shadow-2xl mb-8">
+          <CardContent className="p-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+              <div className="mb-6 lg:mb-0">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                    <FileText className="h-8 w-8 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl lg:text-4xl font-bold">Contract Management</h1>
+                    <p className="text-orange-100 text-lg mt-1">
+                      Upload and manage company contracts and job offers for all users
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex flex-wrap items-center gap-6 text-sm text-orange-100">
+                  <div className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4" />
+                    <span>{contracts.length} Total Contracts</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>{contracts.filter(c => c.signedContractUrl && c.signedJobOfferUrl).length} Fully Signed</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <Button 
+                  asChild
+                  variant="outline" 
+                  size="sm"
+                  className="bg-white/50 hover:bg-white/80 border-white/30"
+                >
+                  <Link href="/admin/dashboard">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Return to Dashboard
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <div className="flex space-x-3">
-              <Button variant="outline" onClick={() => setLocation("/admin/dashboard")}>
-                Back to Dashboard
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+          </CardContent>
+        </Card>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search Section */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-lg mb-8">
+          <CardContent className="p-6">
+            <div className="flex flex-col lg:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search by user name, phone, or UID..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 h-12 bg-white/70 border-gray-200 focus:border-orange-400 focus:ring-orange-400"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Contract Statistics */}
+        <div className="space-y-6">
         {!contractsLoading && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <Card>
@@ -497,6 +543,8 @@ export default function AdminContractsPage() {
           )}
         </div>
 
+        </div>
+
         {/* User Detail Modal */}
         <Dialog open={showUserDetails} onOpenChange={setShowUserDetails}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -702,7 +750,7 @@ export default function AdminContractsPage() {
             )}
           </DialogContent>
         </Dialog>
+        </div>
       </div>
-    </div>
-  );
+    );
 }
