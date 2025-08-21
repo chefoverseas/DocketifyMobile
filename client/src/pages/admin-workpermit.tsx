@@ -177,9 +177,9 @@ export default function AdminWorkPermitPage() {
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/admin">
+          <Link href="/admin/dashboard">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Admin
+            Back to Admin Dashboard
           </Link>
         </Button>
         <div>

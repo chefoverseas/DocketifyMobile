@@ -90,10 +90,10 @@ export default function AdminContractDetail({ userId: propUserId }: AdminContrac
               <Link href={`/admin/user/${userId}`}>
                 <Button variant="outline">User Details</Button>
               </Link>
-              <Link href="/admin/users">
+              <Link href="/admin/dashboard">
                 <Button variant="outline">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Users
+                  Back to Dashboard
                 </Button>
               </Link>
               <Link href="/admin/dashboard">
