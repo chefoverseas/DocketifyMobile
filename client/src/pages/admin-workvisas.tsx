@@ -36,27 +36,46 @@ export default function AdminWorkVisasPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  const { data, isLoading, error } = useQuery({
+  // Fetch all users instead of just work visas
+  const { data: usersData, isLoading: usersLoading, error: usersError } = useQuery({
+    queryKey: ['/api/admin/users'],
+  });
+
+  // Fetch existing work visas
+  const { data: workVisasData, isLoading: workVisasLoading, error: workVisasError } = useQuery({
     queryKey: ['/api/admin/workvisas'],
   });
 
-  // Transform the API response to match expected structure
-  const workVisasData = ((data as any)?.workVisas || []);
-  const workVisas = workVisasData.map((item: any) => ({
-    id: item.workVisa?.id || item.user.id, // Use work visa ID if available, otherwise user ID
-    userId: item.user.id,
-    status: item.workVisa?.status || "preparation",
-    trackingCode: item.workVisa?.trackingCode || null,
-    applicationDate: item.workVisa?.applicationDate || null,
-    interviewDate: item.workVisa?.interviewDate || null,
-    visaType: item.workVisa?.visaType || null,
-    embassyLocation: item.workVisa?.embassyLocation || null,
-    finalVisaUrl: item.workVisa?.finalVisaUrl || null,
-    notes: item.workVisa?.notes || null,
-    lastUpdated: item.workVisa?.lastUpdated || item.user.createdAt,
-    createdAt: item.workVisa?.createdAt || item.user.createdAt,
-    user: item.user
-  })) as WorkVisa[];
+  const isLoading = usersLoading || workVisasLoading;
+  const error = usersError || workVisasError;
+
+  // Get all users
+  const allUsers = ((usersData as any)?.users || []);
+  
+  // Get existing work visas
+  const existingWorkVisas = ((workVisasData as any)?.workVisas || []);
+  
+  // Create work visa object for each user (with existing data if available)
+  const workVisas = allUsers.map((user: any) => {
+    const existingVisa = existingWorkVisas.find((visa: any) => visa.user?.id === user.id);
+    
+    return {
+      id: existingVisa?.workVisa?.id || user.id,
+      userId: user.id,
+      status: existingVisa?.workVisa?.status || "preparation",
+      trackingCode: existingVisa?.workVisa?.trackingCode || null,
+      applicationDate: existingVisa?.workVisa?.applicationDate || null,
+      interviewDate: existingVisa?.workVisa?.interviewDate || null,
+      visaType: existingVisa?.workVisa?.visaType || null,
+      embassyLocation: existingVisa?.workVisa?.embassyLocation || null,
+      finalVisaUrl: existingVisa?.workVisa?.finalVisaUrl || null,
+      notes: existingVisa?.workVisa?.notes || null,
+      lastUpdated: existingVisa?.workVisa?.lastUpdated || user.createdAt,
+      createdAt: existingVisa?.workVisa?.createdAt || user.createdAt,
+      user: user,
+      hasWorkVisa: !!existingVisa?.workVisa
+    };
+  }) as (WorkVisa & { hasWorkVisa: boolean })[];
 
   // Filter work visas based on search term
   const filteredWorkVisas = workVisas.filter((visa) =>
