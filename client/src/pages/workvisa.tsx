@@ -7,10 +7,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Calendar, MapPin, Download, Plane, Edit2, Save, X } from "lucide-react";
+import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Calendar, MapPin, Download, Plane, Edit2, Save, X, ArrowLeft } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
 
 interface WorkVisa {
   id: number;
@@ -244,16 +245,27 @@ export default function WorkVisaPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-6">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center space-x-3">
-            <Plane className="h-8 w-8 text-blue-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Work Visa Status
-            </h1>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between mb-6">
+            <Button asChild variant="outline" size="sm" className="bg-white/80 hover:bg-white">
+              <Link to="/dashboard">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Return to Dashboard
+              </Link>
+            </Button>
           </div>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Track your work visa application progress and important updates from the embassy.
-          </p>
+          
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center space-x-3">
+              <Plane className="h-8 w-8 text-blue-600" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                Work Visa Status
+              </h1>
+            </div>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Track your work visa application progress and important updates from the embassy.
+            </p>
+          </div>
         </div>
 
         {/* Main Status Card */}
