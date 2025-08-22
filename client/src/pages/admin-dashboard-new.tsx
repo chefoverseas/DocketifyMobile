@@ -331,7 +331,7 @@ export default function AdminDashboardPage() {
 
               <Button
                 asChild
-                className="h-20 bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group relative"
+                className="h-20 bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
               >
                 <Link href="/admin/sync" className="flex flex-col items-center space-y-2">
                   <Database className="h-6 w-6 group-hover:scale-110 transition-transform" />
