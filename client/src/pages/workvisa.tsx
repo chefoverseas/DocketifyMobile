@@ -21,6 +21,7 @@ interface WorkVisa {
   trackingCode: string | null;
   applicationDate: string | null;
   interviewDate: string | null;
+  interviewTime: string | null;
   visaType: string | null;
   embassyLocation: string | null;
   finalVisaUrl: string | null;
@@ -515,12 +516,19 @@ export default function WorkVisaPage() {
                         <CardContent className="p-6">
                           <h4 className="font-semibold text-orange-800 flex items-center space-x-2 mb-3">
                             <Calendar className="h-5 w-5 text-orange-600" />
-                            <span>Interview Date</span>
+                            <span>Interview Schedule</span>
                           </h4>
                           <div className="bg-gradient-to-r from-purple-50 to-purple-100 px-4 py-3 rounded-lg border border-purple-200">
-                            <p className="text-purple-800 font-semibold">
-                              {format(new Date(workVisa.interviewDate), "PPP 'at' p")}
-                            </p>
+                            <div className="flex flex-col space-y-1">
+                              <p className="text-purple-800 font-semibold">
+                                {format(new Date(workVisa.interviewDate), "PPP")}
+                              </p>
+                              {workVisa.interviewTime && (
+                                <p className="text-purple-700 text-sm">
+                                  at {workVisa.interviewTime}
+                                </p>
+                              )}
+                            </div>
                           </div>
                         </CardContent>
                       </Card>

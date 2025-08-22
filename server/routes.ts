@@ -1262,10 +1262,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/admin/workvisa/:userId", requireAdminAuth, async (req, res) => {
     try {
       const userId = req.params.userId;
-      const { status, trackingCode, notes, visaType, embassyLocation, interviewDate } = req.body;
+      const { status, trackingCode, notes, visaType, embassyLocation, interviewDate, interviewTime } = req.body;
 
       console.log(`🔄 Admin updating work visa for user ID: ${userId}`);
-      console.log(`📝 Updates:`, { status, trackingCode, notes, visaType, embassyLocation, interviewDate });
+      console.log(`📝 Updates:`, { status, trackingCode, notes, visaType, embassyLocation, interviewDate, interviewTime });
 
       let user = await storage.getUser(userId);
       
@@ -1290,6 +1290,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (visaType !== undefined) updates.visaType = visaType;
       if (embassyLocation !== undefined) updates.embassyLocation = embassyLocation;
       if (interviewDate !== undefined) updates.interviewDate = new Date(interviewDate);
+      if (interviewTime !== undefined) updates.interviewTime = interviewTime;
 
       const updatedWorkVisa = await storage.updateWorkVisa(user.id, updates);
 
