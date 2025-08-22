@@ -1926,10 +1926,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const options = {
         page: parseInt(page as string),
         limit: parseInt(limit as string),
-        search: search as string,
-        action: action as string,
-        entityType: entityType as string,
-        severity: severity as string,
+        search: search as string || undefined,
+        action: action as string || undefined,
+        entityType: entityType as string || undefined,
+        severity: severity as string || undefined,
         startDate: startDate ? new Date(startDate as string) : undefined,
         endDate: endDate ? new Date(endDate as string) : undefined,
       };

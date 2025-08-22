@@ -61,15 +61,36 @@ interface AuditStats {
 
 export default function AdminAuditPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterAction, setFilterAction] = useState<string>("");
-  const [filterEntity, setFilterEntity] = useState<string>("");
-  const [filterSeverity, setFilterSeverity] = useState<string>("");
+  const [filterAction, setFilterAction] = useState<string>("all");
+  const [filterEntity, setFilterEntity] = useState<string>("all");
+  const [filterSeverity, setFilterSeverity] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
   // Fetch audit logs
   const { data: auditData, isLoading: auditLoading, refetch } = useQuery({
     queryKey: ["/api/admin/audit", currentPage, searchTerm, filterAction, filterEntity, filterSeverity],
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: "50"
+      });
+      
+      if (searchTerm) params.append("search", searchTerm);
+      if (filterAction !== "all") params.append("action", filterAction);
+      if (filterEntity !== "all") params.append("entityType", filterEntity);
+      if (filterSeverity !== "all") params.append("severity", filterSeverity);
+      
+      const response = await fetch(`/api/admin/audit?${params.toString()}`, {
+        credentials: "include"
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to fetch audit logs");
+      }
+      
+      return response.json();
+    },
     refetchInterval: 30000, // Auto-refresh every 30 seconds
   });
 
@@ -273,7 +294,7 @@ export default function AdminAuditPage() {
                   <SelectValue placeholder="Filter by Action" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Actions</SelectItem>
+                  <SelectItem value="all">All Actions</SelectItem>
                   <SelectItem value="CREATE">Create</SelectItem>
                   <SelectItem value="UPDATE">Update</SelectItem>
                   <SelectItem value="DELETE">Delete</SelectItem>
@@ -289,7 +310,7 @@ export default function AdminAuditPage() {
                   <SelectValue placeholder="Filter by Entity" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Entities</SelectItem>
+                  <SelectItem value="all">All Entities</SelectItem>
                   <SelectItem value="user">Users</SelectItem>
                   <SelectItem value="docket">Dockets</SelectItem>
                   <SelectItem value="contract">Contracts</SelectItem>
@@ -305,7 +326,7 @@ export default function AdminAuditPage() {
                   <SelectValue placeholder="Filter by Severity" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Severities</SelectItem>
+                  <SelectItem value="all">All Severities</SelectItem>
                   <SelectItem value="info">Info</SelectItem>
                   <SelectItem value="warning">Warning</SelectItem>
                   <SelectItem value="error">Error</SelectItem>
@@ -319,9 +340,9 @@ export default function AdminAuditPage() {
                   size="sm"
                   onClick={() => {
                     setSearchTerm("");
-                    setFilterAction("");
-                    setFilterEntity("");
-                    setFilterSeverity("");
+                    setFilterAction("all");
+                    setFilterEntity("all");
+                    setFilterSeverity("all");
                   }}
                   className="flex-1"
                 >
