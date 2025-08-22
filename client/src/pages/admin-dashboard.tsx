@@ -393,7 +393,7 @@ export default function AdminDashboardPage() {
                   </div>
                   
                   {/* Enhanced Quick Navigation */}
-                  <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                  <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
                     <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300">
                       <Link href="/admin/workpermits">
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -431,6 +431,14 @@ export default function AdminDashboardPage() {
                         <Badge className="ml-2 bg-violet-500 text-white text-xs px-2 py-0.5 relative z-10">NEW</Badge>
                       </Link>
                     </Button>
+                    <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300 bg-gradient-to-r from-blue-500/20 to-cyan-500/20">
+                      <Link href="/admin/analytics">
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-cyan-500/30 rounded opacity-100 transition-opacity duration-300"></div>
+                        <BarChart3 className="w-4 h-4 mr-2 relative z-10" />
+                        <span className="relative z-10 font-bold">Analytics</span>
+                        <Badge className="ml-2 bg-blue-500 text-white text-xs px-2 py-0.5 relative z-10">PRO</Badge>
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -439,6 +447,31 @@ export default function AdminDashboardPage() {
         </Card>
         {/* Interactive Management Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
+          {/* Business Analytics Card - NEW Feature */}
+          <Card 
+            className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-cyan-100 ring-2 ring-blue-200"
+            onClick={() => setLocation("/admin/analytics")}
+          >
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="p-5 bg-blue-500 rounded-xl group-hover:bg-blue-600 transition-colors shadow-lg">
+                  <BarChart3 className="h-10 w-10 text-white" />
+                </div>
+                <div className="flex flex-col items-end">
+                  <Badge className="bg-blue-500 text-white text-xs mb-2">PRO</Badge>
+                  <ChevronRight className="h-6 w-6 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
+                Business Analytics
+              </h3>
+              <p className="text-gray-600 mb-4 text-base leading-relaxed">Advanced insights and performance metrics</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-blue-600 font-medium">Real-time Data</span>
+                <span className="text-gray-500">Live Updates</span>
+              </div>
+            </CardContent>
+          </Card>
           {/* Data Sync Card - Highlighted NEW Feature */}
           <Card 
             className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-100 ring-2 ring-green-200"
