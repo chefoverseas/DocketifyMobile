@@ -236,9 +236,9 @@ export default function Dashboard() {
                 {/* Profile Photo */}
                 <div className="relative group">
                   <div className="w-32 h-32 md:w-36 md:h-36 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-gradient-to-br from-white to-orange-100">
-                    {user?.profileImageUrl ? (
+                    {(user?.profileImageUrl || (user as any)?.photoUrl) ? (
                       <img 
-                        src={user.profileImageUrl} 
+                        src={user?.profileImageUrl || (user as any)?.photoUrl} 
                         alt={user.displayName || (user as any)?.name || 'Profile'} 
                         className="w-full h-full object-cover"
                       />

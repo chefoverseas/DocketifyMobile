@@ -232,7 +232,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
-        profileImageUrl: user.profileImageUrl,
+        profileImageUrl: user.photoUrl || user.profileImageUrl, // Use admin-uploaded photo first
+        photoUrl: user.photoUrl, // Also include photoUrl for compatibility
         isAdmin: user.isAdmin,
         docketCompleted: user.docketCompleted
       });
@@ -260,7 +261,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
-        profileImageUrl: user.profileImageUrl,
+        profileImageUrl: user.photoUrl || user.profileImageUrl, // Use admin-uploaded photo first
+        photoUrl: user.photoUrl, // Also include photoUrl for compatibility
         isAdmin: user.isAdmin,
         docketCompleted: user.docketCompleted
       });
