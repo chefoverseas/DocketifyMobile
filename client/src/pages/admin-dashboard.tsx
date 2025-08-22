@@ -323,6 +323,36 @@ export default function AdminDashboardPage() {
                 
                 <div className="flex-1 text-center md:text-left text-white">
                   <h2 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">Administrator Console</h2>
+                  <p className="text-blue-100 text-lg mb-4">Comprehensive management and monitoring dashboard</p>
+                  
+                  {/* Quick Admin Navigation */}
+                  <div className="flex flex-wrap gap-3 mt-6">
+                    <Button asChild variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                      <Link href="/admin/workpermits">
+                        <FileText className="w-4 h-4 mr-2" />
+                        Work Permits
+                      </Link>
+                    </Button>
+                    <Button asChild variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                      <Link href="/admin/workvisas">
+                        <FileText className="w-4 h-4 mr-2" />
+                        Work Visas
+                      </Link>
+                    </Button>
+                    <Button asChild variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                      <Link href="/admin/contracts">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Contracts
+                      </Link>
+                    </Button>
+                    <Button asChild variant="secondary" size="sm" className="bg-green-500 hover:bg-green-600 text-white border-green-400 shadow-lg">
+                      <Link href="/admin/sync">
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Data Sync
+                        <Badge className="ml-2 bg-green-300 text-green-800 text-xs">NEW</Badge>
+                      </Link>
+                    </Button>
+                  </div>
                   <p className="text-blue-100 mb-6 text-lg leading-relaxed">Real-time system overview and management tools</p>
                   <div className="flex flex-wrap gap-3 justify-center md:justify-start">
                     <Badge className="bg-white/20 text-white border-white/30 px-3 py-2 text-sm">
@@ -408,6 +438,31 @@ export default function AdminDashboardPage() {
         </Card>
         {/* Interactive Management Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
+          {/* Data Sync Card - Highlighted NEW Feature */}
+          <Card 
+            className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-green-50 to-emerald-100 ring-2 ring-green-200"
+            onClick={() => setLocation("/admin/sync")}
+          >
+            <CardContent className="p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="p-5 bg-green-500 rounded-xl group-hover:bg-green-600 transition-colors shadow-lg">
+                  <RefreshCw className="h-10 w-10 text-white" />
+                </div>
+                <div className="flex flex-col items-end">
+                  <Badge className="bg-green-500 text-white text-xs mb-2">NEW</Badge>
+                  <ChevronRight className="h-6 w-6 text-gray-400 group-hover:text-green-500 transition-colors" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors leading-tight">
+                Data Sync
+              </h3>
+              <p className="text-gray-600 mb-4 text-base leading-relaxed">Monitor data consistency and automated synchronization</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-green-600 font-medium">Auto-Sync Active</span>
+                <span className="text-gray-500">Every 5 min</span>
+              </div>
+            </CardContent>
+          </Card>
           <Card 
             className="group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-blue-50 to-indigo-100"
             onClick={() => setLocation("/admin/workpermits")}
