@@ -54,12 +54,12 @@ export default function Admin() {
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <Card className="mb-8">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <CardTitle>Admin Dashboard</CardTitle>
               <p className="text-sm text-muted-foreground">Manage users and export data</p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
                 <Link href="/admin/workpermits">
                   <FileText className="w-4 h-4 mr-2" />
@@ -98,6 +98,64 @@ export default function Admin() {
           </div>
         </CardHeader>
       </Card>
+
+      {/* Quick Access Navigation */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Link href="/admin/workpermits">
+            <CardContent className="p-4 text-center">
+              <FileText className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+              <p className="text-sm font-medium">Work Permits</p>
+            </CardContent>
+          </Link>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Link href="/admin/workvisas">
+            <CardContent className="p-4 text-center">
+              <FileText className="h-8 w-8 mx-auto mb-2 text-purple-600" />
+              <p className="text-sm font-medium">Work Visas</p>
+            </CardContent>
+          </Link>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Link href="/admin/contracts">
+            <CardContent className="p-4 text-center">
+              <Settings className="h-8 w-8 mx-auto mb-2 text-orange-600" />
+              <p className="text-sm font-medium">Contracts</p>
+            </CardContent>
+          </Link>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+          <Link href="/admin/sync">
+            <CardContent className="p-4 text-center">
+              <Database className="h-8 w-8 mx-auto mb-2 text-green-600" />
+              <p className="text-sm font-medium text-green-800">Data Sync</p>
+              <p className="text-xs text-green-600 mt-1">NEW</p>
+            </CardContent>
+          </Link>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Link href="/admin/users">
+            <CardContent className="p-4 text-center">
+              <Users className="h-8 w-8 mx-auto mb-2 text-gray-600" />
+              <p className="text-sm font-medium">Users</p>
+            </CardContent>
+          </Link>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+          <Link href="/admin/user/new">
+            <CardContent className="p-4 text-center">
+              <Plus className="h-8 w-8 mx-auto mb-2 text-indigo-600" />
+              <p className="text-sm font-medium">Add User</p>
+            </CardContent>
+          </Link>
+        </Card>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
