@@ -1,6 +1,6 @@
 # Overview
 
-Docketify is a document management web application designed for secure user authentication via mobile OTP, comprehensive profile management, and organized storage of required documents and professional references within a "docket" system. Key features include file upload capabilities, detailed progress tracking, robust admin functionalities for user and document status management, and a modern real-time notification system. The platform features a revamped user dashboard with prominent user profile cards and professional UI/UX design using Chef Overseas branding. All admin modules have been modernized with consistent glassmorphism design, featuring orange-to-red gradients, interactive elements, and unified Chef Overseas branding across Work Permits, Work Visa, Contract Management, and User Management modules. The system aims to streamline the document collection process, ensuring a secure, efficient, and user-friendly experience for both individuals and administrators.
+Docketify is a document management web application designed for secure user authentication via mobile OTP, comprehensive profile management, and organized storage of required documents and professional references within a "docket" system. Key features include file upload capabilities, detailed progress tracking, robust admin functionalities for user and document status management, automated data synchronization service, and a modern real-time notification system. The platform features a revamped user dashboard with prominent user profile cards and professional UI/UX design using Chef Overseas branding. All admin modules have been modernized with consistent glassmorphism design, featuring orange-to-red gradients, interactive elements, and unified Chef Overseas branding across Work Permits, Work Visa, Contract Management, User Management, and Data Synchronization modules. The system includes comprehensive interview time scheduling for work visas and maintains perfect data consistency between admin and user dashboards through automated synchronization checks every 5 minutes.
 
 # User Preferences
 
@@ -22,12 +22,14 @@ Preferred communication style: Simple, everyday language.
 - **Session Management**: Express sessions for secure authentication state.
 - **File Handling**: Multer middleware for multipart form data processing with validation.
 - **Database ORM**: Drizzle ORM with PostgreSQL for type-safe database operations.
-- **API Structure**: RESTful endpoints organized by feature (auth, users, docket, admin, contracts, work permits).
+- **API Structure**: RESTful endpoints organized by feature (auth, users, docket, admin, contracts, work permits, sync).
 - **Admin Management**: CRUD operations for users and their details.
+- **Data Synchronization**: Automated service running every 5 minutes to ensure data consistency across all user modules.
 
 ## Database Design
-- **Core Tables**: Users (auth, profile), Dockets (document collection, JSON fields for metadata), OTP Sessions (temporary codes).
-- **Relationships**: One-to-one between users and their dockets.
+- **Core Tables**: Users (auth, profile), Dockets (document collection, JSON fields for metadata), Work Permits, Work Visas (with interview scheduling), Contracts, OTP Sessions (temporary codes).
+- **Relationships**: One-to-one between users and their respective modules (dockets, work permits, work visas, contracts).
+- **Interview Management**: Work visa table includes interviewDate and interviewTime fields for comprehensive scheduling.
 
 ## Authentication System
 - **Method**: Custom email-based OTP system using SendGrid (replaced Replit Auth).
@@ -55,6 +57,7 @@ Preferred communication style: Simple, everyday language.
 - **SSL/TLS**: HTTPS implementation for production (Replit Deployments) and self-signed for development. Includes comprehensive security headers (Helmet.js) and HTTPS redirection.
 - **Authentication Security**: OTP verification, secure server-side sessions with expiration, separate admin authentication.
 - **Input Validation**: Zod schema validation for all user inputs.
+- **Data Integrity**: Automated synchronization service ensures data consistency and prevents corruption across all modules.
 
 # External Dependencies
 
@@ -81,3 +84,16 @@ Preferred communication style: Simple, everyday language.
 - **Date-fns**: Date manipulation.
 - **Class Variance Authority**: Dynamic class name generation.
 - **Nanoid**: Unique ID generation.
+
+## Data Synchronization System
+- **Automated Monitoring**: Runs every 5 minutes to check data consistency across all users
+- **Auto-Healing**: Automatically creates missing records and fixes invalid status values
+- **Admin Dashboard**: Real-time monitoring with manual sync triggers and detailed reporting
+- **Consistency Checks**: Validates dockets, work permits, work visas, and contracts for each user
+- **Interview Scheduling**: Ensures proper synchronization of interview dates and times between admin and user views
+- **Error Reporting**: Comprehensive logging and admin notifications for data inconsistencies
+
+## Recent Major Updates
+- **Interview Time Scheduling**: Added comprehensive interview time support for work visa applications (August 2025)
+- **Data Synchronization Service**: Implemented automated 5-minute data consistency checks with admin monitoring dashboard (August 2025)
+- **Enhanced Work Visa Module**: Complete synchronization between admin and user dashboards for interview scheduling (August 2025)
