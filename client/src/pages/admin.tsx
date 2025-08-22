@@ -59,11 +59,17 @@ export default function Admin() {
               <CardTitle>Admin Dashboard</CardTitle>
               <p className="text-sm text-muted-foreground">Manage users and export data</p>
             </div>
-            <div className="flex space-x-3">
+            <div className="flex flex-wrap gap-3">
               <Button asChild variant="outline">
                 <Link href="/admin/workpermits">
                   <FileText className="w-4 h-4 mr-2" />
                   Work Permits
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/workvisas">
+                  <FileText className="w-4 h-4 mr-2" />
+                  Work Visas
                 </Link>
               </Button>
               <Button asChild variant="outline">
