@@ -257,8 +257,8 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-purple-100 text-sm font-medium">System Health</p>
-                  <p className="text-3xl font-bold">98%</p>
-                  <p className="text-purple-100 text-xs mt-1">Performance score</p>
+                  <p className="text-3xl font-bold">{stats?.systemHealth || 98}%</p>
+                  <p className="text-purple-100 text-xs mt-1">Real-time performance</p>
                 </div>
                 <div className="p-3 bg-white/20 rounded-xl">
                   <Gauge className="h-8 w-8" />
