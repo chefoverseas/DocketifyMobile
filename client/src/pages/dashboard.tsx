@@ -310,6 +310,11 @@ export default function Dashboard() {
                   <Button 
                     variant="ghost" 
                     className="text-white/70 hover:text-white hover:bg-white/10 px-4 py-2"
+                    onClick={() => {
+                      // Open quick actions menu or navigate to settings
+                      window.location.href = '/profile';
+                    }}
+                    title="More Options"
                   >
                     <MoreHorizontal className="h-5 w-5" />
                   </Button>
