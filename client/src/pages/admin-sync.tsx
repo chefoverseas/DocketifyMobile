@@ -11,8 +11,10 @@ import {
   Users,
   Database,
   Zap,
-  Settings
+  Settings,
+  ArrowLeft
 } from "lucide-react";
+import { Link } from "wouter";
 import { toast } from "@/hooks/use-toast";
 
 interface SyncStatus {
@@ -97,15 +99,32 @@ export default function AdminSync() {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-2">
-            <div className="bg-gradient-to-r from-orange-600 to-red-600 p-2 rounded-lg">
-              <Database className="h-6 w-6 text-white" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-r from-orange-600 to-red-600 p-2 rounded-lg">
+                <Database className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                  Data Synchronization Center
+                </h1>
+                <p className="text-gray-600">Monitor and manage data consistency across all user modules</p>
+              </div>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-              Data Synchronization Center
-            </h1>
+            
+            {/* Return to Dashboard Button */}
+            <Button 
+              asChild
+              variant="outline" 
+              size="sm"
+              className="bg-white/80 hover:bg-white border-gray-300 hover:border-gray-400"
+            >
+              <Link href="/admin/dashboard">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Return to Dashboard
+              </Link>
+            </Button>
           </div>
-          <p className="text-gray-600">Monitor and manage data consistency across all user modules</p>
         </div>
 
         {/* Status Cards */}
