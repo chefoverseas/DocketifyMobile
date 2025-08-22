@@ -34,7 +34,8 @@ import {
   Monitor,
   Cpu,
   LineChart,
-  PieChart
+  PieChart,
+  CheckCircle
 } from "lucide-react";
 import {
   LineChart as RechartsLineChart,
