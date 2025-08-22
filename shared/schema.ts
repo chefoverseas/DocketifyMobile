@@ -106,6 +106,7 @@ export const workVisas = pgTable("work_visas", {
   trackingCode: text("tracking_code"),
   applicationDate: timestamp("application_date"),
   interviewDate: timestamp("interview_date"),
+  interviewTime: text("interview_time"), // Time slot for interview (e.g., "10:00 AM", "2:30 PM")
   visaType: text("visa_type"), // e.g., "H1B", "L1", "O1", etc.
   embassyLocation: text("embassy_location"),
   finalVisaUrl: text("final_visa_url"),

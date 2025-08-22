@@ -28,6 +28,7 @@ type WorkVisa = {
   trackingCode: string | null;
   applicationDate: string | null;
   interviewDate: string | null;
+  interviewTime: string | null;
   visaType: string | null;
   embassyLocation: string | null;
   finalVisaUrl: string | null;
@@ -75,6 +76,7 @@ export default function AdminWorkVisasPage() {
       trackingCode: existingVisa?.workVisa?.trackingCode || null,
       applicationDate: existingVisa?.workVisa?.applicationDate || null,
       interviewDate: existingVisa?.workVisa?.interviewDate || null,
+      interviewTime: existingVisa?.workVisa?.interviewTime || null,
       visaType: existingVisa?.workVisa?.visaType || null,
       embassyLocation: existingVisa?.workVisa?.embassyLocation || null,
       finalVisaUrl: existingVisa?.workVisa?.finalVisaUrl || null,

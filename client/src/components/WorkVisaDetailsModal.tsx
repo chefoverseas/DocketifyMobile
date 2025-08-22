@@ -29,6 +29,7 @@ export function WorkVisaDetailsModal({ userId, onClose }: WorkVisaDetailsModalPr
     visaType: "",
     embassyLocation: "",
     interviewDate: "",
+    interviewTime: "",
     notes: ""
   });
 
@@ -82,6 +83,7 @@ export function WorkVisaDetailsModal({ userId, onClose }: WorkVisaDetailsModalPr
         embassyLocation: visa.embassyLocation || "",
         interviewDate: visa.interviewDate ? 
           format(new Date(visa.interviewDate), "yyyy-MM-dd") : "",
+        interviewTime: visa.interviewTime || "",
         notes: visa.notes || ""
       });
     }
@@ -249,6 +251,16 @@ export function WorkVisaDetailsModal({ userId, onClose }: WorkVisaDetailsModalPr
                         onChange={(e) => setFormData(prev => ({ ...prev, interviewDate: e.target.value }))}
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="interviewTime">Interview Time</Label>
+                      <Input
+                        id="interviewTime"
+                        type="time"
+                        value={formData.interviewTime}
+                        onChange={(e) => setFormData(prev => ({ ...prev, interviewTime: e.target.value }))}
+                        placeholder="Select interview time"
+                      />
+                    </div>
                     <div className="md:col-span-2">
                       <Label htmlFor="notes">Notes</Label>
                       <Textarea
@@ -294,7 +306,12 @@ export function WorkVisaDetailsModal({ userId, onClose }: WorkVisaDetailsModalPr
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-gray-500" />
                         <span className="font-medium">Interview:</span>
-                        <span>{format(new Date((workVisaData as any).workVisa.interviewDate), "PPP")}</span>
+                        <div className="flex flex-col">
+                          <span>{format(new Date((workVisaData as any).workVisa.interviewDate), "PPP")}</span>
+                          {(workVisaData as any)?.workVisa?.interviewTime && (
+                            <span className="text-sm text-gray-600">at {(workVisaData as any).workVisa.interviewTime}</span>
+                          )}
+                        </div>
                       </div>
                     )}
                     {(workVisaData as any)?.workVisa?.applicationDate && (
