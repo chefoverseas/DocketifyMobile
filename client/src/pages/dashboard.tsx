@@ -259,7 +259,7 @@ export default function Dashboard() {
                     Welcome back, {user?.displayName || (user as any)?.name || 'User'}!
                   </h1>
                   <p className="text-orange-100 mb-3 text-xl leading-relaxed">
-                    ID: {user?.uid || 'Not assigned'} • Member since {new Date().getFullYear()}
+                    UID: {user?.uid || user?.id || 'Not assigned'} • Member since {new Date().getFullYear()}
                   </p>
                   <p className="text-white/90 mb-6 flex items-center justify-center md:justify-start text-lg">
                     <Calendar className="h-5 w-5 mr-3" />

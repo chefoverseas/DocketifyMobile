@@ -226,6 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({
         id: user.id,
+        uid: user.uid,
         email: user.email,
         displayName: user.displayName,
         firstName: user.firstName,
@@ -253,6 +254,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({
         id: user.id,
+        uid: user.uid,
         email: user.email,
         displayName: user.displayName,
         firstName: user.firstName,
