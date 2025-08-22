@@ -127,6 +127,25 @@ export const workVisas = pgTable("work_visas", {
   createdAt: timestamp("created_at").default(sql`now()`),
 });
 
+// Audit logging table for tracking all system activities
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }), // Can be null for system actions
+  adminEmail: text("admin_email"), // For admin actions
+  action: text("action").notNull(), // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, etc.
+  entityType: text("entity_type").notNull(), // user, docket, contract, work_permit, work_visa, etc.
+  entityId: text("entity_id"), // ID of the affected entity
+  oldValues: json("old_values").$type<Record<string, any>>(), // Previous values for updates
+  newValues: json("new_values").$type<Record<string, any>>(), // New values for creates/updates
+  metadata: json("metadata").$type<Record<string, any>>(), // Additional context (IP, user agent, etc.)
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  sessionId: text("session_id"),
+  severity: text("severity").default("info"), // info, warning, error, critical
+  description: text("description"), // Human-readable description
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
 export const notifications = pgTable("notifications", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
@@ -240,6 +259,11 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
   updatedAt: true,
 });
 
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  timestamp: true,
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -257,3 +281,5 @@ export type WorkVisa = typeof workVisas.$inferSelect;
 export type InsertWorkVisa = z.infer<typeof insertWorkVisaSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;

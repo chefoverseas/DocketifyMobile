@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { sendOtpEmail, sendWorkPermitStatusEmail, sendFinalDocketUploadEmail, sendNewUserWelcomeEmail } from "./sendgrid";
 import { syncService } from "./sync-service";
+import { AuditService } from "./audit-service";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import multer from "multer";
@@ -185,6 +186,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Set session
       (req.session as any).userId = user.id;
       (req.session as any).userEmail = user.email;
+
+      // Log user login for audit
+      await AuditService.logAuth('LOGIN', user.id, {
+        ipAddress: req.ip || req.connection.remoteAddress,
+        userAgent: req.get('User-Agent'),
+        sessionId: req.sessionID,
+        metadata: { 
+          email: user.email, 
+          displayName: user.displayName,
+          loginTime: new Date().toISOString()
+        }
+      }, false);
 
       res.json({ 
         message: "Login successful",
@@ -523,9 +536,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (email === "info@chefoverseas.com" && password === "Revaan56789!") {
         (req.session as any).adminId = "admin";
         console.log("Admin login successful, session set");
+        
+        // Log admin login for audit
+        await AuditService.logAuth('LOGIN', email, {
+          adminEmail: email,
+          ipAddress: req.ip || req.connection.remoteAddress,
+          userAgent: req.get('User-Agent'),
+          sessionId: req.sessionID,
+          metadata: { loginTime: new Date().toISOString() }
+        }, true);
+        
         return res.status(200).json({ message: "Admin login successful" });
       } else {
         console.log("Invalid admin credentials provided");
+        
+        // Log failed admin login attempt
+        await AuditService.logAuth('LOGIN_FAILED', email, {
+          adminEmail: email,
+          ipAddress: req.ip || req.connection.remoteAddress,
+          userAgent: req.get('User-Agent'),
+          sessionId: req.sessionID,
+          metadata: { reason: 'Invalid credentials', attemptTime: new Date().toISOString() }
+        }, true);
+        
         return res.status(401).json({ message: "Invalid admin credentials" });
       }
     } catch (error) {
@@ -1873,6 +1906,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.sendStatus(404);
       }
       return res.sendStatus(500);
+    }
+  });
+
+  // Admin: Audit logging management
+  app.get("/api/admin/audit", requireAdminAuth, async (req, res) => {
+    try {
+      const {
+        page = 1,
+        limit = 50,
+        search,
+        action,
+        entityType,
+        severity,
+        startDate,
+        endDate
+      } = req.query;
+
+      const options = {
+        page: parseInt(page as string),
+        limit: parseInt(limit as string),
+        search: search as string,
+        action: action as string,
+        entityType: entityType as string,
+        severity: severity as string,
+        startDate: startDate ? new Date(startDate as string) : undefined,
+        endDate: endDate ? new Date(endDate as string) : undefined,
+      };
+
+      const auditData = await storage.getAuditLogs(options);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json(auditData);
+    } catch (error) {
+      console.error("Get audit logs error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get audit logs" });
+    }
+  });
+
+  app.get("/api/admin/audit/stats", requireAdminAuth, async (req, res) => {
+    try {
+      const { days = 30 } = req.query;
+      const stats = await storage.getAuditStats(parseInt(days as string));
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ stats });
+    } catch (error) {
+      console.error("Get audit stats error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get audit statistics" });
     }
   });
 

@@ -393,7 +393,7 @@ export default function AdminDashboardPage() {
                   </div>
                   
                   {/* Enhanced Quick Navigation */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                     <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300">
                       <Link href="/admin/workpermits">
                         <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -421,6 +421,14 @@ export default function AdminDashboardPage() {
                         <Database className="w-4 h-4 mr-2 relative z-10" />
                         <span className="relative z-10 font-bold">Data Sync</span>
                         <Badge className="ml-2 bg-green-500 text-white text-xs px-2 py-0.5 relative z-10">NEW</Badge>
+                      </Link>
+                    </Button>
+                    <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300 bg-gradient-to-r from-violet-500/20 to-purple-500/20">
+                      <Link href="/admin/audit">
+                        <div className="absolute inset-0 bg-gradient-to-r from-violet-500/30 to-purple-500/30 rounded opacity-100 transition-opacity duration-300"></div>
+                        <Shield className="w-4 h-4 mr-2 relative z-10" />
+                        <span className="relative z-10 font-bold">Audit Center</span>
+                        <Badge className="ml-2 bg-violet-500 text-white text-xs px-2 py-0.5 relative z-10">NEW</Badge>
                       </Link>
                     </Button>
                   </div>

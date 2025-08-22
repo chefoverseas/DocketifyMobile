@@ -27,6 +27,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, lt } from "drizzle-orm";
+import { AuditService } from "./audit-service";
 
 export interface IStorage {
   // User operations (updated for Replit Auth)
@@ -94,6 +95,10 @@ export interface IStorage {
   markNotificationAsRead(notificationId: string, userId: string): Promise<Notification>;
   markAllNotificationsAsRead(userId: string): Promise<number>;
   dismissNotification(notificationId: string, userId: string): Promise<void>;
+
+  // Audit operations
+  getAuditLogs(options: any): Promise<any>;
+  getAuditStats(days?: number): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -193,6 +198,20 @@ export class DatabaseStorage implements IStorage {
       console.log(`👤 Deleted user record ${id}`);
       
       console.log(`✅ Successfully completed cascading deletion for user: ${user.email}`);
+      
+      // Log user deletion for audit
+      await AuditService.logDataChange('DELETE', 'user', user.id, {
+        adminEmail: 'info@chefoverseas.com',
+        metadata: { 
+          deletedUserEmail: user.email,
+          deletedUserName: user.displayName,
+          deletionTime: new Date().toISOString()
+        }
+      }, {
+        email: user.email,
+        displayName: user.displayName,
+        uid: user.uid
+      }, undefined);
       
     } catch (error) {
       console.error(`❌ Error during cascading deletion for user ${id}:`, error);
@@ -586,6 +605,15 @@ export class DatabaseStorage implements IStorage {
         eq(notifications.id, notificationId),
         eq(notifications.userId, userId)
       ));
+  }
+
+  // Audit operations
+  async getAuditLogs(options: any): Promise<any> {
+    return await AuditService.getAuditLogs(options);
+  }
+
+  async getAuditStats(days: number = 30): Promise<any> {
+    return await AuditService.getAuditStats(days);
   }
 }
 
