@@ -69,12 +69,13 @@ export default function AdminDashboardPage() {
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
     enabled: !!(adminData as any)?.admin,
-    refetchInterval: 10000, // Reduce to 10 seconds for faster updates
+    refetchInterval: 5000, // Even faster updates - 5 seconds
     retry: false,
     staleTime: 0,
-    cacheTime: 0,
+    gcTime: 0, // React Query v5 uses gcTime instead of cacheTime
     refetchOnWindowFocus: true,
     refetchOnMount: true,
+    refetchOnReconnect: true,
   });
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
@@ -263,9 +264,16 @@ export default function AdminDashboardPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">System Health</p>
-                  <p className="text-3xl font-bold" key={systemHealthValue}>{systemHealthValue ?? 98}%</p>
-                  <p className="text-purple-100 text-xs mt-1">Real-time performance</p>
+                  <div className="flex items-center space-x-2">
+                    <p className="text-purple-100 text-sm font-medium">System Health</p>
+                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
+                  </div>
+                  <p className="text-3xl font-bold transition-all duration-500" key={`health-${systemHealthValue}-${Date.now()}`}>
+                    {systemHealthValue ?? 98}%
+                  </p>
+                  <p className="text-purple-100 text-xs mt-1">
+                    Live: {new Date().toLocaleTimeString()}
+                  </p>
                 </div>
                 <div className="p-3 bg-white/20 rounded-xl">
                   <Gauge className="h-8 w-8" />
