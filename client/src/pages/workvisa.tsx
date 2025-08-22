@@ -528,6 +528,11 @@ export default function WorkVisaPage() {
                                   at {workVisa.interviewTime}
                                 </p>
                               )}
+                              {!workVisa.interviewTime && (
+                                <p className="text-purple-600 text-xs italic">
+                                  Time not specified
+                                </p>
+                              )}
                             </div>
                           </div>
                         </CardContent>
