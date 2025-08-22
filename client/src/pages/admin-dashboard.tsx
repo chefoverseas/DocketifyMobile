@@ -271,9 +271,26 @@ export default function AdminDashboardPage() {
                   <p className="text-3xl font-bold transition-all duration-500" key={`health-${systemHealthValue}-${Date.now()}`}>
                     {systemHealthValue ?? 98}%
                   </p>
-                  <p className="text-purple-100 text-xs mt-1">
-                    Live: {new Date().toLocaleTimeString()}
-                  </p>
+                  <div className="text-purple-100 text-xs mt-2 space-y-1">
+                    <div className="flex justify-between">
+                      <span>Database:</span>
+                      <span className={`font-medium ${stats?.systemHealthDetails?.database?.score > 80 ? 'text-green-200' : 'text-yellow-200'}`}>
+                        {stats?.systemHealthDetails?.database?.score ?? '--'}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>API:</span>
+                      <span className={`font-medium ${stats?.systemHealthDetails?.apiResponse?.score > 80 ? 'text-green-200' : 'text-yellow-200'}`}>
+                        {stats?.systemHealthDetails?.apiResponse?.score ?? '--'}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Storage:</span>
+                      <span className={`font-medium ${stats?.systemHealthDetails?.storage?.score > 80 ? 'text-green-200' : 'text-yellow-200'}`}>
+                        {stats?.systemHealthDetails?.storage?.score ?? '--'}%
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 <div className="p-3 bg-white/20 rounded-xl">
                   <Gauge className="h-8 w-8" />

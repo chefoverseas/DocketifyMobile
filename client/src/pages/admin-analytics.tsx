@@ -882,15 +882,15 @@ export default function ModernAnalyticsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-purple-100 text-sm font-medium">Throughput</div>
-                      <div className="text-3xl font-bold">1.2K</div>
+                      <div className="text-purple-100 text-sm font-medium">Total Applications</div>
+                      <div className="text-3xl font-bold">{adminStats?.performanceMetrics?.totalApplications || 0}</div>
                       <div className="flex items-center space-x-1 mt-2">
-                        <Activity className="h-4 w-4 text-purple-200" />
-                        <span className="text-purple-200 text-xs">Requests/hour</span>
+                        <FileText className="h-4 w-4 text-purple-200" />
+                        <span className="text-purple-200 text-xs">Live application count</span>
                       </div>
                     </div>
                     <div className="p-3 bg-white/20 rounded-xl">
-                      <Cpu className="h-8 w-8" />
+                      <FileText className="h-8 w-8" />
                     </div>
                   </div>
                 </CardContent>
