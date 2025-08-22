@@ -71,7 +71,12 @@ export default function AdminDashboardPage() {
     enabled: !!(adminData as any)?.admin,
     refetchInterval: 30000,
     retry: false,
+    staleTime: 0,
+    cacheTime: 0,
   });
+
+  // Debug logging for system health
+  console.log("Admin dashboard statsData:", statsData);
 
   const { data: usersData, isLoading: usersLoading } = useQuery({
     queryKey: ["/api/admin/users"],
@@ -134,11 +139,15 @@ export default function AdminDashboardPage() {
   }
 
   const currentUser = adminData as any;
-  const stats = statsData?.stats;
-  const users = usersData?.users || [];
-  const workPermits = workPermitsData?.workPermits || [];
-  const contracts = contractsData?.contracts || [];
-  const workVisas = workVisasData?.workVisas || [];
+  const stats = (statsData as any)?.stats;
+  const users = (usersData as any)?.users || [];
+  const workPermits = (workPermitsData as any)?.workPermits || [];
+  const contracts = (contractsData as any)?.contracts || [];
+  const workVisas = (workVisasData as any)?.workVisas || [];
+
+  // Debug system health value
+  console.log("System health from stats:", stats?.systemHealth);
+  console.log("Full stats object:", stats);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -257,7 +266,7 @@ export default function AdminDashboardPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-purple-100 text-sm font-medium">System Health</p>
-                  <p className="text-3xl font-bold">{stats?.systemHealth || 98}%</p>
+                  <p className="text-3xl font-bold">{stats?.systemHealth ?? 98}%</p>
                   <p className="text-purple-100 text-xs mt-1">Real-time performance</p>
                 </div>
                 <div className="p-3 bg-white/20 rounded-xl">
