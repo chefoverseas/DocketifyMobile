@@ -108,7 +108,16 @@ export default function ModernAnalyticsPage() {
     refetchInterval: autoRefresh ? 30000 : false,
   });
 
+  // Fetch admin stats for performance metrics
+  const { data: adminStatsData } = useQuery({
+    queryKey: ["/api/admin/stats"],
+    refetchInterval: autoRefresh ? 5000 : false,
+    staleTime: 0,
+    gcTime: 0,
+  });
+
   const stats = statsData?.stats as AuditStats;
+  const adminStats = (adminStatsData as any)?.stats;
 
   // Real-time updates effect
   useEffect(() => {
@@ -820,10 +829,10 @@ export default function ModernAnalyticsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-blue-100 text-sm font-medium">System Uptime</div>
-                      <div className="text-3xl font-bold">99.9%</div>
+                      <div className="text-3xl font-bold">{adminStats?.performanceMetrics?.uptime || 99.9}%</div>
                       <div className="flex items-center space-x-1 mt-2">
                         <CheckCircle className="h-4 w-4 text-blue-200" />
-                        <span className="text-blue-200 text-xs">Excellent availability</span>
+                        <span className="text-blue-200 text-xs">Real-time availability</span>
                       </div>
                     </div>
                     <div className="p-3 bg-white/20 rounded-xl">
@@ -838,10 +847,10 @@ export default function ModernAnalyticsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-emerald-100 text-sm font-medium">Response Time</div>
-                      <div className="text-3xl font-bold">245ms</div>
+                      <div className="text-3xl font-bold">{adminStats?.performanceMetrics?.responseTime || 245}ms</div>
                       <div className="flex items-center space-x-1 mt-2">
                         <Zap className="h-4 w-4 text-emerald-200" />
-                        <span className="text-emerald-200 text-xs">Average API response</span>
+                        <span className="text-emerald-200 text-xs">Live API response</span>
                       </div>
                     </div>
                     <div className="p-3 bg-white/20 rounded-xl">
@@ -856,10 +865,10 @@ export default function ModernAnalyticsPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-orange-100 text-sm font-medium">Error Rate</div>
-                      <div className="text-3xl font-bold">{stats?.performanceMetrics?.errorRate || 0.1}%</div>
+                      <div className="text-3xl font-bold">{adminStats?.performanceMetrics?.errorRate || 0.1}%</div>
                       <div className="flex items-center space-x-1 mt-2">
                         <TrendingDown className="h-4 w-4 text-orange-200" />
-                        <span className="text-orange-200 text-xs">Very low errors</span>
+                        <span className="text-orange-200 text-xs">Live error tracking</span>
                       </div>
                     </div>
                     <div className="p-3 bg-white/20 rounded-xl">
