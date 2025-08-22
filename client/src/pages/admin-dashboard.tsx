@@ -33,7 +33,16 @@ import {
   Bell,
   Zap,
   CheckCircle,
-  Plane
+  Plane,
+  Sparkles,
+  Globe,
+  Database,
+  Layers,
+  Cpu,
+  LineChart,
+  ArrowUpRight,
+  Star,
+  Workflow
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import type { User } from "@shared/schema";
@@ -243,62 +252,100 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
-      {/* Modern Admin Header */}
-      <div className="bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-200">
-                <img 
-                  src={chefOverseasLogo} 
-                  alt="Chef Overseas Logo" 
-                  className="h-10 w-auto object-contain"
-                />
-              </div>
-              <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-lg">
-                  <Shield className="h-6 w-6 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-orange-50/50">
+      {/* Futuristic Glassmorphism Header */}
+      <div className="relative bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-2xl sticky top-0 z-50 overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-orange-600/10"></div>
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-0 left-1/4 w-72 h-72 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute top-0 right-1/4 w-96 h-96 bg-gradient-to-r from-orange-400/20 to-red-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center space-x-6">
+              {/* Enhanced Logo */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-400 rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-pulse"></div>
+                <div className="relative bg-white rounded-2xl p-3 shadow-xl border border-white/50">
+                  <img 
+                    src={chefOverseasLogo} 
+                    alt="Chef Overseas Logo" 
+                    className="h-12 w-auto object-contain"
+                  />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                  Docketify Pro Admin
-                </h1>
-                <p className="text-sm text-gray-600 flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  {new Date().toLocaleDateString('en-US', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </p>
+              
+              {/* Interactive Admin Badge */}
+              <div className="relative group cursor-pointer">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl blur opacity-60 group-hover:opacity-100 transition-all duration-300"></div>
+                <div className="relative w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-105 transition-all duration-300">
+                  <Shield className="h-8 w-8 text-white drop-shadow-lg" />
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-3 border-white shadow-lg animate-bounce"></div>
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <div className="flex items-center space-x-3">
+                  <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-orange-600 bg-clip-text text-transparent">
+                    Docketify Pro
+                  </h1>
+                  <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 text-xs font-bold animate-pulse">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    LIVE
+                  </Badge>
+                </div>
+                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                  <div className="flex items-center space-x-1">
+                    <Calendar className="h-4 w-4 text-blue-500" />
+                    <span className="font-medium">
+                      {new Date().toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Globe className="h-4 w-4 text-green-500" />
+                    <span>Administrator Dashboard</span>
+                  </div>
+                </div>
               </div>
             </div>
             
-            {/* Header Actions */}
+            {/* Enhanced Action Buttons */}
             <div className="flex items-center space-x-3">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="hover:bg-orange-100"
+                className="relative group bg-white/60 hover:bg-white/80 backdrop-blur-sm border border-white/30 hover:border-blue-300 transition-all duration-300"
               >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
+                <RefreshCw className={`h-4 w-4 mr-2 text-blue-600 ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                <span className="font-medium">Refresh</span>
               </Button>
               
-              <Button variant="ghost" size="sm" onClick={handleExportCSV} className="hover:bg-blue-100">
-                <Download className="h-4 w-4 mr-2" />
-                Export
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleExportCSV} 
+                className="relative group bg-white/60 hover:bg-white/80 backdrop-blur-sm border border-white/30 hover:border-green-300 transition-all duration-300"
+              >
+                <Download className="h-4 w-4 mr-2 text-green-600 group-hover:translate-y-0.5 transition-transform duration-300" />
+                <span className="font-medium">Export</span>
               </Button>
               
-              <Button variant="ghost" size="sm" onClick={handleLogout} className="hover:bg-red-100 text-red-600">
-                <Settings className="h-4 w-4 mr-2" />
-                Logout
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleLogout} 
+                className="relative group bg-white/60 hover:bg-red-50/80 backdrop-blur-sm border border-white/30 hover:border-red-300 text-red-600 transition-all duration-300"
+              >
+                <Settings className="h-4 w-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
+                <span className="font-medium">Logout</span>
               </Button>
             </div>
           </div>
@@ -307,130 +354,76 @@ export default function AdminDashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* Admin Profile & Quick Actions Header */}
-        <Card className="mb-10 border-0 shadow-xl bg-gradient-to-r from-white via-blue-50 to-indigo-50 overflow-hidden">
-          <CardContent className="p-0">
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-10 py-8">
-              <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
-                <div className="relative">
-                  <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full border-4 border-white shadow-2xl flex items-center justify-center">
-                    <Shield className="h-12 w-12 text-white" />
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-3 border-white rounded-full flex items-center justify-center">
-                    <Zap className="h-4 w-4 text-white" />
+        {/* Modernized Admin Console Header */}
+        <Card className="mb-10 border-0 shadow-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 overflow-hidden relative">
+          {/* Background Patterns */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-l from-blue-200/30 to-purple-200/30 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-r from-orange-200/30 to-red-200/30 rounded-full blur-3xl"></div>
+          </div>
+          
+          <CardContent className="relative p-0">
+            <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 px-8 lg:px-12 py-10">
+              <div className="flex flex-col lg:flex-row items-center lg:items-start space-y-8 lg:space-y-0 lg:space-x-10">
+                {/* Enhanced Avatar Section */}
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 rounded-3xl blur opacity-60 group-hover:opacity-80 transition-all duration-500"></div>
+                  <div className="relative w-28 h-28 bg-white/10 backdrop-blur-lg rounded-3xl border-2 border-white/30 shadow-2xl flex items-center justify-center group-hover:scale-105 transition-all duration-500">
+                    <Shield className="h-14 w-14 text-white drop-shadow-2xl" />
+                    <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-400 border-4 border-white rounded-full flex items-center justify-center shadow-xl">
+                      <Cpu className="h-5 w-5 text-white" />
+                    </div>
                   </div>
                 </div>
                 
-                <div className="flex-1 text-center md:text-left text-white">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-3 leading-tight">Administrator Console</h2>
-                  <p className="text-blue-100 text-lg mb-4">Comprehensive management and monitoring dashboard</p>
+                <div className="flex-1 text-center lg:text-left text-white space-y-6">
+                  <div>
+                    <div className="flex items-center justify-center lg:justify-start space-x-4 mb-4">
+                      <h2 className="text-4xl lg:text-5xl font-black bg-gradient-to-r from-white via-cyan-200 to-blue-200 bg-clip-text text-transparent leading-tight">
+                        Administrator Console
+                      </h2>
+                      <Badge className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 text-sm font-bold animate-pulse">
+                        <Star className="h-4 w-4 mr-1" />
+                        Pro
+                      </Badge>
+                    </div>
+                    <p className="text-cyan-100 text-xl mb-6 max-w-2xl">
+                      Advanced management platform with real-time analytics and intelligent automation
+                    </p>
+                  </div>
                   
-                  {/* Quick Admin Navigation */}
-                  <div className="flex flex-wrap gap-3 mt-6">
-                    <Button asChild variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                  {/* Enhanced Quick Navigation */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300">
                       <Link href="/admin/workpermits">
-                        <FileText className="w-4 h-4 mr-2" />
-                        Work Permits
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <FileText className="w-4 h-4 mr-2 relative z-10" />
+                        <span className="relative z-10">Work Permits</span>
                       </Link>
                     </Button>
-                    <Button asChild variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                    <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300">
                       <Link href="/admin/workvisas">
-                        <FileText className="w-4 h-4 mr-2" />
-                        Work Visas
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <Plane className="w-4 h-4 mr-2 relative z-10" />
+                        <span className="relative z-10">Work Visas</span>
                       </Link>
                     </Button>
-                    <Button asChild variant="secondary" size="sm" className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+                    <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300">
                       <Link href="/admin/contracts">
-                        <Settings className="w-4 h-4 mr-2" />
-                        Contracts
+                        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/20 to-red-500/20 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <Briefcase className="w-4 h-4 mr-2 relative z-10" />
+                        <span className="relative z-10">Contracts</span>
                       </Link>
                     </Button>
-                    <Button asChild variant="secondary" size="sm" className="bg-green-500 hover:bg-green-600 text-white border-green-400 shadow-lg">
+                    <Button asChild variant="secondary" size="sm" className="group relative bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/40 transition-all duration-300 bg-gradient-to-r from-green-500/20 to-emerald-500/20">
                       <Link href="/admin/sync">
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Data Sync
-                        <Badge className="ml-2 bg-green-300 text-green-800 text-xs">NEW</Badge>
+                        <div className="absolute inset-0 bg-gradient-to-r from-green-500/30 to-emerald-500/30 rounded opacity-100 transition-opacity duration-300"></div>
+                        <Database className="w-4 h-4 mr-2 relative z-10" />
+                        <span className="relative z-10 font-bold">Data Sync</span>
+                        <Badge className="ml-2 bg-green-500 text-white text-xs px-2 py-0.5 relative z-10">NEW</Badge>
                       </Link>
                     </Button>
                   </div>
-                  <p className="text-blue-100 mb-6 text-lg leading-relaxed">Real-time system overview and management tools</p>
-                  <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                    <Badge className="bg-white/20 text-white border-white/30 px-3 py-2 text-sm">
-                      <Activity className="h-4 w-4 mr-2" />
-                      System Active
-                    </Badge>
-                    <Badge className="bg-green-500/20 text-white border-green-300/30 px-3 py-2 text-sm">
-                      <Bell className="h-4 w-4 mr-2" />
-                      Real-time Updates
-                    </Badge>
-                  </div>
-                </div>
-                
-                <div className="flex flex-row md:flex-col space-x-3 md:space-x-0 md:space-y-3">
-                  <Button 
-                    variant="secondary" 
-                    className="bg-white/20 text-white border-white/30 hover:bg-white/30 px-6 py-3 text-base"
-                    onClick={() => setLocation("/admin/dockets")}
-                  >
-                    <FileText className="h-5 w-5 mr-3" />
-                    Dockets
-                  </Button>
-                  <Button 
-                    variant="secondary" 
-                    className="bg-white/20 text-white border-white/30 hover:bg-white/30 px-6 py-3 text-base"
-                    onClick={() => setLocation("/admin/contracts")}
-                  >
-                    <Briefcase className="h-5 w-5 mr-3" />
-                    Contracts
-                  </Button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Detailed Stats Row */}
-            <div className="bg-white px-10 py-6 border-t border-gray-100">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
-                  <div className="text-3xl font-bold text-blue-600 mb-1">{stats.totalUsers}</div>
-                  <div className="text-sm text-gray-600 font-medium mb-1">Total Users</div>
-                  <div className="text-xs text-gray-500">Registered accounts</div>
-                </div>
-                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
-                  <div className="text-3xl font-bold text-green-600 mb-1">{stats.completedDockets}</div>
-                  <div className="text-sm text-gray-600 font-medium mb-1">Completed Dockets</div>
-                  <div className="text-xs text-green-600">100% completion rate</div>
-                </div>
-                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
-                  <div className="text-3xl font-bold text-yellow-600 mb-1">{stats.pendingDockets}</div>
-                  <div className="text-sm text-gray-600 font-medium mb-1">Pending Dockets</div>
-                  <div className="text-xs text-yellow-600">Awaiting completion</div>
-                </div>
-                <div className="text-center py-3 border-r border-gray-200 last:border-r-0">
-                  <div className="text-3xl font-bold text-purple-600 mb-1">{stats.contractsPending}</div>
-                  <div className="text-sm text-gray-600 font-medium mb-1">Active Contracts</div>
-                  <div className="text-xs text-purple-600">Processing status</div>
-                </div>
-                <div className="text-center py-3">
-                  <div className="text-3xl font-bold text-red-600 mb-1">{stats.issues || 0}</div>
-                  <div className="text-sm text-gray-600 font-medium mb-1">System Issues</div>
-                  <div className="text-xs text-green-600">All systems operational</div>
-                </div>
-              </div>
-              
-              {/* Real-time status indicator */}
-              <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-gray-600">System Status: Operational</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RefreshCw className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm text-gray-500">Auto-refresh: 30s</span>
-                  </div>
-                </div>
-                <div className="text-sm text-gray-500">
-                  Last updated: {new Date().toLocaleTimeString()}
                 </div>
               </div>
             </div>
