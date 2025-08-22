@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { sendOtpEmail, sendWorkPermitStatusEmail, sendFinalDocketUploadEmail, sendNewUserWelcomeEmail } from "./sendgrid";
+import { syncService } from "./sync-service";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import multer from "multer";
@@ -1872,6 +1873,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.sendStatus(404);
       }
       return res.sendStatus(500);
+    }
+  });
+
+  // Admin: Data synchronization management
+  app.get("/api/admin/sync/status", requireAdminAuth, async (req, res) => {
+    try {
+      const status = syncService.getStatus();
+      res.json({ status });
+    } catch (error) {
+      console.error("Error getting sync status:", error);
+      res.status(500).json({ message: "Failed to get sync status" });
+    }
+  });
+
+  app.post("/api/admin/sync/manual", requireAdminAuth, async (req, res) => {
+    try {
+      console.log("🔧 Admin triggered manual data sync");
+      const report = await syncService.manualSync();
+      res.json({ 
+        message: "Manual sync completed",
+        report 
+      });
+    } catch (error) {
+      console.error("Error running manual sync:", error);
+      res.status(500).json({ message: "Failed to run manual sync" });
     }
   });
 

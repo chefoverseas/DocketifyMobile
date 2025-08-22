@@ -530,7 +530,7 @@ export default function WorkVisaPage() {
                               )}
                               {!workVisa.interviewTime && (
                                 <p className="text-purple-600 text-xs italic">
-                                  Time not specified
+                                  Interview time: To be confirmed
                                 </p>
                               )}
                             </div>

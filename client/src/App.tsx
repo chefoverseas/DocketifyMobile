@@ -19,6 +19,7 @@ import AdminUsers from "@/pages/admin-users";
 import AdminWorkPermits from "@/pages/admin-workpermits";
 import AdminWorkPermit from "@/pages/admin-workpermit";
 import AdminWorkVisas from "@/pages/admin-workvisas";
+import AdminSync from "@/pages/admin-sync";
 import AdminUserCreate from "@/pages/admin-user-create";
 import AdminUserEdit from "@/pages/admin-user-edit";
 import AdminUserDetail from "@/pages/admin-user-detail";
@@ -67,6 +68,7 @@ function Router() {
       <Route path="/admin/workpermits" component={AdminWorkPermits} />
       <Route path="/admin/workpermit/:userId" component={AdminWorkPermit} />
       <Route path="/admin/workvisas" component={AdminWorkVisas} />
+      <Route path="/admin/sync" component={AdminSync} />
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}

@@ -6,6 +6,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { loadSSLConfig } from "./ssl-config";
 import { validateEnvironment, logEnvironmentInfo } from "./env-validation";
+import { syncService } from "./sync-service";
 
 // Validate environment configuration before starting
 const envConfig = validateEnvironment();
@@ -146,6 +147,9 @@ app.use((req, res, next) => {
         log(`🌐 Replit development server running on port ${port}`);
         log(`🔒 SSL security headers enabled via Helmet.js`);
       }
+      
+      // Start data synchronization service
+      syncService.start();
     });
   } else {
     // Local development: Try to use HTTPS with SSL certificates
@@ -160,6 +164,9 @@ app.use((req, res, next) => {
           log(`🔒 HTTPS server running securely on port ${port}`);
           log(`📱 Access the app at: https://localhost:${port}`);
           log(`🛡️  Full SSL/TLS encryption enabled`);
+          
+          // Start data synchronization service
+          syncService.start();
         });
       } catch (error) {
         log(`⚠️  HTTPS setup failed, falling back to HTTP: ${error}`);
@@ -181,6 +188,9 @@ app.use((req, res, next) => {
       log(`🌐 HTTP server running on port ${port}`);
       log(`🔒 Security headers enabled via Helmet.js`);
       log(`📱 Access the app at: http://localhost:${port}`);
+      
+      // Start data synchronization service
+      syncService.start();
     });
   }
 })();
