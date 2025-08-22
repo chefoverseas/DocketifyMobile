@@ -27,8 +27,30 @@ import {
   BarChart3,
   TrendingUp,
   Users,
-  Clock
+  Clock,
+  ShieldCheck,
+  Zap,
+  AlertCircle
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from "recharts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 import { Link } from "wouter";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
@@ -53,6 +75,32 @@ interface AuditLog {
 interface AuditStats {
   totalActions: number;
   actionsByType: Record<string, number>;
+  actionsByEntity: Record<string, number>;
+  actionsBySeverity: Record<string, number>;
+  dailyActivity: Array<{ date: string; count: number }>;
+  topUsers: Array<{ user: string; count: number }>;
+  securityMetrics: {
+    loginAttempts: number;
+    failedLogins: number;
+    successRate: number;
+    uniqueIPs: number;
+  };
+  businessMetrics: {
+    userEngagement: number;
+    adminActivity: number;
+    dataModifications: number;
+    fileOperations: number;
+  };
+  performanceMetrics: {
+    errorRate: number;
+    peakHours: Array<{ hour: number; count: number }>;
+    activityTrend: Array<{ hour: string; count: number }>;
+  };
+  riskMetrics: {
+    highRiskActions: number;
+    suspiciousActivity: number;
+    errorEvents: number;
+  };
   actionsByEntity: Record<string, number>;
   actionsBySeverity: Record<string, number>;
   dailyActivity: Array<{ date: string; count: number }>;

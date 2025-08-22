@@ -233,7 +233,7 @@ export class AuditService {
   }
 
   /**
-   * Get audit statistics
+   * Get comprehensive audit statistics with business analytics
    */
   static async getAuditStats(days: number = 30): Promise<{
     totalActions: number;
@@ -242,6 +242,28 @@ export class AuditService {
     actionsBySeverity: Record<string, number>;
     dailyActivity: Array<{ date: string; count: number }>;
     topUsers: Array<{ user: string; count: number }>;
+    securityMetrics: {
+      loginAttempts: number;
+      failedLogins: number;
+      successRate: number;
+      uniqueIPs: number;
+    };
+    businessMetrics: {
+      userEngagement: number;
+      adminActivity: number;
+      dataModifications: number;
+      fileOperations: number;
+    };
+    performanceMetrics: {
+      errorRate: number;
+      peakHours: Array<{ hour: number; count: number }>;
+      activityTrend: Array<{ hour: string; count: number }>;
+    };
+    riskMetrics: {
+      highRiskActions: number;
+      suspiciousActivity: number;
+      errorEvents: number;
+    };
   }> {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
@@ -259,13 +281,40 @@ export class AuditService {
       actionsBySeverity: {} as Record<string, number>,
       dailyActivity: [] as Array<{ date: string; count: number }>,
       topUsers: [] as Array<{ user: string; count: number }>,
+      securityMetrics: {
+        loginAttempts: 0,
+        failedLogins: 0,
+        successRate: 0,
+        uniqueIPs: 0,
+      },
+      businessMetrics: {
+        userEngagement: 0,
+        adminActivity: 0,
+        dataModifications: 0,
+        fileOperations: 0,
+      },
+      performanceMetrics: {
+        errorRate: 0,
+        peakHours: [] as Array<{ hour: number; count: number }>,
+        activityTrend: [] as Array<{ hour: string; count: number }>,
+      },
+      riskMetrics: {
+        highRiskActions: 0,
+        suspiciousActivity: 0,
+        errorEvents: 0,
+      },
     };
 
     // Count by type, entity, severity
     const userCounts: Record<string, number> = {};
     const dailyCounts: Record<string, number> = {};
+    const hourCounts: Record<number, number> = {};
+    const hourlyTrend: Record<string, number> = {};
+    const ipSet = new Set<string>();
 
     logs.forEach(log => {
+      const logDate = new Date(log.timestamp || new Date());
+      
       // Action types
       stats.actionsByType[log.action] = (stats.actionsByType[log.action] || 0) + 1;
       
@@ -280,8 +329,61 @@ export class AuditService {
       userCounts[user] = (userCounts[user] || 0) + 1;
       
       // Daily activity
-      const date = log.timestamp?.toISOString().split('T')[0] || new Date().toISOString().split('T')[0];
+      const date = logDate.toISOString().split('T')[0];
       dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+      
+      // Hourly activity for peak hours analysis
+      const hour = logDate.getHours();
+      hourCounts[hour] = (hourCounts[hour] || 0) + 1;
+      
+      // Hourly trend for last 24 hours
+      const hourKey = logDate.toISOString().substring(0, 14) + '00:00';
+      hourlyTrend[hourKey] = (hourlyTrend[hourKey] || 0) + 1;
+      
+      // IP addresses for security analysis
+      if (log.ipAddress) {
+        ipSet.add(log.ipAddress);
+      }
+      
+      // Security metrics
+      if (log.action === 'LOGIN' || log.action === 'LOGIN_FAILED') {
+        stats.securityMetrics.loginAttempts++;
+        if (log.action === 'LOGIN_FAILED') {
+          stats.securityMetrics.failedLogins++;
+        }
+      }
+      
+      // Business metrics
+      if (log.adminEmail) {
+        stats.businessMetrics.adminActivity++;
+      } else if (log.userId) {
+        stats.businessMetrics.userEngagement++;
+      }
+      
+      if (['CREATE', 'UPDATE', 'DELETE'].includes(log.action)) {
+        stats.businessMetrics.dataModifications++;
+      }
+      
+      if (['UPLOAD', 'DOWNLOAD'].includes(log.action)) {
+        stats.businessMetrics.fileOperations++;
+      }
+      
+      // Risk metrics
+      if (['DELETE', 'PERMISSION_CHANGE'].includes(log.action)) {
+        stats.riskMetrics.highRiskActions++;
+      }
+      
+      if (log.severity === 'error' || log.severity === 'critical') {
+        stats.riskMetrics.errorEvents++;
+        stats.performanceMetrics.errorRate++;
+      }
+      
+      // Detect suspicious activity (multiple failed logins, unusual hours, etc.)
+      if (log.action === 'LOGIN_FAILED' || 
+          (hour < 6 || hour > 22) || 
+          log.severity === 'warning') {
+        stats.riskMetrics.suspiciousActivity++;
+      }
     });
 
     // Convert to arrays and sort
@@ -293,6 +395,29 @@ export class AuditService {
     stats.dailyActivity = Object.entries(dailyCounts)
       .map(([date, count]) => ({ date, count }))
       .sort((a, b) => a.date.localeCompare(b.date));
+    
+    // Calculate security success rate
+    stats.securityMetrics.successRate = stats.securityMetrics.loginAttempts > 0 
+      ? Math.round(((stats.securityMetrics.loginAttempts - stats.securityMetrics.failedLogins) / stats.securityMetrics.loginAttempts) * 100)
+      : 100;
+    
+    stats.securityMetrics.uniqueIPs = ipSet.size;
+    
+    // Peak hours analysis
+    stats.performanceMetrics.peakHours = Object.entries(hourCounts)
+      .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+    
+    // Activity trend for charts
+    stats.performanceMetrics.activityTrend = Object.entries(hourlyTrend)
+      .map(([hour, count]) => ({ hour, count }))
+      .sort((a, b) => a.hour.localeCompare(b.hour));
+    
+    // Calculate error rate as percentage
+    stats.performanceMetrics.errorRate = stats.totalActions > 0 
+      ? Math.round((stats.performanceMetrics.errorRate / stats.totalActions) * 100)
+      : 0;
 
     return stats;
   }

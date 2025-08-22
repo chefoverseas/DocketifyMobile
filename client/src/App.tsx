@@ -21,6 +21,7 @@ import AdminWorkPermit from "@/pages/admin-workpermit";
 import AdminWorkVisas from "@/pages/admin-workvisas";
 import AdminSync from "@/pages/admin-sync";
 import AdminAudit from "@/pages/admin-audit";
+import AdminAnalytics from "@/pages/admin-analytics";
 import AdminUserCreate from "@/pages/admin-user-create";
 import AdminUserEdit from "@/pages/admin-user-edit";
 import AdminUserDetail from "@/pages/admin-user-detail";
@@ -71,6 +72,7 @@ function Router() {
       <Route path="/admin/workvisas" component={AdminWorkVisas} />
       <Route path="/admin/sync" component={AdminSync} />
       <Route path="/admin/audit" component={AdminAudit} />
+      <Route path="/admin/analytics" component={AdminAnalytics} />
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}
