@@ -29,6 +29,7 @@ export const users = pgTable("users", {
   displayName: text("display_name"),
   docketCompleted: boolean("docket_completed").default(false),
   isAdmin: boolean("is_admin").default(false),
+  lastReminderSent: timestamp("last_reminder_sent"), // Track when last docket reminder was sent
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

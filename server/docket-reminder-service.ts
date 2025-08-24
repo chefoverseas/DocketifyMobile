@@ -77,6 +77,18 @@ export class DocketReminderService {
             continue;
           }
 
+          // Check if user already received a reminder in the last 24 hours
+          const userRecord = await this.storage.getUser(user.id);
+          if (userRecord?.lastReminderSent) {
+            const timeSinceLastReminder = Date.now() - new Date(userRecord.lastReminderSent).getTime();
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            
+            if (timeSinceLastReminder < twentyFourHours) {
+              console.log(`⏳ [Docket Reminders] Skipping ${user.email} - reminder sent ${Math.round(timeSinceLastReminder / (60 * 60 * 1000))} hours ago`);
+              continue;
+            }
+          }
+
           const missingDocuments = this.getMissingDocuments(user.docket);
           
           console.log(`📧 [Docket Reminders] Sending reminder to ${user.email} - missing: ${missingDocuments.join(', ')}`);
@@ -89,6 +101,13 @@ export class DocketReminderService {
           
           if (emailSent) {
             remindersSent++;
+            
+            // Update lastReminderSent timestamp for this user
+            await this.storage.updateUser(user.id, {
+              lastReminderSent: new Date()
+            });
+            
+            console.log(`✅ [Docket Reminders] Reminder sent to ${user.email} and timestamp updated`);
             
             // Log audit trail
             await AuditService.log('VIEW', 'notification', {
