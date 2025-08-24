@@ -2288,25 +2288,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Test admin notifications endpoint
-  app.post("/api/admin/notifications/test", requireAdminAuth, async (req, res) => {
+  app.post("/api/admin/notifications-test", requireAdminAuth, async (req, res) => {
     try {
-      console.log('🧪 Testing admin notifications');
-      const { adminNotificationService } = await import('./admin-notification-service');
+      console.log('🧪 Testing admin notifications system');
+      const { AdminNotificationService } = await import('./admin-notification-service');
+      
+      // Create service instance
+      const adminNotificationService = new AdminNotificationService();
       
       // Create test notifications
       await adminNotificationService.sendDocketCompletionNotifications(
-        'test-user-id',
+        'test-user-12345',
         'Test User',
         'test@example.com'
       );
       
       res.json({ 
         success: true,
-        message: "Test notifications sent to admin dashboard" 
+        message: "Successfully sent 5 test notifications to admin dashboard" 
       });
     } catch (error) {
-      console.error("Test notifications error:", error);
-      res.status(500).json({ message: "Test notifications failed" });
+      console.error("❌ Test notifications error:", error);
+      res.status(500).json({ message: "Test notifications failed", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 
