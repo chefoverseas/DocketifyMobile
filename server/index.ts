@@ -150,6 +150,12 @@ app.use((req, res, next) => {
       
       // Start data synchronization service
       syncService.start();
+      
+      // Start docket reminder service
+      import('./docket-reminder-service').then(({ docketReminderService }) => {
+        console.log('🔔 Starting docket reminder service - sending daily reminders');
+        docketReminderService.start();
+      });
     });
   } else {
     // Local development: Try to use HTTPS with SSL certificates
@@ -167,6 +173,12 @@ app.use((req, res, next) => {
           
           // Start data synchronization service
           syncService.start();
+          
+          // Start docket reminder service
+          import('./docket-reminder-service').then(({ docketReminderService }) => {
+            console.log('🔔 Starting docket reminder service - sending daily reminders');
+            docketReminderService.start();
+          });
         });
       } catch (error) {
         log(`⚠️  HTTPS setup failed, falling back to HTTP: ${error}`);
@@ -191,6 +203,12 @@ app.use((req, res, next) => {
       
       // Start data synchronization service
       syncService.start();
+      
+      // Start docket reminder service
+      import('./docket-reminder-service').then(({ docketReminderService }) => {
+        console.log('🔔 Starting docket reminder service - sending daily reminders');
+        docketReminderService.start();
+      });
     });
   }
 })();

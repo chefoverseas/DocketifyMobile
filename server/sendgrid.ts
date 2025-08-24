@@ -272,6 +272,113 @@ Chef Overseas - Document Management System
   }
 }
 
+// Docket Completion Reminder Email
+export async function sendDocketReminderEmail(email: string, displayName: string, missingDocuments: string[]): Promise<boolean> {
+  // In development mode, log email content to console for testing
+  if (process.env.NODE_ENV === "development") {
+    console.log(`\n📧 DOCKET REMINDER EMAIL FOR ${email} (${displayName})`);
+    console.log(`📋 Missing Documents: ${missingDocuments.join(', ')}`);
+    console.log(`📧 Check server console for email content (development mode)\n`);
+    return true;
+  }
+
+  const fromEmail = 'info@chefoverseas.com';
+  
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #ff6b35; margin: 20px 0;">Chef Overseas</h1>
+      </div>
+      
+      <div style="background: #f8f9fa; padding: 30px; border-radius: 8px;">
+        <h2 style="color: #333; margin-bottom: 20px;">🔔 Docket Completion Reminder</h2>
+        <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
+          Dear ${displayName},
+        </p>
+        
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 4px solid #ffc107; margin: 20px 0;">
+          <h3 style="color: #856404; margin: 0 0 10px 0;">⏰ Action Required</h3>
+          <p style="color: #666; margin: 0; font-size: 16px;">Your docket is still incomplete. Please upload the missing documents to proceed with your application.</p>
+        </div>
+        
+        <div style="margin: 30px 0;">
+          <h3 style="color: #333; margin-bottom: 15px;">📋 Missing Documents:</h3>
+          <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #ddd;">
+            <ul style="color: #666; margin: 0; padding-left: 20px;">
+              ${missingDocuments.map(doc => `<li style="margin-bottom: 8px;">${doc}</li>`).join('')}
+            </ul>
+          </div>
+          
+          <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin: 20px 0;">
+            <p style="color: #155724; margin: 0; font-size: 14px;">
+              <strong>💡 Tip:</strong> Make sure all documents are clear, readable, and in PDF, JPG, or PNG format.
+            </p>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/docket" 
+               style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+              Complete Your Docket
+            </a>
+          </div>
+        </div>
+        
+        <div style="background: #f8d7da; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545; margin: 20px 0;">
+          <p style="color: #721c24; margin: 0; font-size: 14px;">
+            <strong>⚠️ Important:</strong> Incomplete dockets may delay your work permit application process. Please complete your docket as soon as possible.
+          </p>
+        </div>
+        
+        <p style="color: #999; font-size: 14px; margin-top: 30px; text-align: center;">
+          If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
+        </p>
+      </div>
+      
+      <div style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+        <p>Chef Overseas - Document Management System</p>
+        <p style="font-size: 12px; color: #999;">You received this email because your docket is incomplete. This reminder will be sent daily until completion.</p>
+      </div>
+    </div>
+  `;
+
+  const textContent = `
+Chef Overseas - Docket Completion Reminder
+
+Dear ${displayName},
+
+Action Required: Your docket is still incomplete. Please upload the missing documents to proceed with your application.
+
+Missing Documents:
+${missingDocuments.map(doc => `• ${doc}`).join('\n')}
+
+Complete your docket: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/docket
+
+Important: Incomplete dockets may delay your work permit application process. Please complete your docket as soon as possible.
+
+If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
+
+---
+Chef Overseas - Document Management System
+You received this email because your docket is incomplete. This reminder will be sent daily until completion.
+  `;
+
+  try {
+    const result = await sendEmail({
+      to: email,
+      from: fromEmail,
+      subject: '🔔 Docket Completion Reminder - Chef Overseas',
+      text: textContent,
+      html: htmlContent,
+    });
+    
+    console.log(`📧 Docket reminder email sent to ${email}`);
+    return result;
+  } catch (error) {
+    console.error('Docket reminder email error:', error);
+    return false;
+  }
+}
+
 // New User Welcome Email with Overall Status
 export async function sendNewUserWelcomeEmail(email: string, displayName: string, uid: string): Promise<boolean> {
   // In development mode, log email content to console for testing

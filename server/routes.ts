@@ -1100,6 +1100,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Mark user's docket as completed
       await storage.updateUser(user.id, { docketCompleted: true });
       
+      // Send admin notifications for docket completion
+      const { adminNotificationService } = await import('./admin-notification-service');
+      await adminNotificationService.sendDocketCompletionNotifications(
+        user.id,
+        user.displayName || user.phone || 'User',
+        user.email
+      );
+      
       console.log(`✅ Docket completed successfully for user: ${user.email}`);
       
       res.setHeader('Content-Type', 'application/json');
@@ -2258,6 +2266,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error running manual sync:", error);
       res.status(500).json({ message: "Failed to run manual sync" });
+    }
+  });
+
+  // Docket reminder service endpoints (protected admin)
+  app.get("/api/admin/reminders/trigger", requireAdminAuth, async (req, res) => {
+    try {
+      console.log('🔔 Manual docket reminder check triggered by admin');
+      const { docketReminderService } = await import('./docket-reminder-service');
+      const results = await docketReminderService.triggerManualReminderCheck();
+      res.json({ 
+        success: true,
+        sent: results.sent,
+        errors: results.errors,
+        message: `Reminder check completed - ${results.sent} reminders sent, ${results.errors} errors` 
+      });
+    } catch (error) {
+      console.error("Manual reminder check error:", error);
+      res.status(500).json({ message: "Manual reminder check failed" });
+    }
+  });
+
+  // Test admin notifications endpoint
+  app.post("/api/admin/notifications/test", requireAdminAuth, async (req, res) => {
+    try {
+      console.log('🧪 Testing admin notifications');
+      const { adminNotificationService } = await import('./admin-notification-service');
+      
+      // Create test notifications
+      await adminNotificationService.sendDocketCompletionNotifications(
+        'test-user-id',
+        'Test User',
+        'test@example.com'
+      );
+      
+      res.json({ 
+        success: true,
+        message: "Test notifications sent to admin dashboard" 
+      });
+    } catch (error) {
+      console.error("Test notifications error:", error);
+      res.status(500).json({ message: "Test notifications failed" });
     }
   });
 
