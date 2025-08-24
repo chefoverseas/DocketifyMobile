@@ -42,7 +42,7 @@ export default function AdminDocketUpload({ userId: propUserId }: AdminDocketUpl
   const completeDocketMutation = useMutation({
     mutationFn: async () => {
       setIsUploading(true);
-      return apiRequest(`/api/admin/docket/${userId}/complete`, 'POST');
+      return apiRequest('POST', `/api/admin/docket/${userId}/complete`);
     },
     onSuccess: () => {
       toast({
