@@ -195,7 +195,7 @@ export class DocketReminderService {
         'Passport Front Page',
         'Passport Last Page', 
         'Passport Photo Page',
-        'Offer Letter',
+        'Current Employer Offer Letter',
         'Permanent Address Proof',
         'Current Address Proof'
       ];
@@ -206,7 +206,7 @@ export class DocketReminderService {
     if (!docket.passportFrontUrl) missingDocs.push('Passport Front Page');
     if (!docket.passportLastUrl) missingDocs.push('Passport Last Page');
     if (!docket.passportPhotoUrl) missingDocs.push('Passport Photo Page');
-    if (!docket.offerLetterUrl) missingDocs.push('Offer Letter');
+    if (!docket.offerLetterUrl) missingDocs.push('Current Employer Offer Letter');
     if (!docket.permanentAddressUrl) missingDocs.push('Permanent Address Proof');
     if (!docket.currentAddressUrl) missingDocs.push('Current Address Proof');
     

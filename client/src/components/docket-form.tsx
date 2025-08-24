@@ -205,7 +205,7 @@ export default function DocketForm({
           {/* Offer Letter Section */}
           <Card>
             <CardHeader>
-              <CardTitle>Offer Letter</CardTitle>
+              <CardTitle>Current Employer Offer Letter</CardTitle>
             </CardHeader>
             <CardContent>
               <FormField
@@ -213,7 +213,7 @@ export default function DocketForm({
                 name="offerLetterUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Upload Offer Letter</FormLabel>
+                    <FormLabel>Upload Current Employer Offer Letter</FormLabel>
                     <FormControl>
                       <FileUploader
                         currentFile={field.value}

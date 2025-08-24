@@ -115,7 +115,7 @@ export default function AdminDocketUpload({ userId: propUserId }: AdminDocketUpl
       { field: 'passportFrontUrl', name: 'Passport Front Page' },
       { field: 'passportLastUrl', name: 'Passport Last Page' },
       { field: 'passportPhotoUrl', name: 'Passport Photo Page' },
-      { field: 'offerLetterUrl', name: 'Offer Letter' },
+      { field: 'offerLetterUrl', name: 'Current Employer Offer Letter' },
       { field: 'permanentAddressUrl', name: 'Permanent Address Proof' },
       { field: 'currentAddressUrl', name: 'Current Address Proof' }
     ];

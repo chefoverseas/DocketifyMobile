@@ -688,7 +688,7 @@ export default function DocketPage() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-semibold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">STEP 5</span>
-                      <CardTitle className="text-lg">Job Offer Letter</CardTitle>
+                      <CardTitle className="text-lg">Current Employer Offer Letter</CardTitle>
                     </div>
                     <p className="text-sm text-gray-600">Upload your current job offer letter</p>
                   </div>
@@ -709,7 +709,7 @@ export default function DocketPage() {
             </CardHeader>
             <CardContent className="p-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Job Offer Letter *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">Current Employer Offer Letter *</label>
                 <FileUploader
                   currentFile={docket?.offerLetterUrl || undefined}
                   onUpload={(fileData) => handleFileUpload('offerLetterUrl', (fileData as any).url)}

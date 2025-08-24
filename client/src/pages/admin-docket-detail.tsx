@@ -343,7 +343,7 @@ export default function AdminDocketDetail({ userId }: AdminDocketDetailProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <FilePreview file={docket?.resumeUrl} label="Resume/CV" />
-              <FilePreview file={docket?.offerLetterUrl} label="Offer Letter" />
+              <FilePreview file={docket?.offerLetterUrl} label="Current Employer Offer Letter" />
             </CardContent>
           </Card>
 

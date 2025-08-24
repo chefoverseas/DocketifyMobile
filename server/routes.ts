@@ -1085,7 +1085,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!docket.passportFrontUrl) missingDocuments.push("Passport Front Page");
       if (!docket.passportLastUrl) missingDocuments.push("Passport Last Page");
       if (!docket.passportPhotoUrl) missingDocuments.push("Passport Photo Page");
-      if (!docket.offerLetterUrl) missingDocuments.push("Offer Letter");
+      if (!docket.offerLetterUrl) missingDocuments.push("Current Employer Offer Letter");
       if (!docket.permanentAddressUrl) missingDocuments.push("Permanent Address Proof");
       if (!docket.currentAddressUrl) missingDocuments.push("Current Address Proof");
       
