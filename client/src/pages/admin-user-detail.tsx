@@ -34,7 +34,7 @@ export default function AdminUserDetail({ userId: propUserId }: AdminUserDetailP
   // Mutation for completing docket upload
   const completeDocketMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest(`/api/admin/docket/${userId}/complete`, 'POST');
+      return apiRequest('POST', `/api/admin/docket/${userId}/complete`);
     },
     onSuccess: () => {
       toast({
