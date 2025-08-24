@@ -282,31 +282,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  // File upload route
-  app.post('/api/upload', requireAuth, upload.single('file'), (req: any, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: 'No file uploaded' });
-      }
-
-      const fileInfo = {
-        filename: req.file.filename,
-        originalName: req.file.originalname,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        path: req.file.path,
-        url: `/uploads/${req.file.filename}`
-      };
-
-      res.json({
-        message: 'File uploaded successfully',
-        file: fileInfo
-      });
-    } catch (error) {
-      console.error('Upload error:', error);
-      res.status(500).json({ message: 'Failed to upload file' });
-    }
-  });
 
   // Serve uploaded files - public access for photos
   app.use('/uploads', (req, res, next) => {
@@ -526,6 +501,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     next();
   };
+
+  // Combined authentication middleware (user OR admin)
+  const requireUserOrAdminAuth = (req: any, res: any, next: any) => {
+    const hasUserAuth = req.session?.userId;
+    const hasAdminAuth = (req.session as any)?.adminId;
+    
+    console.log("Combined auth middleware - userAuth:", !!hasUserAuth, "adminAuth:", !!hasAdminAuth);
+    
+    if (!hasUserAuth && !hasAdminAuth) {
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    next();
+  };
+
+  // File upload route (accessible by both users and admins)
+  app.post('/api/upload', requireUserOrAdminAuth, upload.single('file'), (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+
+      const fileInfo = {
+        filename: req.file.filename,
+        originalName: req.file.originalname,
+        mimetype: req.file.mimetype,
+        size: req.file.size,
+        path: req.file.path,
+        url: `/uploads/${req.file.filename}`
+      };
+
+      res.json({
+        message: 'File uploaded successfully',
+        file: fileInfo
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ message: 'Failed to upload file' });
+    }
+  });
 
   // Admin login route
   app.post("/api/admin/login", async (req, res) => {
