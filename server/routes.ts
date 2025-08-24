@@ -997,7 +997,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin docket completion endpoint
+  // Admin docket save/update endpoint
+  app.put("/api/admin/docket/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      if (!userId) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      console.log(`📝 Admin saving docket for user ID: ${userId}`);
+      
+      let user = await storage.getUser(userId);
+      
+      // If not found by ID, try to find by UID (for backward compatibility)
+      if (!user) {
+        console.log(`❌ User not found by ID: ${userId}, trying UID search...`);
+        const userByUid = await storage.getUserByUid(userId);
+        user = userByUid;
+      }
+      
+      if (!user) {
+        console.log(`❌ User not found by ID or UID: ${userId}`);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`✅ Found user for docket save: ${user.email}`);
+
+      // Save docket data
+      const docket = await storage.updateDocket(user.id, req.body);
+      
+      console.log(`✅ Docket saved successfully for user: ${user.email}`);
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        success: true,
+        message: "Docket saved successfully",
+        docket
+      });
+    } catch (error) {
+      console.error("Admin docket save error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to save docket" });
+    }
+  });
+
+  // Admin docket completion endpoint with validation
   app.post("/api/admin/docket/:userId/complete", requireAdminAuth, async (req, res) => {
     try {
       const userId = req.params.userId;
@@ -1024,6 +1070,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`✅ Found user for docket completion: ${user.email}`);
+
+      // Get current docket to validate required files
+      const docket = await storage.getDocketByUserId(user.id);
+      
+      if (!docket) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ message: "No docket found for this user. Please upload documents first." });
+      }
+
+      // Validate required documents
+      const missingDocuments = [];
+      
+      if (!docket.passportFrontUrl) missingDocuments.push("Passport Front Page");
+      if (!docket.passportLastUrl) missingDocuments.push("Passport Last Page");
+      if (!docket.passportPhotoUrl) missingDocuments.push("Passport Photo Page");
+      if (!docket.offerLetterUrl) missingDocuments.push("Offer Letter");
+      if (!docket.permanentAddressUrl) missingDocuments.push("Permanent Address Proof");
+      if (!docket.currentAddressUrl) missingDocuments.push("Current Address Proof");
+      
+      if (missingDocuments.length > 0) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ 
+          message: `Cannot complete docket. Missing required documents: ${missingDocuments.join(', ')}`,
+          missingDocuments
+        });
+      }
 
       // Mark user's docket as completed
       await storage.updateUser(user.id, { docketCompleted: true });

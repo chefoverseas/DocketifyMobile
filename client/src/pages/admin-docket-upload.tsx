@@ -10,6 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ArrowLeft, User, Upload, FileText, CheckCircle, AlertCircle } from "lucide-react";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 import DocketForm from "@/components/docket-form";
+import type { Docket } from "@shared/schema";
 
 interface AdminDocketUploadProps {
   userId?: string;
@@ -38,6 +39,27 @@ export default function AdminDocketUpload({ userId: propUserId }: AdminDocketUpl
   const user = userData as any;
   const docket = (docketData as any)?.docket;
 
+  // Mutation for saving docket data
+  const saveDocketMutation = useMutation({
+    mutationFn: async (data: Partial<Docket>) => {
+      return apiRequest('PUT', `/api/admin/docket/${userId}`, data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Saved",
+        description: "Docket documents saved successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/docket/${userId}`] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Save Error",
+        description: error.message || "Failed to save docket documents",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Mutation for completing docket upload
   const completeDocketMutation = useMutation({
     mutationFn: async () => {
@@ -60,7 +82,7 @@ export default function AdminDocketUpload({ userId: propUserId }: AdminDocketUpl
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
+        title: "Completion Error",
         description: error.message || "Failed to complete docket. Please try again.",
         variant: "destructive",
       });
@@ -69,6 +91,37 @@ export default function AdminDocketUpload({ userId: propUserId }: AdminDocketUpl
       setIsUploading(false);
     }
   });
+
+  // Check if all required documents are uploaded
+  const isCompletionAllowed = () => {
+    if (!docket) return false;
+    
+    const requiredFields = [
+      'passportFrontUrl',
+      'passportLastUrl', 
+      'passportPhotoUrl',
+      'offerLetterUrl',
+      'permanentAddressUrl',
+      'currentAddressUrl'
+    ];
+    
+    return requiredFields.every(field => docket[field]);
+  };
+
+  const getMissingDocuments = () => {
+    if (!docket) return ['All documents'];
+    
+    const requiredDocs = [
+      { field: 'passportFrontUrl', name: 'Passport Front Page' },
+      { field: 'passportLastUrl', name: 'Passport Last Page' },
+      { field: 'passportPhotoUrl', name: 'Passport Photo Page' },
+      { field: 'offerLetterUrl', name: 'Offer Letter' },
+      { field: 'permanentAddressUrl', name: 'Permanent Address Proof' },
+      { field: 'currentAddressUrl', name: 'Current Address Proof' }
+    ];
+    
+    return requiredDocs.filter(doc => !docket[doc.field]).map(doc => doc.name);
+  };
 
   if (userLoading) {
     return (
@@ -179,16 +232,39 @@ export default function AdminDocketUpload({ userId: propUserId }: AdminDocketUpl
               docket={docket}
               userId={userId} 
               isAdminMode={true}
-              isLoading={isUploading || completeDocketMutation.isPending}
+              isLoading={isUploading || completeDocketMutation.isPending || saveDocketMutation.isPending}
               onSubmit={(data) => {
-                // Save docket data first
                 console.log("Admin saving docket data:", data);
-                // You could add API call here to save the docket data
+                saveDocketMutation.mutate(data);
               }}
               onComplete={() => {
+                const missingDocs = getMissingDocuments();
+                if (missingDocs.length > 0) {
+                  toast({
+                    title: "Cannot Complete Docket",
+                    description: `Missing required documents: ${missingDocs.join(', ')}`,
+                    variant: "destructive",
+                  });
+                  return;
+                }
                 completeDocketMutation.mutate();
               }}
             />
+            
+            {/* Validation Warning */}
+            {!isCompletionAllowed() && (
+              <Alert className="mt-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  <strong>Missing Documents:</strong> The following documents are required before completing the docket:
+                  <ul className="list-disc list-inside mt-2">
+                    {getMissingDocuments().map((doc, index) => (
+                      <li key={index}>{doc}</li>
+                    ))}
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
           </CardContent>
         </Card>
       </div>
