@@ -47,6 +47,18 @@ import { useAuth } from "@/hooks/use-auth";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <img src="/chef-overseas-logo.png" alt="Chef Overseas" className="h-16 w-auto mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
       {!isAuthenticated ? (
@@ -54,19 +66,8 @@ function Router() {
           <Route path="/" component={EmailLogin} />
           <Route path="/auth/otp" component={OTPVerification} />
         </>
-      ) : isLoading ? (
-        <Route path="/" component={() => (
-          <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
-            <div className="text-center">
-              <img src="/chef-overseas-logo.png" alt="Chef Overseas" className="h-16 w-auto mx-auto mb-4" />
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading...</p>
-            </div>
-          </div>
-        )} />
       ) : (
         <>
-          <Navigation />
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profile" component={Profile} />
@@ -127,6 +128,7 @@ function App() {
         <TooltipProvider>
           <div className="min-h-screen bg-gray-50 flex flex-col">
             <Toaster />
+            <Navigation />
             <div className="flex-1">
               <Router />
             </div>
