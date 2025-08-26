@@ -147,7 +147,7 @@ export default function FileUploader({
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {getFileIcon(currentFile?.name || currentFile)}
+              {getFileIcon(typeof currentFile === 'string' ? currentFile : (currentFile as any)?.name || '')}
               <div>
                 <p className="text-sm font-medium text-green-700">File uploaded</p>
                 <p className="text-xs text-green-600">Click to replace</p>
@@ -157,7 +157,7 @@ export default function FileUploader({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => window.open(currentFile?.url || currentFile, '_blank')}
+                onClick={() => window.open(typeof currentFile === 'string' ? currentFile : (currentFile as any)?.url || '', '_blank')}
               >
                 <Eye className="h-4 w-4" />
               </Button>

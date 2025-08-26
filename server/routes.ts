@@ -950,7 +950,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send welcome email to new user with status overview
       try {
-        await sendNewUserWelcomeEmail(newUser.email!, newUser.displayName || '', newUser.uid);
+        await sendNewUserWelcomeEmail(newUser.email || '', newUser.displayName || '', newUser.id);
         console.log(`📧 Welcome email sent to ${newUser.email}`);
       } catch (emailError) {
         console.error(`⚠️ Failed to send welcome email to ${newUser.email}:`, emailError);

@@ -66,7 +66,7 @@ export default function AdminArchiveManagement() {
 
   // Run automatic archive mutation
   const runArchiveMutation = useMutation({
-    mutationFn: () => apiRequest('/api/admin/archive/run', { method: 'POST' }),
+    mutationFn: () => apiRequest('POST', '/api/admin/archive/run'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/archive/stats'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/archive/users'] });
@@ -77,10 +77,7 @@ export default function AdminArchiveManagement() {
   // Manual archive mutation
   const archiveUserMutation = useMutation({
     mutationFn: ({ userId, reason }: { userId: string; reason: string }) => 
-      apiRequest(`/api/admin/archive/user/${userId}`, { 
-        method: 'POST', 
-        body: { reason }
-      }),
+      apiRequest('POST', `/api/admin/archive/user/${userId}`, { reason }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/archive/stats'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/archive/users'] });
@@ -94,7 +91,7 @@ export default function AdminArchiveManagement() {
   // Restore user mutation
   const restoreUserMutation = useMutation({
     mutationFn: (userId: string) => 
-      apiRequest(`/api/admin/archive/restore/${userId}`, { method: 'POST' }),
+      apiRequest('POST', `/api/admin/archive/restore/${userId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/archive/stats'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/archive/users'] });
@@ -256,12 +253,12 @@ export default function AdminArchiveManagement() {
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertTitle className="text-green-800">Archive Complete</AlertTitle>
                 <AlertDescription className="text-green-700">
-                  {(runArchiveMutation.data as ArchiveResult).summary}
-                  {(runArchiveMutation.data as ArchiveResult).errors.length > 0 && (
+                  {((runArchiveMutation.data as any)?.summary as string) || 'No summary available'}
+                  {((runArchiveMutation.data as any)?.errors?.length > 0) && (
                     <div className="mt-2">
                       <strong>Errors:</strong>
                       <ul className="list-disc list-inside">
-                        {(runArchiveMutation.data as ArchiveResult).errors.map((error, index) => (
+                        {((runArchiveMutation.data as any)?.errors || []).map((error: string, index: number) => (
                           <li key={index} className="text-sm">{error}</li>
                         ))}
                       </ul>

@@ -71,11 +71,7 @@ export class UserArchiveService {
 
           // Log to audit system
           await AuditService.logSystemActivity('USER_ARCHIVED', {
-            userId: user.id,
-            userEmail: user.email,
-            userAge: userAge,
-            archiveReason,
-            archivedAt: new Date().toISOString()
+            userId: user.id
           });
 
         } catch (error) {
@@ -170,10 +166,7 @@ export class UserArchiveService {
 
     // Log to audit system
     await AuditService.logSystemActivity('USER_MANUALLY_ARCHIVED', {
-      userId: user.id,
-      userEmail: user.email,
-      archiveReason: reason,
-      archivedAt: new Date().toISOString()
+      userId: user.id
     });
   }
 
@@ -195,9 +188,7 @@ export class UserArchiveService {
 
     // Log to audit system
     await AuditService.logSystemActivity('USER_UNARCHIVED', {
-      userId: user.id,
-      userEmail: user.email,
-      unarchivedAt: new Date().toISOString()
+      userId: user.id
     });
   }
 

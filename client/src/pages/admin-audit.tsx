@@ -101,10 +101,6 @@ interface AuditStats {
     suspiciousActivity: number;
     errorEvents: number;
   };
-  actionsByEntity: Record<string, number>;
-  actionsBySeverity: Record<string, number>;
-  dailyActivity: Array<{ date: string; count: number }>;
-  topUsers: Array<{ user: string; count: number }>;
 }
 
 export default function AdminAuditPage() {
@@ -149,7 +145,7 @@ export default function AdminAuditPage() {
   });
 
   const logs = auditData?.logs || [];
-  const stats = statsData?.stats || {} as AuditStats;
+  const stats = (statsData as any)?.stats || {} as AuditStats;
 
   // Get severity icon and color
   const getSeverityInfo = (severity: string) => {
@@ -463,7 +459,7 @@ export default function AdminAuditPage() {
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-100">
-                      {logs.map((log) => {
+                      {logs.map((log: AuditLog) => {
                         const severityInfo = getSeverityInfo(log.severity);
                         const actionInfo = getActionInfo(log.action);
                         const SeverityIcon = severityInfo.icon;

@@ -260,9 +260,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
 
     // Log archive action for audit
-    await AuditService.logDataChange('ARCHIVE', 'user', userId, {
+    await AuditService.logDataChange('UPDATE', 'user', userId, {
       adminEmail: 'system',
       metadata: { 
+        action: 'ARCHIVE',
         reason,
         archivedAt: new Date().toISOString(),
         userEmail: user.email
@@ -287,9 +288,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
 
     // Log unarchive action for audit
-    await AuditService.logDataChange('UNARCHIVE', 'user', userId, {
+    await AuditService.logDataChange('UPDATE', 'user', userId, {
       adminEmail: 'system',
       metadata: { 
+        action: 'UNARCHIVE',
         unarchivedAt: new Date().toISOString(),
         userEmail: user.email
       }

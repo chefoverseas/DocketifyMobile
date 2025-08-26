@@ -78,14 +78,19 @@ export class AuditService {
     context: AuditContext,
     isAdmin: boolean = false
   ): Promise<void> {
-    await this.log(action, 'session', context, {
-      entityId: userIdOrEmail,
-      description: `${isAdmin ? 'Admin' : 'User'} ${action.toLowerCase()} ${isAdmin ? '' : 'attempt'}`,
-      severity: action === 'LOGIN_FAILED' ? 'warning' : 'info',
+    const authContext = {
+      ...context,
       metadata: {
+        ...context.metadata,
         isAdmin,
         timestamp: new Date().toISOString(),
       }
+    };
+    
+    await this.log(action, 'session', authContext, {
+      entityId: userIdOrEmail,
+      description: `${isAdmin ? 'Admin' : 'User'} ${action.toLowerCase()} ${isAdmin ? '' : 'attempt'}`,
+      severity: action === 'LOGIN_FAILED' ? 'warning' : 'info',
     });
   }
 
@@ -118,16 +123,21 @@ export class AuditService {
     context: AuditContext,
     metadata?: Record<string, any>
   ): Promise<void> {
-    await this.log(action, 'file', context, {
-      entityId: fileName,
-      description: `File ${action.toLowerCase()}: ${fileName}`,
-      severity: action === 'DELETE' ? 'warning' : 'info',
+    const fileContext = {
+      ...context,
       metadata: {
+        ...context.metadata,
         fileName,
         fileSize: metadata?.fileSize,
         mimeType: metadata?.mimeType,
         ...metadata,
       }
+    };
+    
+    await this.log(action, 'file', fileContext, {
+      entityId: fileName,
+      description: `File ${action.toLowerCase()}: ${fileName}`,
+      severity: action === 'DELETE' ? 'warning' : 'info',
     });
   }
 
@@ -140,14 +150,29 @@ export class AuditService {
     context: AuditContext = {},
     severity: AuditSeverity = 'info'
   ): Promise<void> {
-    await this.log(action, 'system', context, {
+    const systemContext = {
+      ...context,
+      metadata: {
+        ...context.metadata,
+        timestamp: new Date().toISOString(),
+      }
+    };
+    
+    await this.log(action, 'system', systemContext, {
       description,
       severity,
-      metadata: {
-        timestamp: new Date().toISOString(),
-        ...context.metadata,
-      }
     });
+  }
+
+  /**
+   * Log system activity events (alias for logSystem)
+   */
+  static async logSystemActivity(
+    description: string,
+    context: AuditContext = {},
+    severity: AuditSeverity = 'info'
+  ): Promise<void> {
+    await this.logSystem('SYNC_COMPLETE', description, context, severity);
   }
 
   /**

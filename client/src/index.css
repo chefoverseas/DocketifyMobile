@@ -8,6 +8,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
 }
 
 /* Improved line heights for better readability */
@@ -27,11 +28,23 @@ button, a {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
   line-height: 1.5;
+  transition: all 0.2s ease-in-out;
 }
 
 /* Enhanced card and component spacing */
 .card {
   padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+/* Global form enhancement */
+input, textarea, select {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 /* Pastel Admin Glassmorphism Effects */
@@ -40,6 +53,7 @@ button, a {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  border-radius: 12px;
 }
 
 .admin-card-hover {

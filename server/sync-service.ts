@@ -116,12 +116,11 @@ class DataSyncService {
           passportVisaUrls: null,
           passportPhotoUrl: null,
           resumeUrl: null,
-          educationCertificatesUrls: null,
-          experienceCertificatesUrls: null,
-          personalPhotosUrls: null,
-          proofOfAddressUrl: null,
-          birthCertificateUrl: null,
-          additionalDocumentsUrls: null,
+          educationFiles: null,
+          experienceFiles: null,
+          permanentAddressUrl: null,
+
+
           references: null
         });
         
@@ -185,15 +184,8 @@ class DataSyncService {
           interviewTime: null,
           notes: null,
           trackingCode: null,
-          irlApplicationFormUrl: null,
-          visaAppointmentUrl: null,
           travelMedicalInsuranceUrl: null,
-          policeVerificationUrl: null,
-          passportBioDataUrl: null,
-          educationDocumentsUrl: null,
-          experienceLettersUrl: null,
-          bankStatementUrl: null,
-          irishAccommodationDocumentUrl: null,
+
           healthInsuranceDocumentUrl: null,
           fullDocketVisaSubmissionUrl: null,
           finalVisaUrl: null
@@ -240,8 +232,6 @@ class DataSyncService {
           jobOfferOriginalUrl: null,
           jobOfferSignedUrl: null,
           jobOfferStatus: 'pending',
-          contractUrl: null,
-          jobOfferUrl: null,
           notes: null
         });
         

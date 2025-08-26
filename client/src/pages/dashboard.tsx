@@ -62,9 +62,9 @@ export default function Dashboard() {
 
   // Smart analytics calculations
   const calculateDocketCompletion = () => {
-    if (!docketData?.docket) return { percentage: 0, completed: 0, total: 8 };
+    if (!(docketData as any)?.docket) return { percentage: 0, completed: 0, total: 8 };
     
-    const docket = docketData.docket;
+    const docket = (docketData as any).docket;
     const checks = [
       !!docket.passportFrontUrl,
       !!docket.passportLastUrl,
@@ -87,13 +87,13 @@ export default function Dashboard() {
   const getApplicationStats = () => {
     const docketCompletion = calculateDocketCompletion();
     
-    const contract = contractData?.contract;
+    const contract = (contractData as any)?.contract;
     const contractSigned = contract?.companyContractStatus === 'signed' || contract?.jobOfferStatus === 'signed';
     
-    const workPermit = workPermitData?.workPermit;
+    const workPermit = (workPermitData as any)?.workPermit;
     const workPermitApproved = workPermit?.status === 'approved';
     
-    const workVisa = workVisaData?.workVisa;
+    const workVisa = (workVisaData as any)?.workVisa;
     const workVisaApproved = workVisa?.status === 'approved';
     
     // Calculate overall progress
@@ -172,7 +172,7 @@ export default function Dashboard() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center space-x-4 mb-4 lg:mb-0">
               <Avatar className="h-16 w-16 ring-4 ring-orange-100">
-                <AvatarImage src={user.profileImageUrl || user.photoUrl} />
+                <AvatarImage src={user.profileImageUrl || user.photoUrl || undefined} />
                 <AvatarFallback className="bg-gradient-to-br from-orange-500 to-red-500 text-white text-lg font-bold">
                   {(() => {
                     const firstName = user.firstName || user.givenName || '';
@@ -182,7 +182,7 @@ export default function Dashboard() {
                     }
                     if (firstName) return firstName[0].toUpperCase();
                     if (user.displayName) return user.displayName[0].toUpperCase();
-                    return user.email[0].toUpperCase();
+                    return user.email?.[0]?.toUpperCase() || 'U';
                   })()}
                 </AvatarFallback>
               </Avatar>
@@ -193,7 +193,7 @@ export default function Dashboard() {
                     const displayName = user.displayName;
                     if (firstName) return firstName;
                     if (displayName) return displayName.split(' ')[0];
-                    return user.email.split('@')[0];
+                    return user.email?.split('@')[0] || 'User';
                   })()}
                 </h1>
                 <p className="text-gray-600 flex items-center mt-1">

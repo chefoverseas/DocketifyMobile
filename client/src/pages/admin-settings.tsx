@@ -66,8 +66,8 @@ export default function AdminSettingsPage() {
 
   // Update state when settings are loaded
   useEffect(() => {
-    if (settingsData?.settings) {
-      const settings = settingsData.settings;
+    if ((settingsData as any)?.settings) {
+      const settings = (settingsData as any).settings;
       setMaintenanceMode(settings.maintenanceMode);
       setMaintenanceMessage(settings.maintenanceMessage);
       setEmailNotifications(settings.emailNotifications);

@@ -107,7 +107,7 @@ export default function ModernAnalyticsPage() {
     refetchInterval: autoRefresh ? 30000 : false,
   });
 
-  const stats = statsData?.stats as AuditStats;
+  const stats = (statsData as any)?.stats as AuditStats;
 
   // Real-time updates effect
   useEffect(() => {

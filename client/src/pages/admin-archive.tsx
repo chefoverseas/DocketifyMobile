@@ -169,8 +169,8 @@ export default function AdminArchive() {
     );
   }
 
-  const stats = statsData?.stats as ArchiveStats;
-  const users = usersData?.users as ArchivedUser[] || [];
+  const stats = (statsData as any)?.stats as ArchiveStats;
+  const users = ((usersData as any)?.users as ArchivedUser[]) || [];
 
   // Filter users based on search and status
   const filteredUsers = users.filter(user => {
