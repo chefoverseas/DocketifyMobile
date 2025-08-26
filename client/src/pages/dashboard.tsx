@@ -172,14 +172,29 @@ export default function Dashboard() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center space-x-4 mb-4 lg:mb-0">
               <Avatar className="h-16 w-16 ring-4 ring-orange-100">
-                <AvatarImage src={user.profilePhotoUrl} />
+                <AvatarImage src={user.profileImageUrl || user.photoUrl} />
                 <AvatarFallback className="bg-gradient-to-br from-orange-500 to-red-500 text-white text-lg font-bold">
-                  {user.fullName?.split(' ').map(n => n[0]).join('') || user.email[0].toUpperCase()}
+                  {(() => {
+                    const firstName = user.firstName || user.givenName || '';
+                    const lastName = user.lastName || user.surname || '';
+                    if (firstName && lastName) {
+                      return (firstName[0] + lastName[0]).toUpperCase();
+                    }
+                    if (firstName) return firstName[0].toUpperCase();
+                    if (user.displayName) return user.displayName[0].toUpperCase();
+                    return user.email[0].toUpperCase();
+                  })()}
                 </AvatarFallback>
               </Avatar>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Welcome back, {user.fullName?.split(' ')[0] || 'User'}
+                  Welcome back, {(() => {
+                    const firstName = user.firstName || user.givenName;
+                    const displayName = user.displayName;
+                    if (firstName) return firstName;
+                    if (displayName) return displayName.split(' ')[0];
+                    return user.email.split('@')[0];
+                  })()}
                 </h1>
                 <p className="text-gray-600 flex items-center mt-1">
                   <Calendar className="h-4 w-4 mr-2" />
