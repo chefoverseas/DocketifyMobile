@@ -47,7 +47,8 @@ import {
   Monitor,
   Gauge,
   Target,
-  HeartHandshake
+  HeartHandshake,
+  Archive
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import type { User } from "@shared/schema";
@@ -320,7 +321,7 @@ export default function AdminDashboardPage() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
               <Button
                 asChild
                 className="h-20 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
@@ -369,6 +370,17 @@ export default function AdminDashboardPage() {
                   <Database className="h-6 w-6 group-hover:scale-110 transition-transform" />
                   <span className="text-sm font-medium">Data Sync</span>
                   <Badge className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-1">NEW</Badge>
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                className="h-20 bg-gradient-to-br from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group relative"
+              >
+                <Link href="/admin/archive" className="flex flex-col items-center space-y-2">
+                  <Archive className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                  <span className="text-sm font-medium">Archive</span>
+                  <Badge className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs px-1">NEW</Badge>
                 </Link>
               </Button>
 
@@ -487,7 +499,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Advanced Features Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Audit & Security Center */}
           <Card className="bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border-violet-200 dark:border-violet-800 shadow-xl">
             <CardHeader>
@@ -512,6 +524,30 @@ export default function AdminDashboardPage() {
                   <Link href="/admin/analytics">
                     <BarChart3 className="h-4 w-4 mr-2" />
                     Analytics
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Archive Management Center */}
+          <Card className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-200 dark:border-amber-800 shadow-xl">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-amber-800 dark:text-amber-300">
+                <Archive className="h-6 w-6" />
+                <span>Archive Management</span>
+                <Badge className="bg-amber-500 text-white text-xs">NEW</Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-slate-600 dark:text-slate-400">
+                Automated user archiving and lifecycle management for users older than 1 year
+              </p>
+              <div className="grid grid-cols-1 gap-3">
+                <Button asChild className="bg-amber-600 hover:bg-amber-700 text-white">
+                  <Link href="/admin/archive">
+                    <Archive className="h-4 w-4 mr-2" />
+                    Manage Archive
                   </Link>
                 </Button>
               </div>
