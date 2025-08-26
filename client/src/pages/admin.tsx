@@ -73,6 +73,12 @@ export default function Admin() {
                 </Link>
               </Button>
               <Button asChild variant="outline">
+                <Link href="/admin/interview-embassy">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Interviews & Embassy
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
                 <Link href="/admin/contracts">
                   <Settings className="w-4 h-4 mr-2" />
                   Contracts
@@ -121,6 +127,16 @@ export default function Admin() {
             <CardContent className="p-4 text-center">
               <FileText className="h-8 w-8 mx-auto mb-2 text-purple-600" />
               <p className="text-sm font-medium">Work Visas</p>
+            </CardContent>
+          </Link>
+        </Card>
+
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+          <Link href="/admin/interview-embassy">
+            <CardContent className="p-4 text-center">
+              <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+              <p className="text-sm font-medium text-blue-800">Interviews & Embassy</p>
+              <p className="text-xs text-blue-600 mt-1">UNIFIED</p>
             </CardContent>
           </Link>
         </Card>

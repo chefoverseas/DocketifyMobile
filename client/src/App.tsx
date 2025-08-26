@@ -30,8 +30,7 @@ import AdminContractDetail from "@/pages/admin-contract-detail";
 import AdminDocketUpload from "@/pages/admin-docket-upload";
 import AdminContractUpload from "@/pages/admin-contract-upload";
 import AdminArchive from "@/pages/admin-archive";
-import AdminInterviews from "@/pages/admin-interviews";
-import AdminEmbassyTracking from "@/pages/admin-embassy-tracking";
+import AdminInterviewEmbassy from "@/pages/admin-interview-embassy";
 import AdminMonitoring from "@/pages/admin-monitoring";
 import AdminSettings from "@/pages/admin-settings";
 import AdminAnalytics from "@/pages/admin-analytics";
@@ -93,8 +92,7 @@ function Router() {
       <Route path="/admin/settings" component={AdminSettings} />
       <Route path="/admin/reports" component={AdminReports} />
       <Route path="/admin/archive" component={AdminArchive} />
-      <Route path="/admin/interviews" component={AdminInterviews} />
-      <Route path="/admin/embassy-tracking" component={AdminEmbassyTracking} />
+      <Route path="/admin/interview-embassy" component={AdminInterviewEmbassy} />
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}
