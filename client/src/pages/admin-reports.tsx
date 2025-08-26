@@ -415,11 +415,13 @@ export default function AdminReportsPage() {
         });
       }
       
-      // Add footer
+      // Add footer with copyright
       doc.setFontSize(8);
       doc.setTextColor(100, 100, 100);
-      doc.text('Chef Overseas - Professional Immigration Services', 20, 280);
-      doc.text(`Generated on ${format(new Date(), 'MMM dd, yyyy')}`, 20, 285);
+      doc.text('Chef Overseas - Professional Immigration Services', 20, 275);
+      doc.text(`Generated on ${format(new Date(), 'MMM dd, yyyy')}`, 20, 280);
+      doc.setFontSize(7);
+      doc.text('© 2025 Senmer Consulting OPC Pvt Ltd. All rights reserved.', 20, 285);
       
       // Save the PDF
       const fileName = `${report.id}-report-${timestamp}.pdf`;

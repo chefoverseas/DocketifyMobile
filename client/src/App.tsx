@@ -38,6 +38,8 @@ import AdminAnalytics from "@/pages/admin-analytics";
 import AdminInsights from "@/pages/admin-insights";
 import AdminReports from "@/pages/admin-reports";
 import NotFound from "@/pages/not-found";
+import Footer from "@/components/footer";
+import Navigation from "@/components/navigation";
 
 import { useAuth } from "@/hooks/use-auth";
 
@@ -60,6 +62,7 @@ function Router() {
         )} />
       ) : (
         <>
+          <Navigation />
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profile" component={Profile} />
@@ -118,9 +121,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-gray-50 flex flex-col">
             <Toaster />
-            <Router />
+            <div className="flex-1">
+              <Router />
+            </div>
+            <Footer />
           </div>
         </TooltipProvider>
       </AuthProvider>
