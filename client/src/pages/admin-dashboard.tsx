@@ -301,102 +301,244 @@ export default function AdminDashboardPage() {
           </Card>
         </div>
 
-        {/* Quick Actions and Navigation */}
-        <Card className="mb-12 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-0 shadow-xl">
-          <CardContent className="p-8">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Quick Actions</h2>
-                <p className="text-slate-600 dark:text-slate-400">Manage your platform efficiently</p>
+        {/* Service Clusters */}
+        <div className="space-y-8 mb-12">
+          {/* Core Operations Cluster */}
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <CardHeader className="relative z-10 pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg">
+                    <Users className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                      Core Operations
+                    </CardTitle>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">User management and document processing</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleRefresh}
+                  variant="outline"
+                  size="sm"
+                  disabled={isRefreshing}
+                  className="border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400"
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  Refresh
+                </Button>
               </div>
-              <Button
-                onClick={handleRefresh}
-                variant="outline"
-                size="sm"
-                disabled={isRefreshing}
-                className="flex items-center space-x-2"
-              >
-                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                <span>Refresh</span>
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-              <Button
-                asChild
-                className="h-20 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
-              >
-                <Link href="/admin/workpermits" className="flex flex-col items-center space-y-2">
-                  <FileText className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Work Permits</span>
-                </Link>
-              </Button>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/users">
+                    <Users className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Users</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/dockets">
+                    <FileText className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Dockets</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/workpermits">
+                    <Briefcase className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Work Permits</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/contracts">
+                    <FileCheck className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Contracts</span>
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-              <Button
-                asChild
-                className="h-20 bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
-              >
-                <Link href="/admin/workvisas" className="flex flex-col items-center space-y-2">
-                  <Plane className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Work Visas</span>
-                </Link>
-              </Button>
+          {/* Visa & Immigration Services Cluster */}
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-rose-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <CardHeader className="relative z-10 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-3 bg-gradient-to-br from-rose-500 to-orange-500 rounded-xl shadow-lg">
+                  <Plane className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl bg-gradient-to-r from-rose-600 to-orange-600 bg-clip-text text-transparent">
+                    Visa & Immigration Services
+                  </CardTitle>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">International travel and visa processing</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/workvisas">
+                    <Plane className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Work Visas</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/interviews">
+                    <Calendar className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Interviews</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/embassy-tracking">
+                    <Globe className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Embassy Tracking</span>
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-              <Button
-                asChild
-                className="h-20 bg-gradient-to-br from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
-              >
-                <Link href="/admin/contracts" className="flex flex-col items-center space-y-2">
-                  <Briefcase className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Contracts</span>
-                </Link>
-              </Button>
+          {/* System Management Cluster */}
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-teal-500/5 to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <CardHeader className="relative z-10 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-3 bg-gradient-to-br from-teal-500 to-cyan-500 rounded-xl shadow-lg">
+                  <Settings className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                    System Management
+                  </CardTitle>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">Data synchronization and system maintenance</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/sync">
+                    <RefreshCw className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Data Sync</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/archive">
+                    <Archive className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Archive</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/monitoring">
+                    <Monitor className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Monitoring</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/settings">
+                    <Settings className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Settings</span>
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-              <Button
-                asChild
-                className="h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group"
-              >
-                <Link href="/admin/users" className="flex flex-col items-center space-y-2">
-                  <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Users</span>
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                className="h-20 bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group relative"
-              >
-                <Link href="/admin/sync" className="flex flex-col items-center space-y-2">
-                  <Database className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Data Sync</span>
-                  <Badge className="absolute -top-1 -right-1 bg-green-500 text-white text-xs px-1">NEW</Badge>
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                className="h-20 bg-gradient-to-br from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group relative"
-              >
-                <Link href="/admin/archive" className="flex flex-col items-center space-y-2">
-                  <Archive className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Archive</span>
-                  <Badge className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs px-1">NEW</Badge>
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                className="h-20 bg-gradient-to-br from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 group relative"
-              >
-                <Link href="/admin/analytics" className="flex flex-col items-center space-y-2">
-                  <BarChart3 className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                  <span className="text-sm font-medium">Analytics</span>
-                  <Badge className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs px-1">PRO</Badge>
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Analytics & Reporting Cluster */}
+          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <CardHeader className="relative z-10 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-3 bg-gradient-to-br from-violet-500 to-purple-500 rounded-xl shadow-lg">
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-xl bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                    Analytics & Reporting
+                  </CardTitle>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">Performance insights and business intelligence</p>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="relative z-10">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/analytics">
+                    <BarChart3 className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Analytics</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/reports">
+                    <PieChart className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Reports</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/insights">
+                    <TrendingUp className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Insights</span>
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Advanced Management Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
