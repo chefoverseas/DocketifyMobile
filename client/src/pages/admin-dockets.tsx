@@ -71,26 +71,6 @@ export default function AdminDocketsPage() {
     refetchInterval: 30000,
   });
 
-  if (adminLoading || docketsLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
-            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-orange-500 animate-spin animation-delay-150 mx-auto"></div>
-          </div>
-          <p className="mt-6 text-lg font-medium text-slate-700 dark:text-slate-300">Loading Docket Management...</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Preparing advanced analytics</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!(adminData as any)?.admin) {
-    setLocation("/admin/login");
-    return null;
-  }
-
   const dockets: DocketData[] = (docketsData as any)?.dockets || [];
 
   // Calculate docket progress for each user
@@ -162,6 +142,26 @@ export default function AdminDocketsPage() {
     
     return { total, completed, inProgress, notStarted };
   }, [dockets]);
+
+  if (adminLoading || docketsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-orange-500 animate-spin animation-delay-150 mx-auto"></div>
+          </div>
+          <p className="mt-6 text-lg font-medium text-slate-700 dark:text-slate-300">Loading Docket Management...</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Preparing advanced analytics</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!(adminData as any)?.admin) {
+    setLocation("/admin/login");
+    return null;
+  }
 
   const getDocketStatusBadge = (progress: { completed: number; total: number; percentage: number }) => {
     if (progress.percentage === 100) {
