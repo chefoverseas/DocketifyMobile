@@ -94,7 +94,16 @@ Preferred communication style: Simple, everyday language.
 - **Interview Scheduling**: Ensures proper synchronization of interview dates and times between admin and user views
 - **Error Reporting**: Comprehensive logging and admin notifications for data inconsistencies
 
+## User Archive System
+- **Automated Archiving**: Scheduled service runs every 24 hours to archive users older than 1 year
+- **Admin Management**: Comprehensive admin interface with archive statistics, user lists, and management tools
+- **Manual Controls**: Admin can manually archive or restore individual users with custom reasons
+- **Database Schema**: Added archived, archivedAt, and archivedReason fields to users table
+- **API Endpoints**: RESTful endpoints for archive operations including stats, user lists, and archive/restore actions
+- **Safety Features**: Archive operations are reversible and maintain data integrity
+
 ## Recent Major Updates
+- **User Archive Management System**: Implemented comprehensive archive module with automated archiving for users older than 1 year, admin interface for archive management, and API endpoints for manual archiving/restoration operations (August 2025)
 - **Comprehensive Audit Logging System**: Implemented complete audit trail with database schema, service layer, and modern admin dashboard for tracking all system activities including user authentication, data changes, file operations, and admin actions (August 2025)
 - **Interview Time Scheduling**: Added comprehensive interview time support for work visa applications (August 2025)
 - **Data Synchronization Service**: Implemented automated 5-minute data consistency checks with admin monitoring dashboard (August 2025)
