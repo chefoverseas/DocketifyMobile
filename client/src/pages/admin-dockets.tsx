@@ -74,27 +74,29 @@ export default function AdminDocketsPage() {
   const dockets: DocketData[] = (docketsData as any)?.dockets || [];
 
   // Calculate docket progress for each user
-  const calculateDocketProgress = (docket: any) => {
-    if (!docket) return { completed: 0, total: 9, percentage: 0 };
-    
-    const sections = [
-      !!docket.passportFrontUrl,
-      !!docket.passportLastUrl,
-      !!docket.passportPhotoUrl,
-      !!docket.resumeUrl,
-      docket.educationFiles?.length > 0,
-      docket.experienceFiles?.length > 0,
-      !!docket.offerLetterUrl,
-      !!docket.permanentAddressUrl,
-      docket.references?.length >= 2
-    ];
-    
-    const completed = sections.filter(Boolean).length;
-    const total = sections.length;
-    const percentage = Math.round((completed / total) * 100);
-    
-    return { completed, total, percentage };
-  };
+  const calculateDocketProgress = useMemo(() => {
+    return (docket: any) => {
+      if (!docket) return { completed: 0, total: 9, percentage: 0 };
+      
+      const sections = [
+        !!docket.passportFrontUrl,
+        !!docket.passportLastUrl,
+        !!docket.passportPhotoUrl,
+        !!docket.resumeUrl,
+        docket.educationFiles?.length > 0,
+        docket.experienceFiles?.length > 0,
+        !!docket.offerLetterUrl,
+        !!docket.permanentAddressUrl,
+        docket.references?.length >= 2
+      ];
+      
+      const completed = sections.filter(Boolean).length;
+      const total = sections.length;
+      const percentage = Math.round((completed / total) * 100);
+      
+      return { completed, total, percentage };
+    };
+  }, []);
 
   // Enhanced filtering and search
   const filteredDockets = useMemo(() => {
@@ -128,7 +130,7 @@ export default function AdminDocketsPage() {
       const progressB = calculateDocketProgress(b.docket);
       return progressB.percentage - progressA.percentage;
     });
-  }, [dockets, searchTerm, selectedFilter]);
+  }, [dockets, searchTerm, selectedFilter, calculateDocketProgress]);
 
   // Calculate summary statistics
   const stats = useMemo(() => {
@@ -141,7 +143,7 @@ export default function AdminDocketsPage() {
     const notStarted = dockets.filter(item => calculateDocketProgress(item.docket).percentage === 0).length;
     
     return { total, completed, inProgress, notStarted };
-  }, [dockets]);
+  }, [dockets, calculateDocketProgress]);
 
   if (adminLoading || docketsLoading) {
     return (
