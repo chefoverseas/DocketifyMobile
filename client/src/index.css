@@ -34,6 +34,68 @@ button, a {
   padding: 2rem;
 }
 
+/* Pastel Admin Glassmorphism Effects */
+.admin-glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+.admin-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+}
+
+.admin-card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(168, 85, 247, 0.15);
+}
+
+.admin-gradient-bg {
+  background: linear-gradient(135deg, 
+    hsl(280 100% 98%) 0%, 
+    hsl(320 100% 98%) 25%,
+    hsl(260 100% 98%) 50%, 
+    hsl(200 100% 98%) 75%,
+    hsl(280 100% 98%) 100%);
+  min-height: 100vh;
+}
+
+.admin-header-glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+}
+
+.admin-primary-btn {
+  background: linear-gradient(135deg, hsl(280 85% 75%), hsl(320 75% 80%));
+  border: none;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.admin-primary-btn:hover {
+  background: linear-gradient(135deg, hsl(280 85% 70%), hsl(320 75% 75%));
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.25);
+}
+
+.admin-secondary-btn {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: hsl(280 85% 65%);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.admin-secondary-btn:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(168, 85, 247, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(168, 85, 247, 0.15);
+}
+
 /* Logo optimization */
 img[alt*="Logo"], img[alt*="logo"] {
   image-rendering: crisp-edges;
@@ -41,38 +103,39 @@ img[alt*="Logo"], img[alt*="logo"] {
 }
 
 :root {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(210 25% 7.8431%);
-  --card: hsl(0 0% 98%);
-  --card-foreground: hsl(210 25% 7.8431%);
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(210 25% 7.8431%);
-  --primary: hsl(159 100% 38%);
+  /* Pastel Admin Theme */
+  --background: hsl(260 100% 99%);
+  --foreground: hsl(260 25% 15%);
+  --card: hsl(260 50% 98%);
+  --card-foreground: hsl(260 25% 15%);
+  --popover: hsl(260 100% 99%);
+  --popover-foreground: hsl(260 25% 15%);
+  --primary: hsl(280 85% 75%);
   --primary-foreground: hsl(0 0% 100%);
-  --secondary: hsl(25 100% 55%);
+  --secondary: hsl(320 75% 80%);
   --secondary-foreground: hsl(0 0% 100%);
-  --muted: hsl(160 20% 95%);
-  --muted-foreground: hsl(159 15% 35%);
-  --accent: hsl(25 100% 95%);
-  --accent-foreground: hsl(159 100% 38%);
-  --destructive: hsl(0 90% 55%);
+  --muted: hsl(260 30% 96%);
+  --muted-foreground: hsl(260 15% 45%);
+  --accent: hsl(280 100% 95%);
+  --accent-foreground: hsl(280 85% 65%);
+  --destructive: hsl(0 75% 70%);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(159 15% 88%);
-  --input: hsl(160 10% 96%);
-  --ring: hsl(159 100% 38%);
-  --chart-1: hsl(159 100% 38%);
-  --chart-2: hsl(25 100% 55%);
-  --chart-3: hsl(0 90% 55%);
-  --chart-4: hsl(159 80% 45%);
-  --chart-5: hsl(25 80% 60%);
-  --sidebar: hsl(160 20% 97%);
-  --sidebar-foreground: hsl(210 25% 7.8431%);
-  --sidebar-primary: hsl(159 100% 38%);
+  --border: hsl(260 20% 88%);
+  --input: hsl(260 15% 96%);
+  --ring: hsl(280 85% 75%);
+  --chart-1: hsl(280 85% 75%);
+  --chart-2: hsl(320 75% 80%);
+  --chart-3: hsl(200 75% 80%);
+  --chart-4: hsl(120 75% 80%);
+  --chart-5: hsl(40 75% 80%);
+  --sidebar: hsl(260 30% 97%);
+  --sidebar-foreground: hsl(260 25% 15%);
+  --sidebar-primary: hsl(280 85% 75%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
-  --sidebar-accent: hsl(25 100% 95%);
-  --sidebar-accent-foreground: hsl(159 100% 38%);
-  --sidebar-border: hsl(159 15% 88%);
-  --sidebar-ring: hsl(159 100% 38%);
+  --sidebar-accent: hsl(280 100% 95%);
+  --sidebar-accent-foreground: hsl(280 85% 65%);
+  --sidebar-border: hsl(260 20% 88%);
+  --sidebar-ring: hsl(280 85% 75%);
   --font-sans: Open Sans, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;

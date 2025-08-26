@@ -221,38 +221,45 @@ export default function AdminWorkVisasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <div className="admin-gradient-bg min-h-screen">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b border-slate-200/50 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="admin-header-glass sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                onClick={() => setLocation("/admin/dashboard")}
-                className="flex items-center space-x-2 text-slate-600 hover:text-slate-900"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Dashboard</span>
-              </Button>
-              <div className="flex items-center space-x-3">
-                <img src={chefOverseasLogo} alt="Chef Overseas" className="h-8 w-8" />
-                <div>
-                  <h1 className="text-xl font-bold text-slate-900">Visa & Immigration Services</h1>
-                  <p className="text-sm text-slate-600">Unified management for interviews and embassy applications</p>
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400 p-0.5">
+                <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
+                  <img src={chefOverseasLogo} alt="Chef Overseas" className="h-6 w-6" />
                 </div>
               </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+                  Visa & Immigration Services
+                </h1>
+                <p className="text-sm text-purple-600/70">Unified Interview & Embassy Management</p>
+              </div>
             </div>
-            <Button
-              onClick={() => refetch()}
-              variant="outline"
-              size="sm"
-              disabled={workVisasLoading}
-              className="flex items-center space-x-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${workVisasLoading ? 'animate-spin' : ''}`} />
-              <span>Refresh</span>
-            </Button>
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-1 px-3 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium">
+                <CheckCircle className="h-4 w-4" />
+                <span>Unified System</span>
+              </div>
+              <Button
+                onClick={() => refetch()}
+                disabled={workVisasLoading}
+                className="admin-secondary-btn rounded-full px-4 py-2"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${workVisasLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button
+                onClick={() => setLocation("/admin/dashboard")}
+                className="admin-primary-btn rounded-full px-6 shadow-lg"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -260,19 +267,23 @@ export default function AdminWorkVisasPage() {
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-slate-200/50">
+          <Card className="admin-glass admin-card-hover border-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Scheduled Interviews</p>
-                  <p className="text-2xl font-bold text-slate-900">{interviews.length}</p>
+                  <p className="text-sm font-medium text-purple-600/70 mb-1">Scheduled Interviews</p>
+                  <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    {interviews.length}
+                  </p>
                 </div>
-                <CalendarDays className="h-8 w-8 text-blue-600" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                  <CalendarDays className="h-6 w-6 text-white" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/70 backdrop-blur-sm border-slate-200/50">
+          <Card className="admin-glass admin-card-hover border-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
