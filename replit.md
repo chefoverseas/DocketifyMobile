@@ -103,8 +103,9 @@ Preferred communication style: Simple, everyday language.
 - **Safety Features**: Archive operations are reversible and maintain data integrity
 
 ## Recent Major Updates
+- **Streamlined Admin Interface**: Removed separate Visa & Immigration Services section; integrated work visa management directly into Core Operations for unified access (August 2025)
+- **Enhanced Work Visa Management**: Added comprehensive WorkVisaManagementModal with tabbed interface featuring visa details editing, document management, and status tracking with timeline view (August 2025)
 - **Unified Interview & Embassy Management**: Merged separate interview and embassy tracking into single comprehensive admin page with tabbed interface, unified filtering, and consolidated management dashboard (August 2025)
-- **Enhanced Admin Control Center**: Updated admin command center with prominent "Interview & Embassy Center" featuring visual indicators and unified management access (August 2025)
 - **Copyright Footer Implementation**: Added Senmer Consulting OPC Pvt Ltd copyright footer across all application pages and PDF export functionality (August 2025)
 - **Reports PDF Export Enhancement**: Fixed PDF export functionality with proper error handling, toast notifications, and Senmer Consulting copyright integration (August 2025)
 - **User Archive Management System**: Implemented comprehensive archive module with automated archiving for users older than 1 year, admin interface for archive management, and API endpoints for manual archiving/restoration operations (August 2025)

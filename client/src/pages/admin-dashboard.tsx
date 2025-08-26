@@ -398,57 +398,6 @@ export default function AdminDashboardPage() {
             </CardContent>
           </Card>
 
-          {/* Visa & Immigration Services Cluster */}
-          <Card className="admin-glass admin-card-hover border-0 overflow-hidden relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-rose-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <CardHeader className="relative z-10 pb-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center">
-                  <Plane className="h-6 w-6 text-white" />
-                </div>
-                <div>
-                  <CardTitle className="text-xl bg-gradient-to-r from-rose-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">
-                    Visa & Immigration Services
-                  </CardTitle>
-                  <p className="text-sm text-purple-600/70">International travel and visa processing</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button
-                  asChild
-                  className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
-                >
-                  <Link href="/admin/workvisas">
-                    <Plane className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="font-medium text-sm">Work Visas</span>
-                  </Link>
-                </Button>
-                
-                <Button
-                  asChild
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
-                >
-                  <Link href="/admin/interviews">
-                    <Calendar className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="font-medium text-sm">Interviews</span>
-                  </Link>
-                </Button>
-                
-                <Button
-                  asChild
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
-                >
-                  <Link href="/admin/embassy-tracking">
-                    <Globe className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="font-medium text-sm">Embassy Tracking</span>
-                  </Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* System Management Cluster */}
           <Card className="admin-glass admin-card-hover border-0 overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
