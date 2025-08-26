@@ -181,122 +181,208 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Maintenance Mode */}
-        <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center">
-              <Server className="h-6 w-6 mr-3 text-red-500" />
-              Maintenance Mode
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700 rounded-lg">
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
+        {/* System Status & Maintenance Mode - Modern Card */}
+        <Card className="relative overflow-hidden bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 backdrop-blur-xl border-0 shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 dark:from-orange-500/20 dark:to-red-500/20"></div>
+          <CardHeader className="relative">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-2xl flex items-center bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                <Server className="h-8 w-8 mr-4 text-orange-500" />
+                System Control Center
+              </CardTitle>
               <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-full ${maintenanceMode ? 'bg-red-500' : 'bg-green-500'}`}>
-                  <Server className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <div className="font-medium text-slate-900 dark:text-white">
-                    System Status: {maintenanceMode ? 'Maintenance Mode' : 'Online'}
-                  </div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400">
-                    {maintenanceMode ? 'System is currently in maintenance mode' : 'System is operational and accepting users'}
-                  </div>
+                <div className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  maintenanceMode 
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' 
+                    : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                }`}>
+                  <div className={`w-2 h-2 rounded-full mr-2 ${maintenanceMode ? 'bg-red-500' : 'bg-green-500'}`}></div>
+                  {maintenanceMode ? 'Maintenance Active' : 'System Online'}
                 </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <Badge className={maintenanceMode ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}>
-                  {maintenanceMode ? 'Maintenance' : 'Online'}
-                </Badge>
-                <Switch
-                  checked={maintenanceMode}
-                  onCheckedChange={setMaintenanceMode}
-                  className="data-[state=checked]:bg-red-500"
-                />
+            </div>
+          </CardHeader>
+          <CardContent className="relative space-y-6">
+            {/* Maintenance Mode Toggle */}
+            <div className="bg-white/80 dark:bg-slate-700/50 backdrop-blur-sm rounded-xl p-6 border border-slate-200/50 dark:border-slate-600/50">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-4">
+                  <div className={`p-3 rounded-xl transition-all duration-300 ${
+                    maintenanceMode 
+                      ? 'bg-red-500 shadow-lg shadow-red-500/25' 
+                      : 'bg-green-500 shadow-lg shadow-green-500/25'
+                  }`}>
+                    <Server className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                      Maintenance Mode
+                    </h3>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Control system access during maintenance periods
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {maintenanceMode ? 'Enabled' : 'Disabled'}
+                  </span>
+                  <Switch
+                    checked={maintenanceMode}
+                    onCheckedChange={setMaintenanceMode}
+                    className="data-[state=checked]:bg-red-500 data-[state=unchecked]:bg-green-500 scale-125"
+                    data-testid="maintenance-mode-toggle"
+                  />
+                </div>
+              </div>
+              
+              {/* Status Description */}
+              <div className={`p-4 rounded-lg transition-all duration-300 ${
+                maintenanceMode 
+                  ? 'bg-red-50 border border-red-200 dark:bg-red-900/20 dark:border-red-700' 
+                  : 'bg-green-50 border border-green-200 dark:bg-green-900/20 dark:border-green-700'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  {maintenanceMode ? (
+                    <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                  ) : (
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  )}
+                  <p className={`text-sm font-medium ${
+                    maintenanceMode 
+                      ? 'text-red-700 dark:text-red-300' 
+                      : 'text-green-700 dark:text-green-300'
+                  }`}>
+                    {maintenanceMode 
+                      ? 'System is in maintenance mode - only administrators can access the platform'
+                      : 'System is fully operational and accepting all users'
+                    }
+                  </p>
+                </div>
               </div>
             </div>
             
+            {/* Maintenance Message Configuration */}
             {maintenanceMode && (
-              <div className="space-y-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
-                <div className="flex items-center space-x-2 text-red-700 dark:text-red-300">
-                  <AlertTriangle className="h-4 w-4" />
-                  <span className="font-medium">Maintenance Mode Active</span>
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 backdrop-blur-sm rounded-xl p-6 border border-red-200 dark:border-red-700 animate-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="p-2 bg-red-500 rounded-lg">
+                    <AlertTriangle className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-red-800 dark:text-red-200">Maintenance Configuration</h4>
+                    <p className="text-sm text-red-600 dark:text-red-400">Configure the message users will see</p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="maintenance-message">Maintenance Message (shown to users)</Label>
-                  <Textarea
-                    id="maintenance-message"
-                    value={maintenanceMessage}
-                    onChange={(e) => setMaintenanceMessage(e.target.value)}
-                    placeholder="Enter the message users will see during maintenance..."
-                    className="min-h-[100px] bg-white dark:bg-slate-800"
-                  />
-                </div>
-                <div className="text-sm text-red-600 dark:text-red-400">
-                  <strong>Warning:</strong> When maintenance mode is active, regular users will not be able to access the system. Only admin users can access the platform.
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="maintenance-message" className="text-red-700 dark:text-red-300 font-medium">
+                      User Message
+                    </Label>
+                    <Textarea
+                      id="maintenance-message"
+                      value={maintenanceMessage}
+                      onChange={(e) => setMaintenanceMessage(e.target.value)}
+                      placeholder="Enter the message users will see during maintenance..."
+                      className="mt-2 min-h-[120px] bg-white/90 dark:bg-slate-800/90 border-red-200 dark:border-red-700 focus:border-red-400 focus:ring-red-400"
+                      data-testid="maintenance-message-input"
+                    />
+                  </div>
+                  
+                  <div className="flex items-start space-x-3 p-4 bg-red-100/50 dark:bg-red-900/30 rounded-lg">
+                    <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-red-700 dark:text-red-300">
+                      <strong>Important:</strong> While maintenance mode is active, regular users will be redirected to a maintenance page displaying your custom message. Only administrators with valid sessions can access the system.
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* General Settings */}
-        <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center">
-              <Settings className="h-6 w-6 mr-3 text-blue-500" />
-              General Settings
+        {/* Contact & Communication Settings */}
+        <Card className="relative overflow-hidden bg-gradient-to-br from-white via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-slate-800 dark:to-indigo-900 backdrop-blur-xl border-0 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 dark:from-blue-500/10 dark:to-indigo-500/10"></div>
+          <CardHeader className="relative">
+            <CardTitle className="text-xl flex items-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <Mail className="h-6 w-6 mr-3 text-blue-500" />
+              Contact & Communication
             </CardTitle>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">Configure support channels and system messaging</p>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="support-email">Support Email</Label>
-                <Input
-                  id="support-email"
-                  type="email"
-                  value={supportEmail}
-                  onChange={(e) => setSupportEmail(e.target.value)}
-                  placeholder="Enter support email"
-                />
+          <CardContent className="relative space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-blue-200/50 dark:border-blue-700/50">
+                  <Label htmlFor="support-email" className="text-slate-700 dark:text-slate-300 font-medium">
+                    Support Email Address
+                  </Label>
+                  <Input
+                    id="support-email"
+                    type="email"
+                    value={supportEmail}
+                    onChange={(e) => setSupportEmail(e.target.value)}
+                    placeholder="support@chefoverseas.com"
+                    className="mt-2 bg-white/80 dark:bg-slate-800/80 border-blue-200 dark:border-blue-700"
+                    data-testid="input-support-email"
+                  />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Primary email for user support inquiries</p>
+                </div>
+                
+                <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-blue-200/50 dark:border-blue-700/50">
+                  <Label htmlFor="support-phone" className="text-slate-700 dark:text-slate-300 font-medium">
+                    Support WhatsApp Number
+                  </Label>
+                  <Input
+                    id="support-phone"
+                    type="tel"
+                    value={supportPhone}
+                    onChange={(e) => setSupportPhone(e.target.value)}
+                    placeholder="+919363234028"
+                    className="mt-2 bg-white/80 dark:bg-slate-800/80 border-blue-200 dark:border-blue-700"
+                    data-testid="input-support-phone"
+                  />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">WhatsApp contact for instant support</p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="support-phone">Support Phone</Label>
-                <Input
-                  id="support-phone"
-                  type="tel"
-                  value={supportPhone}
-                  onChange={(e) => setSupportPhone(e.target.value)}
-                  placeholder="Enter support phone"
+              
+              <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-blue-200/50 dark:border-blue-700/50">
+                <Label htmlFor="system-message" className="text-slate-700 dark:text-slate-300 font-medium">
+                  System-wide Announcement
+                </Label>
+                <Textarea
+                  id="system-message"
+                  value={systemMessage}
+                  onChange={(e) => setSystemMessage(e.target.value)}
+                  placeholder="Enter important announcements or notices for all users..."
+                  className="mt-2 min-h-[120px] bg-white/80 dark:bg-slate-800/80 border-blue-200 dark:border-blue-700"
+                  data-testid="textarea-system-message"
                 />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">This message will be displayed to all users on their dashboard</p>
               </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="system-message">System Message (displayed to users)</Label>
-              <Textarea
-                id="system-message"
-                value={systemMessage}
-                onChange={(e) => setSystemMessage(e.target.value)}
-                placeholder="Enter any system-wide message for users..."
-                className="min-h-[100px]"
-              />
             </div>
           </CardContent>
         </Card>
 
-        {/* Security & Authentication */}
-        <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center">
-              <Shield className="h-6 w-6 mr-3 text-red-500" />
-              Security & Authentication
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="session-timeout">Session Timeout (days)</Label>
+        {/* Security & Performance Configuration */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Security Settings */}
+          <Card className="relative overflow-hidden bg-gradient-to-br from-white via-red-50 to-orange-50 dark:from-slate-800 dark:via-red-900/10 dark:to-orange-900/10 backdrop-blur-xl border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-orange-500/5 dark:from-red-500/10 dark:to-orange-500/10"></div>
+            <CardHeader className="relative">
+              <CardTitle className="text-xl flex items-center bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                <Shield className="h-6 w-6 mr-3 text-red-500" />
+                Security Configuration
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="relative space-y-4">
+              <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-red-200/50 dark:border-red-700/50">
+                <Label htmlFor="session-timeout" className="text-slate-700 dark:text-slate-300 font-medium">
+                  Session Timeout (days)
+                </Label>
                 <Input
                   id="session-timeout"
                   type="number"
@@ -304,50 +390,53 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setSessionTimeout(e.target.value)}
                   min="1"
                   max="30"
+                  className="mt-2 bg-white/80 dark:bg-slate-800/80 border-red-200 dark:border-red-700"
+                  data-testid="input-session-timeout"
                 />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Automatic logout after inactivity</p>
               </div>
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
+              
+              <div className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
                 <div className="flex items-center space-x-3">
-                  <Key className="h-5 w-5 text-amber-500" />
+                  <div className="p-2 bg-green-500 rounded-lg">
+                    <Key className="h-4 w-4 text-white" />
+                  </div>
                   <div>
-                    <div className="font-medium text-slate-900 dark:text-white">Two-Factor Authentication</div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400">Enhanced security for admin accounts</div>
+                    <div className="font-medium text-green-800 dark:text-green-200">OTP Authentication</div>
+                    <div className="text-sm text-green-600 dark:text-green-400">Mobile verification active</div>
                   </div>
                 </div>
                 <Badge className="bg-green-500 text-white">
                   <CheckCircle className="h-3 w-3 mr-1" />
-                  Enabled
+                  Active
                 </Badge>
               </div>
-            </div>
-            
-            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-              <div className="flex items-start space-x-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
-                <div>
-                  <div className="font-medium text-yellow-800 dark:text-yellow-200">Security Notice</div>
-                  <div className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                    OTP authentication is active for all user accounts. Session management is handled automatically by the system.
+
+              <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
+                <div className="flex items-start space-x-3">
+                  <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm text-amber-700 dark:text-amber-300">
+                    <strong>Security Active:</strong> All users authenticate via mobile OTP. Admin sessions are encrypted and automatically managed.
                   </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* System Configuration */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* File & Storage Settings */}
-          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-xl flex items-center">
-                <FileText className="h-6 w-6 mr-3 text-green-500" />
-                File & Storage
+          {/* System Performance */}
+          <Card className="relative overflow-hidden bg-gradient-to-br from-white via-green-50 to-emerald-50 dark:from-slate-800 dark:via-green-900/10 dark:to-emerald-900/10 backdrop-blur-xl border-0 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 dark:from-green-500/10 dark:to-emerald-500/10"></div>
+            <CardHeader className="relative">
+              <CardTitle className="text-xl flex items-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                <Zap className="h-6 w-6 mr-3 text-green-500" />
+                System Performance
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="max-file-size">Maximum File Size (MB)</Label>
+            <CardContent className="relative space-y-4">
+              <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-green-200/50 dark:border-green-700/50">
+                <Label htmlFor="max-file-size" className="text-slate-700 dark:text-slate-300 font-medium">
+                  Max File Upload (MB)
+                </Label>
                 <Input
                   id="max-file-size"
                   type="number"
@@ -355,160 +444,153 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setMaxFileSize(e.target.value)}
                   min="1"
                   max="100"
+                  className="mt-2 bg-white/80 dark:bg-slate-800/80 border-green-200 dark:border-green-700"
+                  data-testid="input-max-file-size"
                 />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Maximum size for document uploads</p>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="backup-frequency">Backup Frequency</Label>
+              
+              <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-green-200/50 dark:border-green-700/50">
+                <Label htmlFor="backup-frequency" className="text-slate-700 dark:text-slate-300 font-medium">
+                  Data Backup Frequency
+                </Label>
                 <select
                   id="backup-frequency"
                   value={backupFrequency}
                   onChange={(e) => setBackupFrequency(e.target.value)}
-                  className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-md text-sm"
+                  className="mt-2 w-full px-3 py-2 bg-white/80 dark:bg-slate-800/80 border border-green-200 dark:border-green-700 rounded-md text-sm focus:ring-2 focus:ring-green-400"
+                  data-testid="select-backup-frequency"
                 >
-                  <option value="hourly">Hourly</option>
+                  <option value="hourly">Every Hour</option>
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                 </select>
-              </div>
-              <div className="flex items-center space-x-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                <Database className="h-5 w-5 text-blue-500" />
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-slate-900 dark:text-white">Local Storage</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">Files stored in uploads directory</div>
-                </div>
-                <Badge className="bg-green-500 text-white">Active</Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Notifications & Alerts */}
-          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
-            <CardHeader>
-              <CardTitle className="text-xl flex items-center">
-                <Bell className="h-6 w-6 mr-3 text-orange-500" />
-                Notifications & Alerts
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <Mail className="h-5 w-5 text-blue-500" />
-                  <div>
-                    <div className="text-sm font-medium text-slate-900 dark:text-white">Email Notifications</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">Send email alerts for system events</div>
-                  </div>
-                </div>
-                <Switch
-                  checked={emailNotifications}
-                  onCheckedChange={setEmailNotifications}
-                />
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Automated system backup schedule</p>
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
                 <div className="flex items-center space-x-3">
-                  <RefreshCw className="h-5 w-5 text-green-500" />
+                  <div className="p-2 bg-blue-500 rounded-lg">
+                    <Database className="h-4 w-4 text-white" />
+                  </div>
                   <div>
-                    <div className="text-sm font-medium text-slate-900 dark:text-white">Auto Sync</div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">Automatic data synchronization</div>
+                    <div className="font-medium text-blue-800 dark:text-blue-200">Storage System</div>
+                    <div className="text-sm text-blue-600 dark:text-blue-400">Local file system with UUID naming</div>
                   </div>
                 </div>
-                <Switch
-                  checked={autoSync}
-                  onCheckedChange={setAutoSync}
-                />
-              </div>
-
-              <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <div>
-                    <div className="text-sm font-medium text-green-800 dark:text-green-200">SendGrid Integration</div>
-                    <div className="text-xs text-green-700 dark:text-green-300">Email service is configured and operational</div>
-                  </div>
-                </div>
+                <Badge className="bg-blue-500 text-white">Operational</Badge>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* System Status & Integration */}
-        <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center">
-              <Server className="h-6 w-6 mr-3 text-purple-500" />
-              System Status & Integration
+        {/* Notifications & System Automation */}
+        <Card className="relative overflow-hidden bg-gradient-to-br from-white via-purple-50 to-indigo-50 dark:from-slate-800 dark:via-purple-900/10 dark:to-indigo-900/10 backdrop-blur-xl border-0 shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 dark:from-purple-500/10 dark:to-indigo-500/10"></div>
+          <CardHeader className="relative">
+            <CardTitle className="text-xl flex items-center bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              <Bell className="h-6 w-6 mr-3 text-purple-500" />
+              Notifications & Automation
             </CardTitle>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">Configure automated services and notification preferences</p>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                <div className="flex items-center justify-between mb-2">
-                  <Database className="h-5 w-5 text-blue-600" />
-                  <Badge className="bg-green-500 text-white text-xs">Online</Badge>
+          <CardContent className="relative space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Email & Communication */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-slate-800 dark:text-slate-200 flex items-center">
+                  <Mail className="h-4 w-4 mr-2 text-blue-500" />
+                  Communication Services
+                </h4>
+                
+                <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-purple-200/50 dark:border-purple-700/50">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="font-medium text-slate-800 dark:text-slate-200">Email Notifications</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Status updates and alerts</div>
+                    </div>
+                    <Switch
+                      checked={emailNotifications}
+                      onCheckedChange={setEmailNotifications}
+                      className="data-[state=checked]:bg-blue-500"
+                      data-testid="toggle-email-notifications"
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-blue-600 dark:text-blue-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>SendGrid integration active</span>
+                  </div>
                 </div>
-                <div className="text-sm font-medium text-slate-900 dark:text-white">PostgreSQL</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">Primary database</div>
+
+                <div className="bg-white/60 dark:bg-slate-700/30 rounded-lg p-4 border border-purple-200/50 dark:border-purple-700/50">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <div className="font-medium text-slate-800 dark:text-slate-200">Auto-Sync Service</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Data consistency checks</div>
+                    </div>
+                    <Switch
+                      checked={autoSync}
+                      onCheckedChange={setAutoSync}
+                      className="data-[state=checked]:bg-green-500"
+                      data-testid="toggle-auto-sync"
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
+                    <RefreshCw className="h-4 w-4" />
+                    <span>Running every 5 minutes</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-700">
-                <div className="flex items-center justify-between mb-2">
-                  <Mail className="h-5 w-5 text-green-600" />
-                  <Badge className="bg-green-500 text-white text-xs">Active</Badge>
-                </div>
-                <div className="text-sm font-medium text-slate-900 dark:text-white">SendGrid</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">Email service</div>
-              </div>
+              {/* System Services Status */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-slate-800 dark:text-slate-200 flex items-center">
+                  <Server className="h-4 w-4 mr-2 text-green-500" />
+                  System Services
+                </h4>
 
-              <div className="p-4 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
-                <div className="flex items-center justify-between mb-2">
-                  <Smartphone className="h-5 w-5 text-orange-600" />
-                  <Badge className="bg-green-500 text-white text-xs">Active</Badge>
-                </div>
-                <div className="text-sm font-medium text-slate-900 dark:text-white">OTP Service</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">SMS authentication</div>
-              </div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-1.5 bg-green-500 rounded-md">
+                        <Database className="h-3 w-3 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-green-800 dark:text-green-200">Data Sync Service</div>
+                        <div className="text-xs text-green-600 dark:text-green-400">5-minute intervals</div>
+                      </div>
+                    </div>
+                    <Badge className="bg-green-500 text-white text-xs">Active</Badge>
+                  </div>
 
-              <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                <div className="flex items-center justify-between mb-2">
-                  <Globe className="h-5 w-5 text-purple-600" />
-                  <Badge className="bg-green-500 text-white text-xs">Running</Badge>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-1.5 bg-blue-500 rounded-md">
+                        <Users className="h-3 w-3 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-blue-800 dark:text-blue-200">Archive Service</div>
+                        <div className="text-xs text-blue-600 dark:text-blue-400">Daily cleanup</div>
+                      </div>
+                    </div>
+                    <Badge className="bg-blue-500 text-white text-xs">Running</Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-1.5 bg-orange-500 rounded-md">
+                        <Clock className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-orange-800 dark:text-orange-200">Reminder Service</div>
+                        <div className="text-xs text-orange-600 dark:text-orange-400">Document reminders</div>
+                      </div>
+                    </div>
+                    <Badge className="bg-orange-500 text-white text-xs">Online</Badge>
+                  </div>
                 </div>
-                <div className="text-sm font-medium text-slate-900 dark:text-white">API Server</div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">REST endpoints</div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Maintenance Mode */}
-        <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center">
-              <AlertTriangle className="h-6 w-6 mr-3 text-yellow-500" />
-              Maintenance Mode
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <AlertTriangle className="h-5 w-5 text-yellow-600" />
-                <div>
-                  <div className="font-medium text-yellow-800 dark:text-yellow-200">Maintenance Mode</div>
-                  <div className="text-sm text-yellow-700 dark:text-yellow-300">Temporarily disable user access for system maintenance</div>
-                </div>
-              </div>
-              <Switch
-                checked={maintenanceMode}
-                onCheckedChange={setMaintenanceMode}
-              />
-            </div>
-            {maintenanceMode && (
-              <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
-                <div className="text-sm text-red-800 dark:text-red-200 font-medium">
-                  ⚠️ Warning: Maintenance mode is enabled. Users will not be able to access the system.
-                </div>
-              </div>
-            )}
           </CardContent>
         </Card>
       </div>
