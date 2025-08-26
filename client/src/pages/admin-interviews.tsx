@@ -61,6 +61,7 @@ export default function AdminInterviewsPage() {
     refetchInterval: 30000,
   });
 
+  // Early returns for loading and authentication
   if (adminLoading || workVisasLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
@@ -361,7 +362,7 @@ export default function AdminInterviewsPage() {
                   >
                     <option value="all">All Embassies</option>
                     {uniqueEmbassies.map(embassy => (
-                      <option key={embassy} value={embassy}>{embassy}</option>
+                      <option key={embassy} value={embassy || ""}>{embassy}</option>
                     ))}
                   </select>
                 </div>
