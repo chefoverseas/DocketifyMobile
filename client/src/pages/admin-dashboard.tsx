@@ -158,14 +158,14 @@ export default function AdminDashboardPage() {
   const handleLogout = () => logoutMutation.mutate();
 
   const filteredUsers = users.filter((user: User) =>
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.fullName?.toLowerCase().includes(searchTerm.toLowerCase())
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (user.firstName || user.lastName) && `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Calculate advanced metrics
   const totalApplications = workPermits.length + workVisas.length + contracts.length;
   const completionRate = totalApplications > 0 ? Math.round((stats?.completedDockets || 0) / totalApplications * 100) : 0;
-  const activeUsersCount = users.filter((user: User) => user.isActive).length;
+  const activeUsersCount = users.filter((user: User) => !user.archived).length;
   const pendingWorkPermits = workPermits.filter((wp: any) => wp.status === 'pending' || wp.status === 'under_review').length;
 
   return (
