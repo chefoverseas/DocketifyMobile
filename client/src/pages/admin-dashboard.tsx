@@ -330,7 +330,7 @@ export default function AdminDashboardPage() {
                     <CardTitle className="text-xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
                       Core Operations
                     </CardTitle>
-                    <p className="text-sm text-purple-600/70">User management and document processing</p>
+                    <p className="text-sm text-purple-600/70">User management, document processing & work visa administration</p>
                   </div>
                 </div>
                 <Button
@@ -344,7 +344,7 @@ export default function AdminDashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <Button
                   asChild
                   className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
@@ -372,6 +372,16 @@ export default function AdminDashboardPage() {
                   <Link href="/admin/workpermits">
                     <Briefcase className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
                     <span className="font-medium text-sm">Work Permits</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/workvisas">
+                    <Plane className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Work Visas</span>
                   </Link>
                 </Button>
                 
