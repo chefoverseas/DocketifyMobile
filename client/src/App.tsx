@@ -30,7 +30,7 @@ import AdminContractDetail from "@/pages/admin-contract-detail";
 import AdminDocketUpload from "@/pages/admin-docket-upload";
 import AdminContractUpload from "@/pages/admin-contract-upload";
 import AdminArchive from "@/pages/admin-archive";
-import AdminInterviewEmbassy from "@/pages/admin-interview-embassy";
+
 import AdminMonitoring from "@/pages/admin-monitoring";
 import AdminSettings from "@/pages/admin-settings";
 import AdminAnalytics from "@/pages/admin-analytics";
@@ -92,17 +92,16 @@ function Router() {
       <Route path="/admin/settings" component={AdminSettings} />
       <Route path="/admin/reports" component={AdminReports} />
       <Route path="/admin/archive" component={AdminArchive} />
-      <Route path="/admin/interview-embassy" component={AdminInterviewEmbassy} />
-      {/* Redirects from old separated pages to unified page */}
+
       <Route path="/admin/interviews">
         {() => {
-          window.location.href = "/admin/interview-embassy";
+          window.location.href = "/admin/workvisas";
           return null;
         }}
       </Route>
       <Route path="/admin/embassy-tracking">
         {() => {
-          window.location.href = "/admin/interview-embassy";
+          window.location.href = "/admin/workvisas";
           return null;
         }}
       </Route>

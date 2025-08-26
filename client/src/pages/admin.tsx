@@ -74,14 +74,8 @@ export default function Admin() {
                   Work Permits
                 </Link>
               </Button>
-              <Button asChild variant="outline">
-                <Link href="/admin/workvisas">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Work Visas
-                </Link>
-              </Button>
               <Button asChild variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100">
-                <Link href="/admin/interview-embassy">
+                <Link href="/admin/workvisas">
                   <Calendar className="w-4 h-4 mr-2 text-blue-600" />
                   <span className="text-blue-800">Visa & Immigration Services</span>
                 </Link>
@@ -140,7 +134,7 @@ export default function Admin() {
         </Card>
 
         <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-300 hover:shadow-xl">
-          <Link href="/admin/interview-embassy">
+          <Link href="/admin/workvisas">
             <CardContent className="p-4 text-center">
               <div className="relative">
                 <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
