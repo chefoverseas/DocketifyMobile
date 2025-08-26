@@ -1,0 +1,101 @@
+# Dependencies
+node_modules
+npm-debug.log*
+
+# Build outputs
+dist
+.next
+out
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Development files
+.git
+.gitignore
+README.md
+DEVELOPMENT.md
+CHANGELOG.md
+*.md
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Uploads (handled by volume)
+uploads/*
+
+# Cache
+.cache
+.npm
+.eslintcache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Test files
+coverage
+.nyc_output
+test
+tests
+__tests__
+
+# Temporary files
+tmp
+temp
+
+# SSL certificates (mount separately)
+certs
+*.pem
+*.key
+*.cert
+
+# Documentation files
+docs/
+*.md
+
+# Development scripts
+scripts/dev
+deploy-bypass.js
+verify-deployment.js
+
+# Replit specific
+.replit
+replit.toml
+.cache/replit/
+.local/
+.upm/
+
+# Development deployment files
+DEPLOYMENT_*.md
+PRODUCTION_*.md
+SECURITY_*.md
+SUPPORT_*.md
+REPLIT_SUPPORT_TEMPLATE.md
+deployment-*.md
+deployment-*.json
+
+# Admin debug files
+admin_*.txt
+test_*.txt
+newest_admin.txt
+fresh_admin.txt
+final_admin.txt
+user_cookies.txt
+cookies.txt

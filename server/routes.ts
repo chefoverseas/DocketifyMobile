@@ -84,6 +84,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup session middleware
   setupSession(app);
   
+  // Health check endpoint for Docker
+  app.get("/api/health", async (req, res) => {
+    try {
+      // Check database connection
+      await storage.getAllUsers();
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ 
+        status: "healthy", 
+        timestamp: new Date().toISOString(),
+        services: {
+          database: "connected",
+          server: "running"
+        }
+      });
+    } catch (error) {
+      res.status(503).json({ 
+        status: "unhealthy", 
+        timestamp: new Date().toISOString(),
+        error: "Database connection failed"
+      });
+    }
+  });
+
   // Test route to verify API is working
   app.get("/api/test", (req, res) => {
     res.setHeader('Content-Type', 'application/json');

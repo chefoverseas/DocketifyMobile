@@ -1,0 +1,54 @@
+# Development Docker Compose - simpler setup for local development
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  database:
+    image: postgres:16-alpine
+    container_name: docketify-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: docketify_dev
+      POSTGRES_USER: docketify_dev
+      POSTGRES_PASSWORD: dev_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U docketify_dev -d docketify_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Docketify Application (Development)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    container_name: docketify-app-dev
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - DATABASE_URL=postgresql://docketify_dev:dev_password@database:5432/docketify_dev
+      - SESSION_SECRET=development_session_secret_32_chars
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - uploads_dev_data:/app/uploads
+    ports:
+      - "5000:5000"
+    depends_on:
+      database:
+        condition: service_healthy
+    command: npm run dev
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  uploads_dev_data:
+    driver: local
