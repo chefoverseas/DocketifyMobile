@@ -238,8 +238,138 @@ export default function AdminReportsPage() {
   };
 
   const handleExportReport = (reportId: string, format: 'pdf' | 'csv' | 'excel') => {
-    // Mock export functionality
-    alert(`Exporting ${reportId} as ${format.toUpperCase()}. This functionality would be implemented to generate and download the actual report.`);
+    const report = reports.find(r => r.id === reportId);
+    if (!report) return;
+
+    if (format === 'csv') {
+      generateCSVExport(report);
+    } else if (format === 'excel') {
+      generateExcelExport(report);
+    } else {
+      generatePDFExport(report);
+    }
+  };
+
+  const generateCSVExport = (report: Report) => {
+    let csvContent = '';
+    const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+    
+    if (report.id === 'user-summary') {
+      // Generate User Summary CSV with real data
+      const users = (usersData as any)?.users || [];
+      const workVisas = (workVisasData as any)?.workVisas || [];
+      const workPermits = (workPermitsData as any)?.workPermits || [];
+      const contracts = (contractsData as any)?.contracts || [];
+
+      csvContent = 'User ID,Email,Full Name,Created Date,Docket Status,Work Permit Status,Work Visa Status,Contract Status,Embassy Location,Application Date,Interview Date,Processing Status\n';
+      
+      users.forEach((user: any) => {
+        const userWorkVisa = workVisas.find((wv: any) => wv.user.id === user.id);
+        const userWorkPermit = workPermits.find((wp: any) => wp.user.id === user.id);
+        const userContract = contracts.find((c: any) => c.userId === user.id);
+        
+        const row = [
+          user.id || '',
+          user.email || '',
+          user.fullName || '',
+          user.createdAt ? format(parseISO(user.createdAt), 'yyyy-MM-dd') : '',
+          user.docketStatus || 'not_started',
+          userWorkPermit?.workPermit?.status || 'not_started',
+          userWorkVisa?.workVisa?.status || 'not_started',
+          userContract?.status || 'not_started',
+          userWorkVisa?.workVisa?.embassyLocation || '',
+          userWorkVisa?.workVisa?.applicationDate ? format(parseISO(userWorkVisa.workVisa.applicationDate), 'yyyy-MM-dd') : '',
+          userWorkVisa?.workVisa?.interviewDate ? format(parseISO(userWorkVisa.workVisa.interviewDate), 'yyyy-MM-dd') : '',
+          userWorkVisa?.workVisa?.processingStatus || ''
+        ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(',');
+        
+        csvContent += row + '\n';
+      });
+    } else if (report.id === 'embassy-performance') {
+      // Generate Embassy Performance CSV
+      const workVisas = (workVisasData as any)?.workVisas || [];
+      const embassyStats: Record<string, any> = {};
+      
+      workVisas.forEach((item: any) => {
+        const embassy = item.workVisa?.embassyLocation || 'Unknown';
+        if (!embassyStats[embassy]) {
+          embassyStats[embassy] = {
+            total: 0,
+            approved: 0,
+            pending: 0,
+            rejected: 0,
+            processing: 0
+          };
+        }
+        embassyStats[embassy].total++;
+        const status = item.workVisa?.status || 'pending';
+        embassyStats[embassy][status] = (embassyStats[embassy][status] || 0) + 1;
+      });
+
+      csvContent = 'Embassy Location,Total Applications,Approved,Pending,Rejected,Under Processing,Success Rate (%)\n';
+      
+      Object.entries(embassyStats).forEach(([embassy, stats]: [string, any]) => {
+        const successRate = stats.total > 0 ? ((stats.approved / stats.total) * 100).toFixed(1) : '0.0';
+        const row = [
+          embassy,
+          stats.total,
+          stats.approved || 0,
+          stats.pending || 0,
+          stats.rejected || 0,
+          stats.processing || 0,
+          successRate
+        ].map(field => `"${String(field).replace(/"/g, '""')}"`).join(',');
+        
+        csvContent += row + '\n';
+      });
+    } else if (report.id === 'monthly-summary') {
+      // Generate Monthly Summary CSV
+      const users = (usersData as any)?.users || [];
+      const workVisas = (workVisasData as any)?.workVisas || [];
+      const workPermits = (workPermitsData as any)?.workPermits || [];
+      const stats = (statsData as any)?.stats;
+
+      csvContent = 'Metric,Value,Unit\n';
+      csvContent += `"Report Month","${format(new Date(), 'MMMM yyyy')}",""\n`;
+      csvContent += `"Total Users","${users.length}","users"\n`;
+      csvContent += `"New Users This Month","${report.data.newUsers}","users"\n`;
+      csvContent += `"Total Applications","${workVisas.length + workPermits.length}","applications"\n`;
+      csvContent += `"Applications This Month","${report.data.applicationsSubmitted}","applications"\n`;
+      csvContent += `"Success Rate","${(stats?.performanceMetrics?.applicationSuccessRate || 0).toFixed(1)}","%"\n`;
+      csvContent += `"System Health","${stats?.systemHealth || 100}","%"\n`;
+      csvContent += `"Response Time","${stats?.performanceMetrics?.responseTime || 0}","ms"\n`;
+      csvContent += `"Memory Usage","${(stats?.performanceMetrics?.memoryUsage || 0).toFixed(1)}","%"\n`;
+    } else {
+      // Generic report data
+      csvContent = 'Report,Generated Date,Type\n';
+      csvContent += `"${report.title}","${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}","${report.type}"\n`;
+    }
+
+    // Create and download CSV file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${report.id}_${timestamp}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
+  const generateExcelExport = (report: Report) => {
+    // For Excel export, we'll use CSV format with .xls extension for simplicity
+    // In a real implementation, you'd use a library like SheetJS
+    const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+    generateCSVExport(report);
+    alert('Excel export functionality would use a dedicated library like SheetJS for proper .xlsx formatting. CSV export completed as alternative.');
+  };
+
+  const generatePDFExport = (report: Report) => {
+    // PDF export would require a library like jsPDF or Puppeteer
+    alert('PDF export functionality would be implemented using libraries like jsPDF or server-side PDF generation. Use CSV export for now.');
   };
 
   const getTypeColor = (type: string) => {
