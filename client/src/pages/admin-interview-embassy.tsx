@@ -248,11 +248,11 @@ export default function AdminInterviewEmbassyPage() {
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
-                onClick={() => setLocation("/admin")}
+                onClick={() => setLocation("/admin/dashboard")}
                 className="flex items-center space-x-2 text-slate-600 hover:text-slate-900"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span>Back to Admin Dashboard</span>
+                <span>Back to Dashboard</span>
               </Button>
               <div className="flex items-center space-x-3">
                 <img src={chefOverseasLogo} alt="Chef Overseas" className="h-8 w-8" />
