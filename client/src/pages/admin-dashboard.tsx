@@ -316,7 +316,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Service Clusters */}
-        <div className="space-y-8 mb-12">
+        <div className="space-y-12 mb-16">
           {/* Core Operations Cluster */}
           <Card className="admin-glass admin-card-hover border-0 overflow-hidden relative group">
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -343,11 +343,11 @@ export default function AdminDashboardPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <CardContent className="relative z-10 pb-8">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/users">
                     <Users className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -357,7 +357,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/dockets">
                     <FileText className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -367,7 +367,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/workpermits">
                     <Briefcase className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -377,7 +377,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/workvisas">
                     <Plane className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -387,7 +387,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/contracts">
                     <FileCheck className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -414,11 +414,11 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <CardContent className="relative z-10 pb-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/sync">
                     <RefreshCw className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -428,7 +428,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/archive">
                     <Archive className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -438,7 +438,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/monitoring">
                     <Monitor className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -448,7 +448,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/settings">
                     <Settings className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -475,11 +475,11 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="relative z-10">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <CardContent className="relative z-10 pb-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-violet-500 to-violet-600 hover:from-violet-600 hover:to-violet-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/analytics">
                     <BarChart3 className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -489,7 +489,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/reports">
                     <PieChart className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
@@ -499,7 +499,7 @@ export default function AdminDashboardPage() {
                 
                 <Button
                   asChild
-                  className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                  className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-24 flex-col justify-center"
                 >
                   <Link href="/admin/insights">
                     <TrendingUp className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
