@@ -13,7 +13,7 @@ import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Cale
 import { Link } from "wouter";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 import { format, isToday, parseISO, isTomorrow, isThisWeek } from "date-fns";
-import { WorkVisaManagementModal } from "@/components/WorkVisaManagementModal";
+import { WorkVisaManagementModal } from "../components/WorkVisaManagementModal";
 
 interface InterviewData {
   id: number;

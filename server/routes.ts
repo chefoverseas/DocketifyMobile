@@ -950,7 +950,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Send welcome email to new user with status overview
       try {
-        await sendNewUserWelcomeEmail(newUser.email, newUser.displayName, newUser.uid);
+        await sendNewUserWelcomeEmail(newUser.email!, newUser.displayName || '', newUser.uid);
         console.log(`📧 Welcome email sent to ${newUser.email}`);
       } catch (emailError) {
         console.error(`⚠️ Failed to send welcome email to ${newUser.email}:`, emailError);
@@ -1163,7 +1163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await adminNotificationService.sendDocketCompletionNotifications(
         user.id,
         user.displayName || user.phone || 'User',
-        user.email
+        user.email || ''
       );
       
       console.log(`✅ Docket completed successfully for user: ${user.email}`);
@@ -1366,7 +1366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Send email notification for new work permit creation with initial status
         try {
-          await sendWorkPermitStatusEmail(user.email, user.displayName, workPermit.status);
+          await sendWorkPermitStatusEmail(user.email || '', user.displayName || '', workPermit.status);
           console.log(`📧 New work permit status email sent to ${user.email}`);
         } catch (emailError) {
           console.error(`📧 Failed to send new work permit email to ${user.email}:`, emailError);
@@ -1384,7 +1384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if status changed and send email notification
         if (req.body.status && req.body.status !== oldStatus) {
           try {
-            await sendWorkPermitStatusEmail(user.email, user.displayName, req.body.status);
+            await sendWorkPermitStatusEmail(user.email || '', user.displayName || '', req.body.status);
             console.log(`📧 Work permit status change email sent to ${user.email}: ${oldStatus} → ${req.body.status}`);
           } catch (emailError) {
             console.error(`📧 Failed to send status change email to ${user.email}:`, emailError);
@@ -1394,7 +1394,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Check if final docket was uploaded and send email notification
         if (req.body.finalDocketUrl && req.body.finalDocketUrl !== oldFinalDocketUrl) {
           try {
-            await sendFinalDocketUploadEmail(user.email, user.displayName);
+            await sendFinalDocketUploadEmail(user.email || '', user.displayName || '');
             console.log(`📧 Final docket upload email sent to ${user.email}`);
           } catch (emailError) {
             console.error(`📧 Failed to send final docket upload email to ${user.email}:`, emailError);
@@ -1466,7 +1466,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Send email notification for final docket upload
         try {
-          await sendFinalDocketUploadEmail(user.email, user.displayName);
+          await sendFinalDocketUploadEmail(user.email || '', user.displayName || '');
           console.log(`📧 Final docket upload email sent to ${user.email} (new work permit)`);
         } catch (emailError) {
           console.error(`📧 Failed to send final docket upload email to ${user.email}:`, emailError);
@@ -1480,7 +1480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Send email notification for final docket upload (only if this is a new/updated final docket)
         try {
-          await sendFinalDocketUploadEmail(user.email, user.displayName);
+          await sendFinalDocketUploadEmail(user.email || '', user.displayName || '');
           console.log(`📧 Final docket upload email sent to ${user.email} (${hadPreviousFinalDocket ? 'updated' : 'new'} final docket)`);
         } catch (emailError) {
           console.error(`📧 Failed to send final docket upload email to ${user.email}:`, emailError);
