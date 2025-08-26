@@ -122,6 +122,9 @@ function Router() {
       <Route path="/admin/docket/:userId">
         {params => <AdminDocketDetail userId={params.userId} />}
       </Route>
+      <Route path="/admin/docket-detail/:userId">
+        {params => <AdminDocketDetail userId={params.userId} />}
+      </Route>
       <Route path="/admin/contracts/:userId">
         {params => <AdminContractDetail userId={params.userId} />}
       </Route>
