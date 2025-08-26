@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { format, parseISO, startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 interface Report {
@@ -46,6 +47,7 @@ export default function AdminReportsPage() {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
 
   // Check admin authentication
   const { data: adminData, isLoading: adminLoading } = useQuery({
