@@ -535,10 +535,11 @@ export default function AdminReportsPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => setSelectedReport(selectedReport === report.id ? null : report.id)}
-                      className="flex items-center"
+                      className="flex items-center hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/20 transition-colors"
+                      data-testid={`button-preview-${report.id}`}
                     >
                       <Eye className="h-3 w-3 mr-1" />
-                      {selectedReport === report.id ? 'Hide' : 'Preview'}
+                      {selectedReport === report.id ? 'Hide Preview' : 'Show Preview'}
                     </Button>
                     <div className="flex space-x-1">
                       <Button
@@ -562,21 +563,151 @@ export default function AdminReportsPage() {
                     </div>
                   </div>
 
-                  {/* Expanded Preview */}
+                  {/* Enhanced Preview */}
                   {selectedReport === report.id && (
-                    <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
-                      <div className="text-sm font-medium mb-2">Report Preview:</div>
-                      <div className="text-xs space-y-1">
-                        {Object.entries(report.data).map(([key, value]) => (
-                          <div key={key} className="flex justify-between">
-                            <span className="text-slate-600 dark:text-slate-400 capitalize">
-                              {key.replace(/([A-Z])/g, ' $1').trim()}:
-                            </span>
-                            <span className="font-medium">
-                              {typeof value === 'object' ? JSON.stringify(value).slice(0, 50) + '...' : String(value)}
-                            </span>
+                    <div className="mt-4 p-4 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-700 dark:to-slate-800 rounded-xl border border-slate-200 dark:border-slate-600 shadow-inner">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                          📊 Report Preview
+                        </div>
+                        <Badge className="bg-blue-500 text-white text-xs">
+                          {report.type.toUpperCase()}
+                        </Badge>
+                      </div>
+                      
+                      {report.id === 'user-summary' && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="bg-white dark:bg-slate-700 p-3 rounded-lg">
+                            <div className="text-2xl font-bold text-blue-600">{report.data.totalUsers}</div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">Total Users</div>
                           </div>
-                        ))}
+                          <div className="bg-white dark:bg-slate-700 p-3 rounded-lg">
+                            <div className="text-2xl font-bold text-green-600">{report.data.activeUsers}</div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">Active Users</div>
+                          </div>
+                          <div className="bg-white dark:bg-slate-700 p-3 rounded-lg">
+                            <div className="text-2xl font-bold text-orange-600">{report.data.pendingApplications}</div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">Pending Apps</div>
+                          </div>
+                          <div className="bg-white dark:bg-slate-700 p-3 rounded-lg">
+                            <div className="text-2xl font-bold text-purple-600">{report.data.completedDocuments}</div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">Completed Docs</div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {report.id === 'application-status' && (
+                        <div className="space-y-3">
+                          <div className="bg-white dark:bg-slate-700 p-3 rounded-lg">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium">Total Applications</span>
+                              <span className="text-xl font-bold text-blue-600">{report.data.totalApplications}</span>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg border border-green-200 dark:border-green-700">
+                              <div className="text-sm font-bold text-green-700 dark:text-green-300">
+                                {report.data.statusBreakdown?.approved || 0}
+                              </div>
+                              <div className="text-xs text-green-600 dark:text-green-400">Approved</div>
+                            </div>
+                            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded-lg border border-yellow-200 dark:border-yellow-700">
+                              <div className="text-sm font-bold text-yellow-700 dark:text-yellow-300">
+                                {report.data.statusBreakdown?.pending || 0}
+                              </div>
+                              <div className="text-xs text-yellow-600 dark:text-yellow-400">Pending</div>
+                            </div>
+                            <div className="bg-red-50 dark:bg-red-900/20 p-2 rounded-lg border border-red-200 dark:border-red-700">
+                              <div className="text-sm font-bold text-red-700 dark:text-red-300">
+                                {report.data.statusBreakdown?.rejected || 0}
+                              </div>
+                              <div className="text-xs text-red-600 dark:text-red-400">Rejected</div>
+                            </div>
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg border border-blue-200 dark:border-blue-700">
+                              <div className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                                {report.data.statusBreakdown?.under_review || 0}
+                              </div>
+                              <div className="text-xs text-blue-600 dark:text-blue-400">Under Review</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {report.id === 'system-health' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 bg-white dark:bg-slate-700 rounded-lg">
+                            <span className="text-sm font-medium">System Health</span>
+                            <div className="flex items-center space-x-2">
+                              <div className={`w-3 h-3 rounded-full ${report.data.systemHealth >= 95 ? 'bg-green-500' : report.data.systemHealth >= 80 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+                              <span className="text-xl font-bold text-green-600">{report.data.systemHealth}%</span>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg">
+                              <div className="text-sm font-bold text-blue-700 dark:text-blue-300">{report.data.uptime}%</div>
+                              <div className="text-xs text-blue-600 dark:text-blue-400">Uptime</div>
+                            </div>
+                            <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-lg">
+                              <div className="text-sm font-bold text-purple-700 dark:text-purple-300">{report.data.responseTime}ms</div>
+                              <div className="text-xs text-purple-600 dark:text-purple-400">Response Time</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {report.id === 'embassy-performance' && (
+                        <div className="space-y-2">
+                          <div className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Top Performing Embassies</div>
+                          {Object.entries(report.data.embassyStats || {}).slice(0, 3).map(([embassy, stats]: [string, any], index) => (
+                            <div key={embassy} className="flex items-center justify-between p-2 bg-white dark:bg-slate-700 rounded-lg">
+                              <div className="flex items-center space-x-2">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white ${
+                                  index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-orange-500'
+                                }`}>
+                                  {index + 1}
+                                </div>
+                                <span className="text-sm font-medium">{embassy}</span>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-bold text-green-600">{stats.successRate}%</div>
+                                <div className="text-xs text-slate-500">{stats.total} apps</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      {report.id === 'monthly-summary' && (
+                        <div className="space-y-3">
+                          <div className="text-center p-3 bg-white dark:bg-slate-700 rounded-lg">
+                            <div className="text-lg font-bold text-blue-600">{report.data.month}</div>
+                            <div className="text-xs text-slate-600 dark:text-slate-400">Report Period</div>
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            <div className="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg text-center">
+                              <div className="text-sm font-bold text-green-700 dark:text-green-300">{report.data.newUsers}</div>
+                              <div className="text-xs text-green-600 dark:text-green-400">New Users</div>
+                            </div>
+                            <div className="bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg text-center">
+                              <div className="text-sm font-bold text-blue-700 dark:text-blue-300">{report.data.applicationsSubmitted}</div>
+                              <div className="text-xs text-blue-600 dark:text-blue-400">Apps Submitted</div>
+                            </div>
+                            <div className="bg-purple-50 dark:bg-purple-900/20 p-2 rounded-lg text-center">
+                              <div className="text-sm font-bold text-purple-700 dark:text-purple-300">{report.data.successRate}%</div>
+                              <div className="text-xs text-purple-600 dark:text-purple-400">Success Rate</div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
+                        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                          <span>Generated: {format(parseISO(report.lastGenerated), 'MMM dd, HH:mm')}</span>
+                          <span className="flex items-center">
+                            <CheckCircle className="h-3 w-3 mr-1 text-green-500" />
+                            Live Data
+                          </span>
+                        </div>
                       </div>
                     </div>
                   )}
