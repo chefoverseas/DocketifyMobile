@@ -117,6 +117,7 @@ export default function AdminEmbassyTrackingPage() {
     const stats: Record<string, any> = {};
     
     uniqueEmbassies.forEach(embassy => {
+      if (!embassy) return;
       const embassyApps = embassyApplications.filter(a => a.embassyLocation === embassy);
       stats[embassy] = {
         total: embassyApps.length,
@@ -373,11 +374,11 @@ export default function AdminEmbassyTrackingPage() {
                   
                   return (
                     <div 
-                      key={embassy}
+                      key={embassy || 'unknown'}
                       className="p-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 rounded-lg border border-slate-200 dark:border-slate-600"
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-semibold text-slate-900 dark:text-white">{embassy}</h3>
+                        <h3 className="font-semibold text-slate-900 dark:text-white">{embassy || 'Unknown Embassy'}</h3>
                         <Badge variant="outline" className="text-xs">
                           {successRate}% success
                         </Badge>
@@ -444,7 +445,7 @@ export default function AdminEmbassyTrackingPage() {
                   >
                     <option value="all">All Embassies</option>
                     {uniqueEmbassies.map(embassy => (
-                      <option key={embassy} value={embassy}>{embassy}</option>
+                      <option key={embassy || 'unknown'} value={embassy || ''}>{embassy || 'Unknown Embassy'}</option>
                     ))}
                   </select>
                 </div>

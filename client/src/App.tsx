@@ -21,7 +21,6 @@ import AdminWorkPermit from "@/pages/admin-workpermit";
 import AdminWorkVisas from "@/pages/admin-workvisas";
 import AdminSync from "@/pages/admin-sync";
 import AdminAudit from "@/pages/admin-audit";
-import AdminAnalytics from "@/pages/admin-analytics";
 import AdminUserCreate from "@/pages/admin-user-create";
 import AdminUserEdit from "@/pages/admin-user-edit";
 import AdminUserDetail from "@/pages/admin-user-detail";
@@ -33,6 +32,10 @@ import AdminContractUpload from "@/pages/admin-contract-upload";
 import AdminArchive from "@/pages/admin-archive";
 import AdminInterviews from "@/pages/admin-interviews";
 import AdminEmbassyTracking from "@/pages/admin-embassy-tracking";
+import AdminMonitoring from "@/pages/admin-monitoring";
+import AdminSettings from "@/pages/admin-settings";
+import AdminAnalytics from "@/pages/admin-analytics";
+import AdminReports from "@/pages/admin-reports";
 import NotFound from "@/pages/not-found";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -76,6 +79,9 @@ function Router() {
       <Route path="/admin/sync" component={AdminSync} />
       <Route path="/admin/audit" component={AdminAudit} />
       <Route path="/admin/analytics" component={AdminAnalytics} />
+      <Route path="/admin/monitoring" component={AdminMonitoring} />
+      <Route path="/admin/settings" component={AdminSettings} />
+      <Route path="/admin/reports" component={AdminReports} />
       <Route path="/admin/archive" component={AdminArchive} />
       <Route path="/admin/interviews" component={AdminInterviews} />
       <Route path="/admin/embassy-tracking" component={AdminEmbassyTracking} />
