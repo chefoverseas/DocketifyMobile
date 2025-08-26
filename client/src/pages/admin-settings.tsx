@@ -45,6 +45,7 @@ export default function AdminSettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [autoSync, setAutoSync] = useState(true);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMessage, setMaintenanceMessage] = useState("We are currently performing scheduled maintenance. Please check back shortly.");
   const [sessionTimeout, setSessionTimeout] = useState("7");
   const [maxFileSize, setMaxFileSize] = useState("10");
   const [backupFrequency, setBackupFrequency] = useState("daily");
@@ -147,6 +148,65 @@ export default function AdminSettingsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Maintenance Mode */}
+        <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center">
+              <Server className="h-6 w-6 mr-3 text-red-500" />
+              Maintenance Mode
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border border-red-200 dark:border-red-700 rounded-lg">
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-full ${maintenanceMode ? 'bg-red-500' : 'bg-green-500'}`}>
+                  <Server className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <div className="font-medium text-slate-900 dark:text-white">
+                    System Status: {maintenanceMode ? 'Maintenance Mode' : 'Online'}
+                  </div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">
+                    {maintenanceMode ? 'System is currently in maintenance mode' : 'System is operational and accepting users'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Badge className={maintenanceMode ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}>
+                  {maintenanceMode ? 'Maintenance' : 'Online'}
+                </Badge>
+                <Switch
+                  checked={maintenanceMode}
+                  onCheckedChange={setMaintenanceMode}
+                  className="data-[state=checked]:bg-red-500"
+                />
+              </div>
+            </div>
+            
+            {maintenanceMode && (
+              <div className="space-y-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
+                <div className="flex items-center space-x-2 text-red-700 dark:text-red-300">
+                  <AlertTriangle className="h-4 w-4" />
+                  <span className="font-medium">Maintenance Mode Active</span>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="maintenance-message">Maintenance Message (shown to users)</Label>
+                  <Textarea
+                    id="maintenance-message"
+                    value={maintenanceMessage}
+                    onChange={(e) => setMaintenanceMessage(e.target.value)}
+                    placeholder="Enter the message users will see during maintenance..."
+                    className="min-h-[100px] bg-white dark:bg-slate-800"
+                  />
+                </div>
+                <div className="text-sm text-red-600 dark:text-red-400">
+                  <strong>Warning:</strong> When maintenance mode is active, regular users will not be able to access the system. Only admin users can access the platform.
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* General Settings */}
         <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-xl">
           <CardHeader>
