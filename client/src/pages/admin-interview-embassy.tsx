@@ -252,13 +252,13 @@ export default function AdminInterviewEmbassyPage() {
                 className="flex items-center space-x-2 text-slate-600 hover:text-slate-900"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span>Back to Admin</span>
+                <span>Back to Admin Dashboard</span>
               </Button>
               <div className="flex items-center space-x-3">
                 <img src={chefOverseasLogo} alt="Chef Overseas" className="h-8 w-8" />
                 <div>
-                  <h1 className="text-xl font-bold text-slate-900">Interview & Embassy Management</h1>
-                  <p className="text-sm text-slate-600">Monitor interviews and track embassy applications</p>
+                  <h1 className="text-xl font-bold text-slate-900">Visa & Immigration Services</h1>
+                  <p className="text-sm text-slate-600">Unified management for interviews and embassy applications</p>
                 </div>
               </div>
             </div>

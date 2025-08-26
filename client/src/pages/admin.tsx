@@ -83,7 +83,7 @@ export default function Admin() {
               <Button asChild variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100">
                 <Link href="/admin/interview-embassy">
                   <Calendar className="w-4 h-4 mr-2 text-blue-600" />
-                  <span className="text-blue-800">Interview & Embassy Center</span>
+                  <span className="text-blue-800">Visa & Immigration Services</span>
                 </Link>
               </Button>
               <Button asChild variant="outline">
@@ -146,9 +146,9 @@ export default function Admin() {
                 <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               </div>
-              <p className="text-sm font-medium text-blue-800">Interview & Embassy Center</p>
-              <p className="text-xs text-blue-600 mt-1 font-semibold">✓ MERGED</p>
-              <p className="text-xs text-gray-500 mt-1">Unified Management</p>
+              <p className="text-sm font-medium text-blue-800">Visa & Immigration Services</p>
+              <p className="text-xs text-blue-600 mt-1 font-semibold">✓ UNIFIED</p>
+              <p className="text-xs text-gray-500 mt-1">Interviews & Embassy Tracking</p>
             </CardContent>
           </Link>
         </Card>
