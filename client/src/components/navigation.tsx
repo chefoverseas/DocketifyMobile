@@ -84,6 +84,16 @@ export default function Navigation() {
               >
                 Work Permit
               </Link>
+              <Link 
+                href="/workvisa"
+                className={`px-4 py-3 rounded-md text-base font-medium transition-colors ${
+                  isActive("/workvisa") 
+                    ? "text-primary-600 bg-primary-50" 
+                    : "text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                Work Visa
+              </Link>
               {user?.isAdmin && (
                 <Link 
                   href="/admin"
