@@ -13,7 +13,7 @@ import { Clock, FileText, AlertCircle, CheckCircle, XCircle, Search, Users, Cale
 import { Link } from "wouter";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 import { format, isToday, parseISO, isTomorrow, isThisWeek } from "date-fns";
-import { WorkVisaDetailsModal } from "@/components/WorkVisaDetailsModal";
+import { WorkVisaManagementModal } from "@/components/WorkVisaManagementModal";
 
 interface InterviewData {
   id: number;
@@ -568,9 +568,8 @@ export default function AdminWorkVisasPage() {
                       </div>
 
                       <div className="flex justify-end space-x-2 mt-4">
-                        <WorkVisaDetailsModal 
-                          workVisa={item.workVisa} 
-                          user={item.user}
+                        <WorkVisaManagementModal 
+                          userId={item.user.id}
                           onUpdate={() => refetch()}
                         />
                         <Button
