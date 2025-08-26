@@ -93,6 +93,19 @@ function Router() {
       <Route path="/admin/reports" component={AdminReports} />
       <Route path="/admin/archive" component={AdminArchive} />
       <Route path="/admin/interview-embassy" component={AdminInterviewEmbassy} />
+      {/* Redirects from old separated pages to unified page */}
+      <Route path="/admin/interviews">
+        {() => {
+          window.location.href = "/admin/interview-embassy";
+          return null;
+        }}
+      </Route>
+      <Route path="/admin/embassy-tracking">
+        {() => {
+          window.location.href = "/admin/interview-embassy";
+          return null;
+        }}
+      </Route>
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}
