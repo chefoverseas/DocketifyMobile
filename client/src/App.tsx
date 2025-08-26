@@ -35,6 +35,7 @@ import AdminEmbassyTracking from "@/pages/admin-embassy-tracking";
 import AdminMonitoring from "@/pages/admin-monitoring";
 import AdminSettings from "@/pages/admin-settings";
 import AdminAnalytics from "@/pages/admin-analytics";
+import AdminInsights from "@/pages/admin-insights";
 import AdminReports from "@/pages/admin-reports";
 import NotFound from "@/pages/not-found";
 
@@ -79,6 +80,7 @@ function Router() {
       <Route path="/admin/sync" component={AdminSync} />
       <Route path="/admin/audit" component={AdminAudit} />
       <Route path="/admin/analytics" component={AdminAnalytics} />
+      <Route path="/admin/insights" component={AdminInsights} />
       <Route path="/admin/monitoring" component={AdminMonitoring} />
       <Route path="/admin/settings" component={AdminSettings} />
       <Route path="/admin/reports" component={AdminReports} />
