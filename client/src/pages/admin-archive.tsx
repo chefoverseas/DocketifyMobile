@@ -220,7 +220,7 @@ export default function AdminArchive() {
               </Button>
               <div className="flex items-center space-x-4">
                 <div className="relative">
-                  <img src={chefOverseasLogo} alt="Chef Overseas" className="h-12 w-12 rounded-xl shadow-lg" />
+                  <img src={chefOverseasLogo} alt="Chef Overseas" className="h-12 w-auto rounded-xl shadow-lg" />
                   <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full animate-pulse"></div>
                 </div>
                 <div>
