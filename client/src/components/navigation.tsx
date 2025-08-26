@@ -11,7 +11,8 @@ export default function Navigation() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  if (!isAuthenticated || location === "/" || location === "/auth/otp" || location.startsWith("/admin")) {
+  // Only hide navigation for non-authenticated users or admin pages
+  if (!isAuthenticated || location === "/auth/otp" || location.startsWith("/admin")) {
     return null;
   }
 
