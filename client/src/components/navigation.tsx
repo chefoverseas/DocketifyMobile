@@ -36,8 +36,8 @@ export default function Navigation() {
     { href: "/profile", label: "Profile" },
     { href: "/docket", label: "Docket" },
     { href: "/contracts", label: "Contracts" },
-    { href: "/workpermit", label: "Work Permit" },
-    { href: "/workvisa", label: "Work Visa" },
+    { href: "/workpermit", label: "Permit" },
+    { href: "/workvisa", label: "Visa" },
   ];
 
   return (
