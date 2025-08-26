@@ -169,21 +169,23 @@ export default function AdminDashboardPage() {
   const pendingWorkPermits = workPermits.filter((wp: any) => wp.status === 'pending' || wp.status === 'under_review').length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="admin-gradient-bg min-h-screen">
       {/* Modern Header with Glass Effect */}
-      <div className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-white/20 shadow-lg">
+      <div className="admin-header-glass sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg">
-                  <img src={chefOverseasLogo} alt="Chef Overseas" className="h-8 w-auto brightness-0 invert" />
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400 p-0.5">
+                  <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
+                    <img src={chefOverseasLogo} alt="Chef Overseas" className="h-6 w-6" />
+                  </div>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-200 bg-clip-text text-transparent">
-                    Command Center
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
+                    Admin Control Center
                   </h1>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-purple-600/70">
                     {currentUser?.email} • System Administrator
                   </p>
                 </div>
@@ -191,19 +193,25 @@ export default function AdminDashboardPage() {
             </div>
             
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium text-green-600 dark:text-green-400">Live</span>
+              <div className="flex items-center space-x-2 px-3 py-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400 text-white text-sm font-medium">
+                <div className="h-2 w-2 bg-white rounded-full animate-pulse"></div>
+                <span>Live</span>
               </div>
-              <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1">
-                <CheckCircle className="h-3 w-3 mr-1" />
-                All Systems Operational
-              </Badge>
+              <div className="flex items-center space-x-1 px-3 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium">
+                <CheckCircle className="h-4 w-4" />
+                <span>All Systems Operational</span>
+              </div>
               <Button
-                variant="ghost"
-                size="sm"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="admin-secondary-btn rounded-full px-4 py-2"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button
                 onClick={handleLogout}
-                className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-all duration-200"
+                className="admin-danger-btn rounded-full px-4 py-2"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Sign Out
@@ -216,85 +224,91 @@ export default function AdminDashboardPage() {
       <div className="container mx-auto px-6 py-8">
         {/* Hero Statistics Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <Card className="admin-glass admin-card-hover border-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium">Total Users</p>
-                  <p className="text-3xl font-bold">{stats?.totalUsers || 0}</p>
-                  <p className="text-blue-100 text-xs mt-1">{activeUsersCount} active</p>
+                  <p className="text-sm font-medium text-purple-600/70 mb-1">Total Users</p>
+                  <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    {stats?.totalUsers || 0}
+                  </p>
+                  <p className="text-xs text-purple-600/50 mt-1">{activeUsersCount} active</p>
                 </div>
-                <div className="p-3 bg-white/20 rounded-xl">
-                  <Users className="h-8 w-8" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <Card className="admin-glass admin-card-hover border-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-emerald-100 text-sm font-medium">Completed Dockets</p>
-                  <p className="text-3xl font-bold">{stats?.completedDockets || 0}</p>
-                  <p className="text-emerald-100 text-xs mt-1">{completionRate}% completion rate</p>
+                  <p className="text-sm font-medium text-purple-600/70 mb-1">Completed Dockets</p>
+                  <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    {stats?.completedDockets || 0}
+                  </p>
+                  <p className="text-xs text-purple-600/50 mt-1">{completionRate}% completion rate</p>
                 </div>
-                <div className="p-3 bg-white/20 rounded-xl">
-                  <FileCheck className="h-8 w-8" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center">
+                  <FileCheck className="h-6 w-6 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-orange-500 to-orange-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <Card className="admin-glass admin-card-hover border-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-100 text-sm font-medium">Pending Items</p>
-                  <p className="text-3xl font-bold">{stats?.pendingDockets + pendingWorkPermits || 0}</p>
-                  <p className="text-orange-100 text-xs mt-1">Requires attention</p>
+                  <p className="text-sm font-medium text-purple-600/70 mb-1">Pending Items</p>
+                  <p className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                    {stats?.pendingDockets + pendingWorkPermits || 0}
+                  </p>
+                  <p className="text-xs text-purple-600/50 mt-1">Requires attention</p>
                 </div>
-                <div className="p-3 bg-white/20 rounded-xl">
-                  <Clock className="h-8 w-8" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-white" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          <Card className="admin-glass admin-card-hover border-0">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-purple-100 text-sm font-medium">System Health</p>
+                  <div className="flex items-center space-x-2 mb-1">
+                    <p className="text-sm font-medium text-purple-600/70">System Health</p>
                     <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
                   </div>
-                  <p className="text-3xl font-bold transition-all duration-500" key={`health-${systemHealthValue}-${Date.now()}`}>
+                  <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent transition-all duration-500" key={`health-${systemHealthValue}-${Date.now()}`}>
                     {systemHealthValue ?? 98}%
                   </p>
-                  <div className="text-purple-100 text-xs mt-2 space-y-1">
+                  <div className="text-xs text-purple-600/50 mt-2 space-y-1">
                     <div className="flex justify-between">
                       <span>Database:</span>
-                      <span className={`font-medium ${stats?.systemHealthDetails?.database?.score > 80 ? 'text-green-200' : 'text-yellow-200'}`}>
+                      <span className={`font-medium ${stats?.systemHealthDetails?.database?.score > 80 ? 'text-green-600' : 'text-yellow-600'}`}>
                         {stats?.systemHealthDetails?.database?.score ?? '--'}%
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>API:</span>
-                      <span className={`font-medium ${stats?.systemHealthDetails?.apiResponse?.score > 80 ? 'text-green-200' : 'text-yellow-200'}`}>
+                      <span className={`font-medium ${stats?.systemHealthDetails?.apiResponse?.score > 80 ? 'text-green-600' : 'text-yellow-600'}`}>
                         {stats?.systemHealthDetails?.apiResponse?.score ?? '--'}%
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span>Storage:</span>
-                      <span className={`font-medium ${stats?.systemHealthDetails?.storage?.score > 80 ? 'text-green-200' : 'text-yellow-200'}`}>
+                      <span className={`font-medium ${stats?.systemHealthDetails?.storage?.score > 80 ? 'text-green-600' : 'text-yellow-600'}`}>
                         {stats?.systemHealthDetails?.storage?.score ?? '--'}%
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="p-3 bg-white/20 rounded-xl">
-                  <Gauge className="h-8 w-8" />
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center">
+                  <Gauge className="h-6 w-6 text-white" />
                 </div>
               </div>
             </CardContent>
@@ -304,27 +318,25 @@ export default function AdminDashboardPage() {
         {/* Service Clusters */}
         <div className="space-y-8 mb-12">
           {/* Core Operations Cluster */}
-          <Card className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-0 shadow-2xl overflow-hidden relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <Card className="admin-glass admin-card-hover border-0 overflow-hidden relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <CardHeader className="relative z-10 pb-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg">
+                <div className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center">
                     <Users className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    <CardTitle className="text-xl bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
                       Core Operations
                     </CardTitle>
-                    <p className="text-sm text-slate-600 dark:text-slate-400">User management and document processing</p>
+                    <p className="text-sm text-purple-600/70">User management and document processing</p>
                   </div>
                 </div>
                 <Button
                   onClick={handleRefresh}
-                  variant="outline"
-                  size="sm"
                   disabled={isRefreshing}
-                  className="border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400"
+                  className="admin-secondary-btn rounded-full px-4 py-2"
                 >
                   <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                   Refresh
