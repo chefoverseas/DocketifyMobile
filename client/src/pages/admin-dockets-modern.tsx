@@ -12,15 +12,23 @@ import {
   Calendar,
   Eye,
   CheckCircle,
+  XCircle,
   Clock,
   ArrowLeft,
   Filter,
+  Download,
   Upload,
   Users,
+  TrendingUp,
   AlertCircle,
+  Sparkles,
+  FileCheck,
   Phone,
   Mail,
-  RefreshCw
+  MoreHorizontal,
+  RefreshCw,
+  Archive,
+  Star
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { format } from "date-fns";
@@ -55,10 +63,11 @@ interface DocketData {
   } | null;
 }
 
-export default function AdminDocketsPage() {
+export default function AdminDocketsModernPage() {
   const [, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Check admin authentication
   const { data: adminData, isLoading: adminLoading } = useQuery({

@@ -870,6 +870,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/admin/dockets", requireAdminAuth, async (req, res) => {
+    try {
+      console.log("🗂️ Admin requesting all dockets");
+      const users = await storage.getAllUsers();
+      const dockets = await storage.getAllDockets();
+      
+      // Merge user and docket data for comprehensive view
+      const docketsWithUsers = users.map(user => {
+        const userDocket = dockets.find(d => d.userId === user.id);
+        return {
+          userId: user.id,
+          user: {
+            id: user.id,
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            phone: user.phone,
+            createdAt: user.createdAt,
+            docketCompleted: user.docketCompleted
+          },
+          docket: userDocket || null
+        };
+      });
+      
+      console.log(`✅ Found ${docketsWithUsers.length} user docket records`);
+      res.setHeader('Content-Type', 'application/json');
+      res.json({ dockets: docketsWithUsers });
+    } catch (error) {
+      console.error("Get admin dockets error:", error);
+      res.setHeader('Content-Type', 'application/json');
+      res.status(500).json({ message: "Failed to get dockets" });
+    }
+  });
+
   app.post("/api/admin/users", requireAdminAuth, async (req, res) => {
     console.log(`👤 Admin create user request:`, req.body);
     try {

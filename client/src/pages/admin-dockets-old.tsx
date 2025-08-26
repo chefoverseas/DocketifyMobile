@@ -12,15 +12,23 @@ import {
   Calendar,
   Eye,
   CheckCircle,
+  XCircle,
   Clock,
   ArrowLeft,
   Filter,
+  Download,
   Upload,
   Users,
+  TrendingUp,
   AlertCircle,
+  Sparkles,
+  FileCheck,
   Phone,
   Mail,
-  RefreshCw
+  MoreHorizontal,
+  RefreshCw,
+  Archive,
+  Star
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { format } from "date-fns";
@@ -59,6 +67,7 @@ export default function AdminDocketsPage() {
   const [, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
   // Check admin authentication
   const { data: adminData, isLoading: adminLoading } = useQuery({
@@ -471,6 +480,87 @@ export default function AdminDocketsPage() {
             </CardContent>
           </Card>
         )}
+      </div>
+    </div>
+  );
+}
+
+        {/* Dockets List */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <FileText className="h-5 w-5 mr-2" />
+              User Dockets ({filteredUsers.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {filteredUsers.length === 0 ? (
+              <div className="text-center py-8">
+                <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-500">No dockets found matching your search.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredUsers.map((user) => {
+                  const progress = calculateDocketProgress(user.docket);
+                  return (
+                    <div key={user.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="p-2 bg-blue-100 rounded-lg">
+                            <User className="h-5 w-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              {user.displayName}
+                            </h3>
+                            <div className="flex items-center space-x-4 text-sm text-gray-500">
+                              <span>UID: {user.uid}</span>
+                              <span>•</span>
+                              <span>{user.email}</span>
+                              <span>•</span>
+                              <span>{user.phone}</span>
+                            </div>
+                            {user.docket?.lastUpdated && (
+                              <div className="flex items-center mt-1 text-xs text-gray-400">
+                                <Calendar className="h-3 w-3 mr-1" />
+                                Last updated: {format(new Date(user.docket.lastUpdated), 'MMM dd, yyyy HH:mm')}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center space-x-4">
+                          <div className="text-right">
+                            <div className="flex items-center space-x-2">
+                              {getDocketStatusBadge(progress)}
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {progress.completed}/{progress.total} sections complete
+                            </div>
+                            <div className="w-24 bg-gray-200 rounded-full h-2 mt-1">
+                              <div 
+                                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${progress.percentage}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                          
+                          <Link href={`/admin/docket/${user.id}`}>
+                            <Button variant="outline" size="sm">
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
