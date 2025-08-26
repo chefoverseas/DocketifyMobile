@@ -367,9 +367,221 @@ export default function AdminReportsPage() {
     alert('Excel export functionality would use a dedicated library like SheetJS for proper .xlsx formatting. CSV export completed as alternative.');
   };
 
-  const generatePDFExport = (report: Report) => {
-    // PDF export would require a library like jsPDF or Puppeteer
-    alert('PDF export functionality would be implemented using libraries like jsPDF or server-side PDF generation. Use CSV export for now.');
+  const generatePDFExport = async (report: Report) => {
+    try {
+      // Dynamic import to reduce bundle size
+      const { jsPDF } = await import('jspdf');
+      await import('jspdf-autotable');
+      
+      const doc = new jsPDF() as any;
+      const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+      
+      // Add Chef Overseas branding
+      doc.setFontSize(20);
+      doc.setTextColor(255, 102, 0); // Orange color
+      doc.text('Chef Overseas', 20, 25);
+      
+      doc.setFontSize(16);
+      doc.setTextColor(0, 0, 0);
+      doc.text(report.title, 20, 40);
+      
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Generated: ${format(new Date(), 'MMM dd, yyyy HH:mm')}`, 20, 50);
+      doc.text(`Report Type: ${report.type.toUpperCase()}`, 20, 55);
+      
+      let yPosition = 70;
+      
+      if (report.id === 'user-summary') {
+        const users = (usersData as any)?.users || [];
+        const workVisas = (workVisasData as any)?.workVisas || [];
+        const workPermits = (workPermitsData as any)?.workPermits || [];
+        const contracts = (contractsData as any)?.contracts || [];
+        
+        // Summary section
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Summary Statistics', 20, yPosition);
+        yPosition += 10;
+        
+        doc.setFontSize(10);
+        doc.text(`Total Users: ${report.data.totalUsers}`, 25, yPosition);
+        doc.text(`Active Users: ${report.data.activeUsers}`, 25, yPosition + 5);
+        doc.text(`Pending Applications: ${report.data.pendingApplications}`, 25, yPosition + 10);
+        doc.text(`Completed Documents: ${report.data.completedDocuments}`, 25, yPosition + 15);
+        yPosition += 30;
+        
+        // User details table
+        const tableData = users.map((user: any) => {
+          const userWorkVisa = workVisas.find((wv: any) => wv.user.id === user.id);
+          const userWorkPermit = workPermits.find((wp: any) => wp.user.id === user.id);
+          const userContract = contracts.find((c: any) => c.userId === user.id);
+          
+          return [
+            user.email || '',
+            user.fullName || '',
+            user.createdAt ? format(parseISO(user.createdAt), 'MMM dd, yyyy') : '',
+            user.docketStatus || 'Not Started',
+            userWorkPermit?.workPermit?.status || 'Not Started',
+            userWorkVisa?.workVisa?.status || 'Not Started',
+            userContract?.status || 'Not Started'
+          ];
+        });
+        
+        doc.autoTable({
+          startY: yPosition,
+          head: [['Email', 'Full Name', 'Created', 'Docket', 'Work Permit', 'Work Visa', 'Contract']],
+          body: tableData,
+          theme: 'grid',
+          headStyles: { fillColor: [255, 102, 0] },
+          styles: { fontSize: 8 },
+          margin: { left: 20, right: 20 }
+        });
+        
+      } else if (report.id === 'application-status') {
+        // Application status overview
+        doc.setFontSize(14);
+        doc.text('Application Status Overview', 20, yPosition);
+        yPosition += 15;
+        
+        doc.setFontSize(10);
+        doc.text(`Total Applications: ${report.data.totalApplications}`, 25, yPosition);
+        doc.text(`Approved: ${report.data.statusBreakdown?.approved || 0}`, 25, yPosition + 5);
+        doc.text(`Pending: ${report.data.statusBreakdown?.pending || 0}`, 25, yPosition + 10);
+        doc.text(`Rejected: ${report.data.statusBreakdown?.rejected || 0}`, 25, yPosition + 15);
+        doc.text(`Under Review: ${report.data.statusBreakdown?.under_review || 0}`, 25, yPosition + 20);
+        yPosition += 35;
+        
+        // Status breakdown table
+        const statusData = Object.entries(report.data.statusBreakdown || {}).map(([status, count]) => [
+          status.replace('_', ' ').toUpperCase(),
+          String(count),
+          `${((Number(count) / report.data.totalApplications) * 100).toFixed(1)}%`
+        ]);
+        
+        doc.autoTable({
+          startY: yPosition,
+          head: [['Status', 'Count', 'Percentage']],
+          body: statusData,
+          theme: 'grid',
+          headStyles: { fillColor: [255, 102, 0] },
+          styles: { fontSize: 10 },
+          margin: { left: 20, right: 20 }
+        });
+        
+      } else if (report.id === 'system-health') {
+        // System health metrics
+        doc.setFontSize(14);
+        doc.text('System Health Report', 20, yPosition);
+        yPosition += 15;
+        
+        doc.setFontSize(10);
+        doc.text(`System Health: ${report.data.systemHealth}%`, 25, yPosition);
+        doc.text(`Uptime: ${report.data.uptime}%`, 25, yPosition + 5);
+        doc.text(`Response Time: ${report.data.responseTime}ms`, 25, yPosition + 10);
+        yPosition += 25;
+        
+        // Health metrics table
+        const healthData = [
+          ['Overall Health', `${report.data.systemHealth}%`],
+          ['System Uptime', `${report.data.uptime}%`],
+          ['Average Response Time', `${report.data.responseTime}ms`],
+          ['Database Status', 'Online'],
+          ['API Status', 'Operational'],
+          ['Storage Status', 'Available']
+        ];
+        
+        doc.autoTable({
+          startY: yPosition,
+          head: [['Metric', 'Value']],
+          body: healthData,
+          theme: 'grid',
+          headStyles: { fillColor: [255, 102, 0] },
+          styles: { fontSize: 10 },
+          margin: { left: 20, right: 20 }
+        });
+        
+      } else if (report.id === 'embassy-performance') {
+        // Embassy performance report
+        doc.setFontSize(14);
+        doc.text('Embassy Performance Analysis', 20, yPosition);
+        yPosition += 15;
+        
+        const embassyData = Object.entries(report.data.embassyStats || {}).map(([embassy, stats]: [string, any]) => [
+          embassy,
+          String(stats.total),
+          String(stats.approved || 0),
+          String(stats.pending || 0),
+          String(stats.rejected || 0),
+          `${stats.successRate}%`
+        ]);
+        
+        doc.autoTable({
+          startY: yPosition,
+          head: [['Embassy', 'Total', 'Approved', 'Pending', 'Rejected', 'Success Rate']],
+          body: embassyData,
+          theme: 'grid',
+          headStyles: { fillColor: [255, 102, 0] },
+          styles: { fontSize: 9 },
+          margin: { left: 20, right: 20 }
+        });
+        
+      } else if (report.id === 'monthly-summary') {
+        // Monthly summary report
+        doc.setFontSize(14);
+        doc.text(`Monthly Summary - ${report.data.month}`, 20, yPosition);
+        yPosition += 15;
+        
+        doc.setFontSize(10);
+        doc.text(`New Users This Month: ${report.data.newUsers}`, 25, yPosition);
+        doc.text(`Applications Submitted: ${report.data.applicationsSubmitted}`, 25, yPosition + 5);
+        doc.text(`Success Rate: ${report.data.successRate}%`, 25, yPosition + 10);
+        yPosition += 25;
+        
+        // Monthly metrics table
+        const monthlyData = [
+          ['New User Registrations', String(report.data.newUsers)],
+          ['Applications Submitted', String(report.data.applicationsSubmitted)],
+          ['Success Rate', `${report.data.successRate}%`],
+          ['Report Period', report.data.month]
+        ];
+        
+        doc.autoTable({
+          startY: yPosition,
+          head: [['Metric', 'Value']],
+          body: monthlyData,
+          theme: 'grid',
+          headStyles: { fillColor: [255, 102, 0] },
+          styles: { fontSize: 10 },
+          margin: { left: 20, right: 20 }
+        });
+      }
+      
+      // Add footer
+      const pageCount = doc.internal.getNumberOfPages();
+      doc.setPage(pageCount);
+      doc.setFontSize(8);
+      doc.setTextColor(100, 100, 100);
+      doc.text('Chef Overseas - Professional Immigration Services', 20, doc.internal.pageSize.height - 20);
+      doc.text(`Page ${pageCount} - Generated on ${format(new Date(), 'MMM dd, yyyy')}`, 20, doc.internal.pageSize.height - 15);
+      
+      // Save the PDF
+      const fileName = `${report.id}-report-${timestamp}.pdf`;
+      doc.save(fileName);
+      
+      toast({
+        title: "PDF Export Successful",
+        description: `${report.title} has been exported as ${fileName}`,
+      });
+      
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast({
+        title: "PDF Export Failed",
+        description: "There was an error generating the PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getTypeColor = (type: string) => {
@@ -546,8 +758,9 @@ export default function AdminReportsPage() {
                         size="sm"
                         variant="outline"
                         onClick={() => handleExportReport(report.id, 'pdf')}
-                        className="px-2"
+                        className="px-2 hover:bg-orange-50 hover:border-orange-300 dark:hover:bg-orange-900/20 transition-colors"
                         title="Export as PDF"
+                        data-testid={`button-export-pdf-${report.id}`}
                       >
                         <FileText className="h-3 w-3" />
                       </Button>
