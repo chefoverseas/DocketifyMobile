@@ -1,62 +1,61 @@
 import { ContractManagement } from "@/components/contract-management";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, ArrowLeft, FileSignature, Shield } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { FileText, ArrowLeft, FileSignature, Shield, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { Link } from "wouter";
-import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 export default function Contracts() {
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-6">
-            <div className="flex items-center">
-              <img src={chefOverseasLogo} alt="Chef Overseas" className="h-12 w-12 mr-4" />
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center space-x-4 mb-4 lg:mb-0">
+              <Link href="/dashboard">
+                <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
+              </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">Contract Management</h1>
                 <p className="text-gray-600 mt-1">Secure document signing and submission process</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Dashboard
-                </Button>
-              </Link>
-            </div>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 px-4 py-2">
+              <Shield className="h-4 w-4 mr-2" />
+              Secure Environment
+            </Badge>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Information Banner */}
-        <Card className="mb-8 border-l-4 border-l-blue-500 bg-blue-50">
-          <CardContent className="pt-6">
+        {/* Security Information Banner */}
+        <Card className="mb-8 border-blue-200 bg-gradient-to-r from-blue-50 to-cyan-50 hover:shadow-lg transition-all duration-300">
+          <CardContent className="p-6">
             <div className="flex items-start gap-4">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <Shield className="h-5 w-5 text-blue-600" />
+              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <Shield className="h-6 w-6 text-blue-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Secure Document Processing</h3>
-                <p className="text-blue-800 mb-4">
+                <h3 className="text-xl font-semibold text-blue-900 mb-3">Secure Document Processing</h3>
+                <p className="text-blue-800 mb-4 leading-relaxed">
                   All documents are processed through our secure, encrypted system. Your personal information and signatures are protected with industry-standard security measures.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <FileSignature className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-700">Digital signature support</span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                    <FileSignature className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                    <span className="text-blue-700 font-medium">Digital Signature Support</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-700">End-to-end encryption</span>
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                    <Shield className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                    <span className="text-blue-700 font-medium">End-to-End Encryption</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-blue-600" />
-                    <span className="text-blue-700">Automatic verification</span>
+                  <div className="flex items-center gap-3 p-3 bg-white/60 rounded-lg">
+                    <CheckCircle2 className="h-5 w-5 text-blue-600 flex-shrink-0" />
+                    <span className="text-blue-700 font-medium">Automatic Verification</span>
                   </div>
                 </div>
               </div>
@@ -64,8 +63,10 @@ export default function Contracts() {
           </CardContent>
         </Card>
 
-        {/* Main Content */}
-        <ContractManagement />
+        {/* Main Contract Management Component */}
+        <div className="space-y-6">
+          <ContractManagement />
+        </div>
       </div>
     </div>
   );

@@ -134,7 +134,14 @@ export default function DocketPage() {
   };
 
   if (isLoading || workPermitLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading your docket information...</p>
+        </div>
+      </div>
+    );
   }
 
   // Calculate progress
@@ -198,46 +205,33 @@ export default function DocketPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-yellow-50">
-      {/* Modern Header with Glassmorphism */}
-      <div className="relative bg-white/80 backdrop-blur-md border-b border-white/20 shadow-lg">
-        <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-yellow-500/10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-8">
-            <div className="flex items-center space-x-6">
-              <div className="bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-white/30">
-                <img 
-                  src={chefOverseasLogo} 
-                  alt="Chef Overseas" 
-                  className="h-10 w-auto object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-yellow-600 bg-clip-text text-transparent">
-                  Document Docket
-                </h1>
-                <p className="text-gray-700 mt-2 text-lg font-medium">
-                  Secure document collection and work permit processing
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-center space-x-4 mb-4 lg:mb-0">
               <Link href="/dashboard">
-                <Button 
-                  variant="outline" 
-                  className="flex items-center gap-2 bg-white/70 backdrop-blur-sm border-white/30 hover:bg-white/90 hover:shadow-md transition-all duration-300"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Dashboard
+                <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-50">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Dashboard
                 </Button>
               </Link>
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900">Document Docket</h1>
+                <p className="text-gray-600 mt-1">Upload and manage your required documents</p>
+              </div>
             </div>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 px-4 py-2">
+              <FileText className="h-4 w-4 mr-2" />
+              Document Collection
+            </Badge>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         {/* Modern Information Banner */}
         <div className="mb-8 bg-white/60 backdrop-blur-md rounded-2xl border border-white/30 shadow-lg overflow-hidden">
           <div className="relative p-8">
