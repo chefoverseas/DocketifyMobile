@@ -31,6 +31,8 @@ import AdminContractDetail from "@/pages/admin-contract-detail";
 import AdminDocketUpload from "@/pages/admin-docket-upload";
 import AdminContractUpload from "@/pages/admin-contract-upload";
 import AdminArchive from "@/pages/admin-archive";
+import AdminInterviews from "@/pages/admin-interviews";
+import AdminEmbassyTracking from "@/pages/admin-embassy-tracking";
 import NotFound from "@/pages/not-found";
 
 import { useAuth } from "@/hooks/use-auth";
@@ -75,6 +77,8 @@ function Router() {
       <Route path="/admin/audit" component={AdminAudit} />
       <Route path="/admin/analytics" component={AdminAnalytics} />
       <Route path="/admin/archive" component={AdminArchive} />
+      <Route path="/admin/interviews" component={AdminInterviews} />
+      <Route path="/admin/embassy-tracking" component={AdminEmbassyTracking} />
       <Route path="/admin/user/new" component={AdminUserCreate} />
       <Route path="/admin/user/:userId/edit">
         {params => <AdminUserEdit userId={params.userId} />}
