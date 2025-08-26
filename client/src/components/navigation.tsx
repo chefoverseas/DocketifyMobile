@@ -14,6 +14,16 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
+  // Fetch notifications to show unread count - must be before conditional return
+  const { data: notificationsData } = useQuery({
+    queryKey: ['/api/notifications'],
+    enabled: isAuthenticated,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+
+  const notifications = (notificationsData as { notifications?: any[] })?.notifications || [];
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
+
   // Only hide navigation for non-authenticated users or admin pages
   if (!isAuthenticated || location === "/auth/otp" || location.startsWith("/admin")) {
     return null;
@@ -29,16 +39,6 @@ export default function Navigation() {
     { href: "/workpermit", label: "Work Permit" },
     { href: "/workvisa", label: "Work Visa" },
   ];
-
-  // Fetch notifications to show unread count
-  const { data: notificationsData } = useQuery({
-    queryKey: ['/api/notifications'],
-    enabled: isAuthenticated,
-    refetchInterval: 30000, // Refetch every 30 seconds
-  });
-
-  const notifications = (notificationsData as { notifications?: any[] })?.notifications || [];
-  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   return (
     <nav className="bg-white/95 backdrop-blur-md shadow-xl border-b border-orange-100/50 sticky top-0 z-50">
