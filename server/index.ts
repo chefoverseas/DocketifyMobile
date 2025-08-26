@@ -7,6 +7,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { loadSSLConfig } from "./ssl-config";
 import { validateEnvironment, logEnvironmentInfo } from "./env-validation";
 import { syncService } from "./sync-service";
+import { userArchiveService } from "./user-archive-service";
 
 // Validate environment configuration before starting
 const envConfig = validateEnvironment();
@@ -151,6 +152,9 @@ app.use((req, res, next) => {
       // Start data synchronization service
       syncService.start();
       
+      // Start user archive service  
+      userArchiveService.startScheduledArchiving();
+      
       // Start docket reminder service
       import('./docket-reminder-service').then(({ docketReminderService }) => {
         console.log('🔔 Starting docket reminder service - sending daily reminders');
@@ -173,6 +177,9 @@ app.use((req, res, next) => {
           
           // Start data synchronization service
           syncService.start();
+          
+          // Start user archive service  
+          userArchiveService.startScheduledArchiving();
           
           // Start docket reminder service
           import('./docket-reminder-service').then(({ docketReminderService }) => {

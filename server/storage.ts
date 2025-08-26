@@ -41,6 +41,13 @@ export interface IStorage {
   getAllUsers(): Promise<User[]>;
   generateUniqueUid(): Promise<string>;
 
+  // Archive operations
+  archiveUser(userId: string, reason: string): Promise<void>;
+  unarchiveUser(userId: string): Promise<void>;
+  getArchivedUsers(): Promise<User[]>;
+  getActiveUsers(): Promise<User[]>;
+  getUsersOlderThanOneYear(): Promise<User[]>;
+
   // Email OTP operations
   createOtpVerification(session: InsertOtpSession): Promise<OtpSession>;
   getLatestOtpVerification(email: string): Promise<OtpSession | undefined>;
@@ -233,6 +240,90 @@ export class DatabaseStorage implements IStorage {
     } while (existingUser);
     
     return uid;
+  }
+
+  // Archive operations
+  async archiveUser(userId: string, reason: string): Promise<void> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error(`User ${userId} not found`);
+    }
+
+    await db
+      .update(users)
+      .set({
+        archived: true,
+        archivedAt: new Date(),
+        archivedReason: reason,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+
+    // Log archive action for audit
+    await AuditService.logDataChange('ARCHIVE', 'user', userId, {
+      adminEmail: 'system',
+      metadata: { 
+        reason,
+        archivedAt: new Date().toISOString(),
+        userEmail: user.email
+      }
+    }, user, { archived: true, archivedAt: new Date(), archivedReason: reason });
+  }
+
+  async unarchiveUser(userId: string): Promise<void> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error(`User ${userId} not found`);
+    }
+
+    await db
+      .update(users)
+      .set({
+        archived: false,
+        archivedAt: null,
+        archivedReason: null,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId));
+
+    // Log unarchive action for audit
+    await AuditService.logDataChange('UNARCHIVE', 'user', userId, {
+      adminEmail: 'system',
+      metadata: { 
+        unarchivedAt: new Date().toISOString(),
+        userEmail: user.email
+      }
+    }, { archived: true, archivedAt: user.archivedAt, archivedReason: user.archivedReason }, { archived: false });
+  }
+
+  async getArchivedUsers(): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .where(eq(users.archived, true))
+      .orderBy(desc(users.archivedAt));
+  }
+
+  async getActiveUsers(): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .where(eq(users.archived, false))
+      .orderBy(desc(users.createdAt));
+  }
+
+  async getUsersOlderThanOneYear(): Promise<User[]> {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    
+    return await db
+      .select()
+      .from(users)
+      .where(and(
+        eq(users.archived, false), // Only non-archived users
+        lt(users.createdAt, oneYearAgo)
+      ))
+      .orderBy(users.createdAt);
   }
 
   async createOtpVerification(session: InsertOtpSession): Promise<OtpSession> {

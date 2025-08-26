@@ -30,6 +30,9 @@ export const users = pgTable("users", {
   docketCompleted: boolean("docket_completed").default(false),
   isAdmin: boolean("is_admin").default(false),
   lastReminderSent: timestamp("last_reminder_sent"), // Track when last docket reminder was sent
+  archived: boolean("archived").default(false), // Archive status
+  archivedAt: timestamp("archived_at"), // When the user was archived
+  archivedReason: text("archived_reason"), // Reason for archiving (e.g., "inactive_1_year", "manual")
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

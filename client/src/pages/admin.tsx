@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, CheckCircle, Clock, AlertTriangle, Download, Search, Plus, FileText, Settings, Database } from "lucide-react";
+import { Users, CheckCircle, Clock, AlertTriangle, Download, Search, Plus, FileText, Settings, Database, Archive } from "lucide-react";
 import { useEffect } from "react";
 import { useLocation, Link } from "wouter";
 
@@ -84,6 +84,12 @@ export default function Admin() {
                   Data Sync
                 </Link>
               </Button>
+              <Button asChild variant="outline">
+                <Link href="/admin/archive">
+                  <Archive className="w-4 h-4 mr-2" />
+                  Archive
+                </Link>
+              </Button>
               <Button onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700">
                 <Download className="w-4 h-4 mr-2" />
                 Export CSV
@@ -134,6 +140,16 @@ export default function Admin() {
               <Database className="h-8 w-8 mx-auto mb-2 text-green-600" />
               <p className="text-sm font-medium text-green-800">Data Sync</p>
               <p className="text-xs text-green-600 mt-1">NEW</p>
+            </CardContent>
+          </Link>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+          <Link href="/admin/archive">
+            <CardContent className="p-4 text-center">
+              <Archive className="h-8 w-8 mx-auto mb-2 text-amber-600" />
+              <p className="text-sm font-medium text-amber-800">Archive</p>
+              <p className="text-xs text-amber-600 mt-1">NEW</p>
             </CardContent>
           </Link>
         </Card>

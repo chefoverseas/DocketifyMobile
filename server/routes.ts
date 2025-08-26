@@ -2337,6 +2337,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User Archive Management Routes (Admin Only)
+  
+  // Get archive statistics
+  app.get("/api/admin/archive/stats", requireAdminAuth, async (req, res) => {
+    try {
+      const { userArchiveService } = await import('./user-archive-service');
+      const stats = await userArchiveService.getArchiveStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error getting archive stats:", error);
+      res.status(500).json({ message: "Failed to get archive statistics" });
+    }
+  });
+
+  // Get archived users list
+  app.get("/api/admin/archive/users", requireAdminAuth, async (req, res) => {
+    try {
+      const { userArchiveService } = await import('./user-archive-service');
+      const archivedUsers = await userArchiveService.getArchivedUsers();
+      res.json(archivedUsers);
+    } catch (error) {
+      console.error("Error getting archived users:", error);
+      res.status(500).json({ message: "Failed to get archived users" });
+    }
+  });
+
+  // Get users eligible for archiving (older than 1 year)
+  app.get("/api/admin/archive/eligible", requireAdminAuth, async (req, res) => {
+    try {
+      const { userArchiveService } = await import('./user-archive-service');
+      const eligibleUsers = await userArchiveService.getUsersEligibleForArchive();
+      res.json(eligibleUsers);
+    } catch (error) {
+      console.error("Error getting users eligible for archive:", error);
+      res.status(500).json({ message: "Failed to get users eligible for archive" });
+    }
+  });
+
+  // Run automatic archive process
+  app.post("/api/admin/archive/run", requireAdminAuth, async (req, res) => {
+    try {
+      console.log('🗂️ Admin triggered automatic user archive process');
+      const { userArchiveService } = await import('./user-archive-service');
+      const result = await userArchiveService.runAutomaticArchive();
+      res.json(result);
+    } catch (error) {
+      console.error("Error running automatic archive:", error);
+      res.status(500).json({ message: "Failed to run automatic archive process" });
+    }
+  });
+
+  // Manually archive a specific user
+  app.post("/api/admin/archive/user/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { reason } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      const { userArchiveService } = await import('./user-archive-service');
+      await userArchiveService.archiveUser(userId, reason || "manual_archive");
+      
+      console.log(`📦 Admin manually archived user: ${userId}`);
+      res.json({ 
+        success: true, 
+        message: "User archived successfully" 
+      });
+    } catch (error) {
+      console.error("Error archiving user:", error);
+      res.status(500).json({ message: error instanceof Error ? error.message : "Failed to archive user" });
+    }
+  });
+
+  // Restore a user from archive
+  app.post("/api/admin/archive/restore/:userId", requireAdminAuth, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      const { userArchiveService } = await import('./user-archive-service');
+      await userArchiveService.unarchiveUser(userId);
+      
+      console.log(`📤 Admin restored user from archive: ${userId}`);
+      res.json({ 
+        success: true, 
+        message: "User restored successfully" 
+      });
+    } catch (error) {
+      console.error("Error restoring user:", error);
+      res.status(500).json({ message: error instanceof Error ? error.message : "Failed to restore user" });
+    }
+  });
+
   // Catch-all handler for undefined API routes
   // This must be registered LAST to ensure all defined routes are matched first
   app.use('/api/*', (req, res) => {
