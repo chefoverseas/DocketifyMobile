@@ -271,7 +271,7 @@ export default function AdminInsightsPage() {
                 asChild
                 className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               >
-                <Link href="/admin">
+                <Link href="/admin/dashboard">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Link>
