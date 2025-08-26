@@ -405,21 +405,34 @@ export default function AdminDashboardPage() {
               </div>
             </CardHeader>
             <CardContent className="relative z-10">
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Button
                   asChild
-                  className="admin-primary-btn h-20 flex-col justify-center group relative overflow-hidden"
+                  className="bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
                 >
                   <Link href="/admin/workvisas">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
-                        <HeartHandshake className="h-5 w-5 text-white" />
-                      </div>
-                      <div className="text-left">
-                        <span className="font-semibold text-white block">Interview & Embassy Center</span>
-                        <span className="text-xs text-white/80">Unified work visa, interview scheduling & embassy tracking</span>
-                      </div>
-                    </div>
+                    <Plane className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Work Visas</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/interviews">
+                    <Calendar className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Interviews</span>
+                  </Link>
+                </Button>
+                
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 group h-20 flex-col justify-center"
+                >
+                  <Link href="/admin/embassy-tracking">
+                    <Globe className="h-6 w-6 mb-2 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-sm">Embassy Tracking</span>
                   </Link>
                 </Button>
               </div>
