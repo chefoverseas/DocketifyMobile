@@ -61,7 +61,7 @@ export default function AdminWorkVisasPage() {
   const [dateFilter, setDateFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [embassyFilter, setEmbassyFilter] = useState("all");
-  const [activeTab, setActiveTab] = useState("interviews");
+  const [activeTab, setActiveTab] = useState("overview");
 
   // Check admin authentication
   const { data: adminData, isLoading: adminLoading } = useQuery({
@@ -373,9 +373,119 @@ export default function AdminWorkVisasPage() {
           </CardContent>
         </Card>
 
+        {/* Core Work Visa Management Functions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="admin-glass admin-card-hover border-0">
+            <CardHeader className="pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                  <Plane className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Work Visa Applications</CardTitle>
+                  <CardDescription>Manage all work visa applications</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Total Applications</span>
+                  <Badge className="bg-blue-100 text-blue-800">{allWorkVisas.length}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Approved</span>
+                  <Badge className="bg-green-100 text-green-800">
+                    {allWorkVisas.filter((v: any) => v.workVisa?.status === 'approved').length}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Pending</span>
+                  <Badge className="bg-yellow-100 text-yellow-800">
+                    {allWorkVisas.filter((v: any) => v.workVisa?.status === 'awaiting_decision').length}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="admin-glass admin-card-hover border-0">
+            <CardHeader className="pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+                  <Calendar className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Interview Scheduling</CardTitle>
+                  <CardDescription>Schedule and manage interviews</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Scheduled Interviews</span>
+                  <Badge className="bg-purple-100 text-purple-800">{interviews.length}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Today's Interviews</span>
+                  <Badge className="bg-orange-100 text-orange-800">
+                    {interviews.filter(i => i.interviewDate && isToday(parseISO(i.interviewDate))).length}
+                  </Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">This Week</span>
+                  <Badge className="bg-blue-100 text-blue-800">
+                    {interviews.filter(i => i.interviewDate && isThisWeek(parseISO(i.interviewDate))).length}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="admin-glass admin-card-hover border-0">
+            <CardHeader className="pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                  <Building2 className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg">Embassy Tracking</CardTitle>
+                  <CardDescription>Track embassy applications</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Embassy Applications</span>
+                  <Badge className="bg-green-100 text-green-800">{embassyApplications.length}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">Active Embassies</span>
+                  <Badge className="bg-indigo-100 text-indigo-800">{embassyLocations.length}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-slate-600">With Tracking Code</span>
+                  <Badge className="bg-cyan-100 text-cyan-800">
+                    {embassyApplications.filter(e => e.trackingCode).length}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Main Content with Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 bg-white/50 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-3 bg-white/50 backdrop-blur-sm">
+            <TabsTrigger 
+              value="overview" 
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
+            >
+              <Plane className="h-4 w-4 mr-2" />
+              All Work Visas ({allWorkVisas.length})
+            </TabsTrigger>
             <TabsTrigger 
               value="interviews" 
               className="data-[state=active]:bg-white data-[state=active]:shadow-sm"
@@ -391,6 +501,93 @@ export default function AdminWorkVisasPage() {
               Embassy Tracking ({filteredEmbassyApplications.length})
             </TabsTrigger>
           </TabsList>
+
+          {/* Overview Tab - All Work Visas */}
+          <TabsContent value="overview" className="space-y-6">
+            {allWorkVisas.length === 0 ? (
+              <Card className="bg-white/70 backdrop-blur-sm border-slate-200/50">
+                <CardContent className="p-12 text-center">
+                  <Plane className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">No Work Visas Found</h3>
+                  <p className="text-slate-600">No work visa applications in the system.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-6">
+                {allWorkVisas.map((item: any) => (
+                  <Card key={item.workVisa?.id || item.user.id} className="bg-white/70 backdrop-blur-sm border-slate-200/50 hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <UserCheck className="h-6 w-6 text-blue-600" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-slate-900">{item.user.displayName}</h3>
+                            <p className="text-sm text-slate-600">{item.user.email}</p>
+                          </div>
+                        </div>
+                        <Badge className={getStatusColor(item.workVisa?.status || 'preparation')}>
+                          {formatStatus(item.workVisa?.status || 'preparation')}
+                        </Badge>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="flex items-center space-x-2">
+                          <Globe className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <p className="text-xs text-slate-500">Visa Type</p>
+                            <p className="text-sm font-medium">{item.workVisa?.visaType || 'Not specified'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <p className="text-xs text-slate-500">Embassy</p>
+                            <p className="text-sm font-medium">{item.workVisa?.embassyLocation || 'Not specified'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <p className="text-xs text-slate-500">Interview Date</p>
+                            <p className="text-sm font-medium">
+                              {item.workVisa?.interviewDate 
+                                ? format(parseISO(item.workVisa.interviewDate), 'MMM dd, yyyy')
+                                : 'Not scheduled'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4 text-slate-500" />
+                          <div>
+                            <p className="text-xs text-slate-500">Tracking Code</p>
+                            <p className="text-sm font-medium">{item.workVisa?.trackingCode || 'Not assigned'}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end space-x-2 mt-4">
+                        <WorkVisaDetailsModal 
+                          workVisa={item.workVisa} 
+                          user={item.user}
+                          onUpdate={() => refetch()}
+                        />
+                        <Button
+                          onClick={() => setLocation(`/admin/user/${item.user.id}`)}
+                          className="admin-secondary-btn"
+                          size="sm"
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Details
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
           {/* Interviews Tab */}
           <TabsContent value="interviews" className="space-y-6">
