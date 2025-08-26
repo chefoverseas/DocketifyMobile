@@ -42,6 +42,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Force navigation to dashboard after successful login
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 100);
     },
   });
 

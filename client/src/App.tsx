@@ -40,6 +40,7 @@ import AdminReports from "@/pages/admin-reports";
 import NotFound from "@/pages/not-found";
 import Footer from "@/components/footer";
 import Navigation from "@/components/navigation";
+import OTPVerification from "@/pages/otp-verification";
 
 import { useAuth } from "@/hooks/use-auth";
 
@@ -49,7 +50,10 @@ function Router() {
   return (
     <Switch>
       {!isAuthenticated ? (
-        <Route path="/" component={EmailLogin} />
+        <>
+          <Route path="/" component={EmailLogin} />
+          <Route path="/auth/otp" component={OTPVerification} />
+        </>
       ) : isLoading ? (
         <Route path="/" component={() => (
           <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
