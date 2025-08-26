@@ -2,14 +2,17 @@ import { useAuth } from "@/hooks/use-auth";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Bell, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import chefOverseasLogo from "@assets/Chef Overseas_22092021_final_A_1754986317927.png";
 
 export default function Navigation() {
   const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   // Only hide navigation for non-authenticated users or admin pages
   if (!isAuthenticated || location === "/auth/otp" || location.startsWith("/admin")) {
@@ -26,6 +29,16 @@ export default function Navigation() {
     { href: "/workpermit", label: "Work Permit" },
     { href: "/workvisa", label: "Work Visa" },
   ];
+
+  // Fetch notifications to show unread count
+  const { data: notificationsData } = useQuery({
+    queryKey: ['/api/notifications'],
+    enabled: isAuthenticated,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
+
+  const notifications = (notificationsData as { notifications?: any[] })?.notifications || [];
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   return (
     <nav className="bg-white/95 backdrop-blur-md shadow-xl border-b border-orange-100/50 sticky top-0 z-50">
@@ -95,9 +108,76 @@ export default function Navigation() {
           </div>
           
           <div className="flex items-center space-x-4 flex-shrink-0">
-            <Button variant="ghost" className="p-2.5 rounded-full hover:bg-orange-50 transition-all duration-300 group">
-              <Bell className="h-4 w-4 text-gray-600 group-hover:text-orange-600 transition-colors" />
-            </Button>
+            <div className="relative">
+              <Button 
+                variant="ghost" 
+                className="p-2.5 rounded-full hover:bg-orange-50 transition-all duration-300 group relative"
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+              >
+                <Bell className="h-4 w-4 text-gray-600 group-hover:text-orange-600 transition-colors" />
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs rounded-full bg-red-500 text-white border-2 border-white"
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </Badge>
+                )}
+              </Button>
+              
+              {/* Notification Dropdown */}
+              {isNotificationOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-orange-100/50 z-50 max-h-96 overflow-hidden">
+                  <div className="p-4 border-b border-orange-100/50">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-gray-900">Notifications</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setIsNotificationOpen(false)}
+                        className="h-6 w-6 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="p-4 text-center text-gray-500">
+                        <Bell className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                        <p>No notifications yet</p>
+                      </div>
+                    ) : (
+                      <div className="p-2">
+                        {notifications.slice(0, 5).map((notification: any) => (
+                          <div 
+                            key={notification.id}
+                            className={`p-3 rounded-lg mb-2 border ${
+                              notification.read 
+                                ? 'bg-gray-50 border-gray-200' 
+                                : 'bg-orange-50 border-orange-200'
+                            }`}
+                          >
+                            <h4 className="font-medium text-sm text-gray-900">{notification.title}</h4>
+                            <p className="text-xs text-gray-600 mt-1">{notification.message}</p>
+                            <p className="text-xs text-gray-400 mt-2">
+                              {new Date(notification.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                        ))}
+                        {notifications.length > 5 && (
+                          <div className="p-3 text-center">
+                            <Button variant="ghost" size="sm" className="text-orange-600">
+                              View all notifications
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="flex items-center space-x-3 bg-gradient-to-r from-orange-50/50 to-red-50/50 backdrop-blur-sm rounded-2xl px-3 py-2 border border-orange-100/50">
               <Avatar className="h-9 w-9 ring-2 ring-orange-200/50 ring-offset-1 ring-offset-white">
                 <AvatarImage src={user?.profileImageUrl || ""} />
