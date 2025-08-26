@@ -56,8 +56,16 @@ export default function Admin() {
         <CardHeader>
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
-              <CardTitle>Admin Dashboard</CardTitle>
-              <p className="text-sm text-muted-foreground">Manage users and export data</p>
+              <CardTitle>Admin Control Center</CardTitle>
+              <p className="text-sm text-muted-foreground">Comprehensive management with unified interview & embassy tracking</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  ✓ Interview & Embassy Merged
+                </span>
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Enhanced Management
+                </span>
+              </div>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
@@ -72,10 +80,10 @@ export default function Admin() {
                   Work Visas
                 </Link>
               </Button>
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:from-blue-100 hover:to-indigo-100">
                 <Link href="/admin/interview-embassy">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Interviews & Embassy
+                  <Calendar className="w-4 h-4 mr-2 text-blue-600" />
+                  <span className="text-blue-800">Interview & Embassy Center</span>
                 </Link>
               </Button>
               <Button asChild variant="outline">
@@ -131,12 +139,16 @@ export default function Admin() {
           </Link>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="hover:shadow-lg transition-shadow cursor-pointer bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-300 hover:shadow-xl">
           <Link href="/admin/interview-embassy">
             <CardContent className="p-4 text-center">
-              <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
-              <p className="text-sm font-medium text-blue-800">Interviews & Embassy</p>
-              <p className="text-xs text-blue-600 mt-1">UNIFIED</p>
+              <div className="relative">
+                <Calendar className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              </div>
+              <p className="text-sm font-medium text-blue-800">Interview & Embassy Center</p>
+              <p className="text-xs text-blue-600 mt-1 font-semibold">✓ MERGED</p>
+              <p className="text-xs text-gray-500 mt-1">Unified Management</p>
             </CardContent>
           </Link>
         </Card>
