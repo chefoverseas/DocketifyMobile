@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,29 @@ export default function AdminSettingsPage() {
     queryKey: ["/api/admin/me"],
   });
 
+  // Load current settings
+  const { data: settingsData, isLoading: settingsLoading } = useQuery({
+    queryKey: ["/api/admin/settings"],
+    enabled: !!(adminData as any)?.admin,
+  });
+
+  // Update state when settings are loaded
+  useEffect(() => {
+    if (settingsData?.settings) {
+      const settings = settingsData.settings;
+      setMaintenanceMode(settings.maintenanceMode);
+      setMaintenanceMessage(settings.maintenanceMessage);
+      setEmailNotifications(settings.emailNotifications);
+      setAutoSync(settings.autoSync);
+      setSessionTimeout(settings.sessionTimeout.toString());
+      setMaxFileSize(settings.maxFileSize.toString());
+      setBackupFrequency(settings.backupFrequency);
+      setSupportEmail(settings.supportEmail);
+      setSupportPhone(settings.supportPhone);
+      setSystemMessage(settings.systemMessage);
+    }
+  }, [settingsData]);
+
   // Early returns after all hooks are called
   if (adminLoading) {
     return (
@@ -82,8 +105,19 @@ export default function AdminSettingsPage() {
   const handleSaveSettings = async () => {
     setSaving(true);
     try {
-      // Simulate API call for saving settings
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Save maintenance mode and other settings to backend
+      await apiRequest("/api/admin/settings", "POST", {
+        maintenanceMode,
+        maintenanceMessage,
+        emailNotifications,
+        autoSync,
+        sessionTimeout: parseInt(sessionTimeout),
+        maxFileSize: parseInt(maxFileSize),
+        backupFrequency,
+        supportEmail,
+        supportPhone,
+        systemMessage
+      });
       
       toast({
         title: "Settings Saved",

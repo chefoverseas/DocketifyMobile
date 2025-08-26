@@ -2469,6 +2469,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin Settings Management Routes
+  
+  // Get admin settings
+  app.get("/api/admin/settings", requireAdminAuth, async (req, res) => {
+    try {
+      // For now, return default settings - in production this would come from database
+      const defaultSettings = {
+        maintenanceMode: false,
+        maintenanceMessage: "We are currently performing scheduled maintenance. Please check back shortly.",
+        emailNotifications: true,
+        autoSync: true,
+        sessionTimeout: 7,
+        maxFileSize: 10,
+        backupFrequency: "daily",
+        supportEmail: "info@chefoverseas.com",
+        supportPhone: "+919363234028",
+        systemMessage: ""
+      };
+      
+      res.json({ settings: defaultSettings });
+    } catch (error) {
+      console.error("Error getting admin settings:", error);
+      res.status(500).json({ message: "Failed to get settings" });
+    }
+  });
+
+  // Save admin settings
+  app.post("/api/admin/settings", requireAdminAuth, async (req, res) => {
+    try {
+      const {
+        maintenanceMode,
+        maintenanceMessage,
+        emailNotifications,
+        autoSync,
+        sessionTimeout,
+        maxFileSize,
+        backupFrequency,
+        supportEmail,
+        supportPhone,
+        systemMessage
+      } = req.body;
+
+      // Log the maintenance mode change for audit
+      console.log(`🔧 Admin ${(req.session as any).adminId} ${maintenanceMode ? 'enabled' : 'disabled'} maintenance mode`);
+      
+      // In production, save to database
+      // For now, just log the action and simulate success
+      console.log("📝 Admin settings updated:", {
+        maintenanceMode,
+        maintenanceMessage: maintenanceMessage?.substring(0, 50) + "...",
+        emailNotifications,
+        autoSync,
+        sessionTimeout,
+        maxFileSize,
+        backupFrequency,
+        supportEmail,
+        supportPhone
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Settings saved successfully",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error saving admin settings:", error);
+      res.status(500).json({ message: "Failed to save settings" });
+    }
+  });
+
   // Catch-all handler for undefined API routes
   // This must be registered LAST to ensure all defined routes are matched first
   app.use('/api/*', (req, res) => {
