@@ -133,7 +133,7 @@ export async function sendWorkPermitStatusEmail(email: string, displayName: stri
           </p>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit" 
+            <a href="https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/workpermit" 
                style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
               View Work Permit Status
             </a>
@@ -161,7 +161,7 @@ ${statusInfo.message}
 
 ${statusInfo.description}
 
-View your work permit status: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit
+View your work permit status: https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/workpermit
 
 If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
 
@@ -218,7 +218,7 @@ export async function sendFinalDocketUploadEmail(email: string, displayName: str
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit" 
+            <a href="https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/workpermit" 
                style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
               Download Final Docket
             </a>
@@ -248,7 +248,7 @@ Your final docket containing all necessary documents for your work permit applic
 
 Important: Please review all documents carefully and keep them safe for your application process.
 
-Download your final docket: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/workpermit
+Download your final docket: https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/workpermit
 
 If you have any questions, please contact us at info@chefoverseas.com or WhatsApp +919363234028
 
@@ -316,7 +316,7 @@ export async function sendDocketReminderEmail(email: string, displayName: string
           </div>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/docket" 
+            <a href="https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/docket" 
                style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
               Complete Your Docket
             </a>
@@ -351,7 +351,7 @@ Action Required: Your docket is still incomplete. Please upload the missing docu
 Missing Documents:
 ${missingDocuments.map(doc => `• ${doc}`).join('\n')}
 
-Complete your docket: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/docket
+Complete your docket: https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/docket
 
 Important: Incomplete dockets may delay your work permit application process. Please complete your docket as soon as possible.
 
@@ -439,7 +439,7 @@ export async function sendNewUserWelcomeEmail(email: string, displayName: string
           </ul>
           
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/dashboard" 
+            <a href="https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/dashboard" 
                style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
               Access Your Dashboard
             </a>
@@ -483,7 +483,7 @@ What's Next?
 3. Work Permit Processing: We'll begin processing your work permit application
 4. Status Updates: You'll receive email notifications for all status changes
 
-Access your dashboard: ${process.env.REPLIT_DOMAINS || 'https://docketify.replit.app'}/dashboard
+Access your dashboard: https://${process.env.REPLIT_DOMAINS || 'docketify.replit.app'}/dashboard
 
 Need Help? Our support team is here to assist you throughout the process. Contact us at any time.
 
