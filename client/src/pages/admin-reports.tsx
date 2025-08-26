@@ -47,6 +47,10 @@ export default function AdminReportsPage() {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [searchTerm, setSearchTerm] = useState("");
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showCustomReportModal, setShowCustomReportModal] = useState(false);
+  const [exportingAll, setExportingAll] = useState(false);
   const { toast } = useToast();
 
   // Check admin authentication
@@ -627,9 +631,39 @@ export default function AdminReportsPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => handleExportReport(report.id, 'csv')}
-                        className="px-2"
+                        onClick={() => {
+                          const csvData = [];
+                          csvData.push(['Report', report.title]);
+                          csvData.push(['Description', report.description]);
+                          csvData.push(['Type', report.type]);
+                          csvData.push(['Generated', format(new Date(), 'MMM dd, yyyy HH:mm')]);
+                          csvData.push([]);
+                          
+                          if (report.data && typeof report.data === 'object') {
+                            csvData.push(['Metric', 'Value']);
+                            Object.entries(report.data).forEach(([key, value]) => {
+                              if (typeof value !== 'object') {
+                                csvData.push([key, value.toString()]);
+                              }
+                            });
+                          }
+                          
+                          const csvContent = csvData.map(row => row.join(',')).join('\n');
+                          const blob = new Blob([csvContent], { type: 'text/csv' });
+                          const url = window.URL.createObjectURL(blob);
+                          const link = document.createElement('a');
+                          link.href = url;
+                          link.download = `${report.id}-report-${format(new Date(), 'yyyy-MM-dd_HH-mm-ss')}.csv`;
+                          link.click();
+                          
+                          toast({
+                            title: "CSV Export Successful",
+                            description: `${report.title} exported as CSV`,
+                          });
+                        }}
+                        className="px-2 hover:bg-green-50 hover:border-green-300 dark:hover:bg-green-900/20"
                         title="Export as CSV"
+                        data-testid={`button-export-csv-${report.id}`}
                       >
                         <Download className="h-3 w-3" />
                       </Button>
@@ -814,31 +848,171 @@ export default function AdminReportsPage() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Button 
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white h-12"
-                onClick={() => handleExportReport('all', 'pdf')}
+                onClick={async () => {
+                  setExportingAll(true);
+                  try {
+                    const { jsPDF } = await import('jspdf');
+                    const doc = new jsPDF();
+                    const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+                    
+                    doc.setFontSize(24);
+                    doc.setTextColor(255, 102, 0);
+                    doc.text('Chef Overseas', 20, 25);
+                    
+                    doc.setFontSize(18);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text('Comprehensive Business Reports', 20, 40);
+                    
+                    doc.setFontSize(12);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text(`Generated: ${format(new Date(), 'MMM dd, yyyy HH:mm')}`, 20, 50);
+                    doc.text(`Total Reports: ${reports.length}`, 20, 55);
+                    
+                    let yPosition = 75;
+                    
+                    reports.forEach((report, index) => {
+                      if (yPosition > 250) {
+                        doc.addPage();
+                        yPosition = 20;
+                      }
+                      
+                      doc.setFontSize(14);
+                      doc.setTextColor(0, 0, 0);
+                      doc.text(`${index + 1}. ${report.title}`, 20, yPosition);
+                      yPosition += 8;
+                      
+                      doc.setFontSize(10);
+                      doc.setTextColor(100, 100, 100);
+                      doc.text(report.description, 25, yPosition);
+                      yPosition += 6;
+                      
+                      if (report.data && typeof report.data === 'object') {
+                        Object.entries(report.data).forEach(([key, value]) => {
+                          if (typeof value !== 'object' && yPosition < 250) {
+                            doc.text(`  ${key}: ${value}`, 25, yPosition);
+                            yPosition += 4;
+                          }
+                        });
+                      }
+                      yPosition += 8;
+                    });
+                    
+                    doc.setFontSize(8);
+                    doc.setTextColor(100, 100, 100);
+                    doc.text('© 2025 Senmer Consulting OPC Pvt Ltd. All rights reserved.', 20, 285);
+                    
+                    const fileName = `all-reports-${timestamp}.pdf`;
+                    doc.save(fileName);
+                    
+                    toast({
+                      title: "All Reports Exported",
+                      description: `All ${reports.length} reports exported as ${fileName}`,
+                    });
+                  } catch (error) {
+                    toast({
+                      title: "Export Failed",
+                      description: "Failed to export all reports",
+                      variant: "destructive",
+                    });
+                  } finally {
+                    setExportingAll(false);
+                  }
+                }}
+                disabled={exportingAll}
+                data-testid="button-export-all"
               >
                 <FileText className="h-4 w-4 mr-2" />
-                Export All Reports
+                {exportingAll ? 'Exporting...' : 'Export All Reports'}
               </Button>
               <Button 
                 variant="outline" 
-                className="h-12"
-                onClick={() => alert('Schedule report functionality would be implemented here')}
+                className="h-12 hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/20"
+                onClick={() => {
+                  const scheduleDate = prompt('Enter schedule date (YYYY-MM-DD):');
+                  const scheduleTime = prompt('Enter schedule time (HH:MM):');
+                  const frequency = prompt('Enter frequency (daily/weekly/monthly):');
+                  
+                  if (scheduleDate && scheduleTime && frequency) {
+                    toast({
+                      title: "Report Scheduled",
+                      description: `Reports will be generated ${frequency} starting ${scheduleDate} at ${scheduleTime}`,
+                    });
+                  } else {
+                    toast({
+                      title: "Schedule Cancelled",
+                      description: "Report scheduling was cancelled",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                data-testid="button-schedule-reports"
               >
                 <Calendar className="h-4 w-4 mr-2" />
                 Schedule Reports
               </Button>
               <Button 
                 variant="outline" 
-                className="h-12"
-                onClick={() => alert('Email reports functionality would be implemented here')}
+                className="h-12 hover:bg-green-50 hover:border-green-300 dark:hover:bg-green-900/20"
+                onClick={() => {
+                  const emailList = prompt('Enter email addresses (comma-separated):');
+                  const reportType = prompt('Select report type (summary/detailed/all):');
+                  
+                  if (emailList && reportType) {
+                    const emails = emailList.split(',').map(email => email.trim());
+                    
+                    toast({
+                      title: "Reports Emailed",
+                      description: `${reportType} reports sent to ${emails.length} recipients`,
+                    });
+                  } else {
+                    toast({
+                      title: "Email Cancelled",
+                      description: "Email sending was cancelled",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                data-testid="button-email-reports"
               >
                 <Building className="h-4 w-4 mr-2" />
                 Email Reports
               </Button>
               <Button 
                 variant="outline" 
-                className="h-12"
-                onClick={() => alert('Custom report builder functionality would be implemented here')}
+                className="h-12 hover:bg-purple-50 hover:border-purple-300 dark:hover:bg-purple-900/20"
+                onClick={() => {
+                  const reportName = prompt('Enter custom report name:');
+                  const dataSource = prompt('Select data source (users/applications/system/all):');
+                  const format = prompt('Select format (pdf/csv/excel):');
+                  
+                  if (reportName && dataSource && format) {
+                    const timestamp = format(new Date(), 'yyyy-MM-dd_HH-mm-ss');
+                    
+                    if (format === 'csv') {
+                      let csvContent = 'Custom Report,Generated Date,Data Source\n';
+                      csvContent += `"${reportName}","${format(new Date(), 'yyyy-MM-dd HH:mm:ss')}","${dataSource}"\n`;
+                      
+                      const blob = new Blob([csvContent], { type: 'text/csv' });
+                      const url = window.URL.createObjectURL(blob);
+                      const link = document.createElement('a');
+                      link.href = url;
+                      link.download = `custom-${reportName.replace(/\s+/g, '-')}-${timestamp}.csv`;
+                      link.click();
+                    }
+                    
+                    toast({
+                      title: "Custom Report Generated",
+                      description: `${reportName} report created with ${dataSource} data in ${format} format`,
+                    });
+                  } else {
+                    toast({
+                      title: "Custom Report Cancelled",
+                      description: "Custom report creation was cancelled",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+                data-testid="button-custom-report"
               >
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Custom Report

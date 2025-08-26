@@ -185,8 +185,6 @@ class DataSyncService {
           notes: null,
           trackingCode: null,
           travelMedicalInsuranceUrl: null,
-
-          healthInsuranceDocumentUrl: null,
           fullDocketVisaSubmissionUrl: null,
           finalVisaUrl: null
         });
