@@ -61,44 +61,26 @@ export default function AdminInterviewsPage() {
     refetchInterval: 30000,
   });
 
-  // Early returns for loading and authentication
-  if (adminLoading || workVisasLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
-            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-orange-500 animate-spin animation-delay-150 mx-auto"></div>
-          </div>
-          <p className="mt-6 text-lg font-medium text-slate-700 dark:text-slate-300">Loading Interview Management...</p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Preparing interview schedules</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!(adminData as any)?.admin) {
-    setLocation("/admin/login");
-    return null;
-  }
-
+  // Process data unconditionally to ensure hooks are called in the same order
   const allWorkVisas = ((workVisasData as any)?.workVisas || []);
   
   // Filter only interviews that are scheduled
-  const interviews: InterviewData[] = allWorkVisas
-    .filter((item: any) => item.workVisa?.interviewDate && item.workVisa?.interviewTime)
-    .map((item: any) => ({
-      id: item.workVisa.id,
-      userId: item.user.id,
-      status: item.workVisa.status,
-      interviewDate: item.workVisa.interviewDate,
-      interviewTime: item.workVisa.interviewTime,
-      visaType: item.workVisa.visaType,
-      embassyLocation: item.workVisa.embassyLocation,
-      trackingCode: item.workVisa.trackingCode,
-      notes: item.workVisa.notes,
-      user: item.user
-    }));
+  const interviews: InterviewData[] = useMemo(() => {
+    return allWorkVisas
+      .filter((item: any) => item.workVisa?.interviewDate && item.workVisa?.interviewTime)
+      .map((item: any) => ({
+        id: item.workVisa.id,
+        userId: item.user.id,
+        status: item.workVisa.status,
+        interviewDate: item.workVisa.interviewDate,
+        interviewTime: item.workVisa.interviewTime,
+        visaType: item.workVisa.visaType,
+        embassyLocation: item.workVisa.embassyLocation,
+        trackingCode: item.workVisa.trackingCode,
+        notes: item.workVisa.notes,
+        user: item.user
+      }));
+  }, [allWorkVisas]);
 
   // Filter and search interviews
   const filteredInterviews = useMemo(() => {
@@ -157,6 +139,27 @@ export default function AdminInterviewsPage() {
       pending: pendingInterviews.length
     };
   }, [interviews]);
+
+  // Early returns after all hooks are called
+  if (adminLoading || workVisasLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
+            <div className="absolute inset-0 rounded-full h-16 w-16 border-4 border-transparent border-t-orange-500 animate-spin animation-delay-150 mx-auto"></div>
+          </div>
+          <p className="mt-6 text-lg font-medium text-slate-700 dark:text-slate-300">Loading Interview Management...</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Preparing interview schedules</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!(adminData as any)?.admin) {
+    setLocation("/admin/login");
+    return null;
+  }
 
   const getInterviewStatusBadge = (interview: InterviewData) => {
     if (!interview.interviewDate) return null;
